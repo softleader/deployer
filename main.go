@@ -13,7 +13,7 @@ func main() {
 	app.Controller("/", new(controller.DeploymentController), new(services.DeploymentService))
 
 	app.Run(
-		iris.Addr("localhost:8080"),
+		iris.Addr(":5678"),
 		iris.WithoutVersionChecker,
 		iris.WithoutServerError(iris.ErrServerClosed),
 		iris.WithOptimizations, // enables faster json serialization and more
