@@ -18,16 +18,22 @@ $ go run $GOPATH/src/github.com/softleader/deployer/main.go
 $ curl localhost:5678
 ```
 
-- Remove stack ${stackName}
+- List services in stack
 
 ```
-$ curl -X DELETE localhost:5678/${stackName}
+$ curl localhost:5678/${stack}
+```
+
+- Remove stack ${stack}
+
+```
+$ curl -X DELETE localhost:5678/${stack}
 ```
 
 - Deploy a `package.yaml`
 
 ```
 $ curl -X POST \
-       -d '{"eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "publishPort": 30000, "mount": "/nfs/rpc", "network": "net0", "yaml": "github:softleader/softleader-package/package.yml#rpc"}' \
-       localhost:5678/${stackName}
+       -d '{"project": "cki", "eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "publishPort": 30000, "volume0": "/nfs/rpc", "net0": "softleader-cki", "yaml": "github:softleader/softleader-package/package.yaml#hotains"}' \
+       localhost:5678/
 ```
