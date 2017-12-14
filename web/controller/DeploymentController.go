@@ -15,10 +15,14 @@ func (c *DeploymentController) Get() string {
 	return c.Service.GetAll()
 }
 
-func (c *DeploymentController) PostBy(stack string) string {
+func (c *DeploymentController) GetBy(stack string) string {
+	return c.Service.GetServices(stack)
+}
+
+func (c *DeploymentController) Post() string {
 	d := &datamodels.Deployment{}
 	c.Ctx.ReadJSON(d)
-	return c.Service.Deploy(stack, *d)
+	return c.Service.Deploy(*d)
 }
 
 func (c *DeploymentController) DeleteBy(stack string) string {
