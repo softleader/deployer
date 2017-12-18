@@ -18,7 +18,7 @@ type DeployService struct {
 }
 
 func (ds *DeployService) GetAll() string {
-	out, err := ds.DockerStack.Ls()
+	_, out, err := ds.DockerStack.Ls()
 	if err != nil {
 		return err.Error()
 	} else {
@@ -27,7 +27,7 @@ func (ds *DeployService) GetAll() string {
 }
 
 func (ds *DeployService) GetServices(stack string) string {
-	out, err := ds.DockerStack.Services(stack)
+	_, out, err := ds.DockerStack.Services(stack)
 	if err != nil {
 		return err.Error()
 	} else {
@@ -56,10 +56,11 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 
 	// gpm install
 	installDir := "repo"
-	out, err := ds.Gpm.Install(installDir, y)
+	cmd, out, err := ds.Gpm.Install(installDir, y)
 	if err != nil {
 		return err.Error()
 	}
+	resp.WriteString(fmt.Sprintf("$ %v", cmd))
 	resp.WriteString(out)
 
 	// gen-yaml
@@ -68,10 +69,11 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 	repo := path.Join(ds.Wd.Path, installDir)
 
 	if !strings.Contains(out, "Detected groups in YAML dependencies!") {
-		yml, out, err := ds.genYaml(repo, "docker-compose.yml", d)
+		yml, cmd, out, err := ds.genYaml(repo, "docker-compose.yml", d)
 		if err != nil {
 			return err.Error()
 		}
+		resp.WriteString(fmt.Sprintf("$ %v", cmd))
 		resp.WriteString(out)
 		yamls = append(yamls, yml)
 	} else {
@@ -85,10 +87,11 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
-			yml, out, err := ds.genYaml(groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), d)
+			yml, cmd, out, err := ds.genYaml(groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), d)
 			if err != nil {
 				return err.Error()
 			}
+			resp.WriteString(fmt.Sprintf("$ %v", cmd))
 			resp.WriteString(out)
 			yamls = append(yamls, yml)
 		}
@@ -97,20 +100,23 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 	// docker stack deploy
 
 	for _, yaml := range yamls {
-		out, err = ds.DockerStack.Deploy(d.Project, yaml)
+		cmd, out, err = ds.DockerStack.Deploy(d.Project, yaml)
 		if err != nil {
 			return err.Error()
 		}
+		resp.WriteString(fmt.Sprintf("$ %v", cmd))
 		resp.WriteString(out)
 	}
+
+	resp.WriteString("\n")
 
 	return resp.String()
 }
 
-func (ds *DeployService) genYaml(dirname string, yaml string, d datamodels.Deploy) (string, string, error) {
+func (ds *DeployService) genYaml(dirname string, yaml string, d datamodels.Deploy) (string, string, string, error) {
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	var dirs []string
 	for _, f := range files {
@@ -118,15 +124,16 @@ func (ds *DeployService) genYaml(dirname string, yaml string, d datamodels.Deplo
 	}
 
 	yml := path.Join(dirname, "docker-compose.yml")
-	out, err := ds.GenYaml.Gen(yml, d, strings.Join(dirs, " "))
+	cmd, out, err := ds.GenYaml.Gen(yml, d, strings.Join(dirs, " "))
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
-	return yml, out, nil
+
+	return yml, cmd, out, nil
 }
 
 func (ds *DeployService) Delete(stack string) string {
-	out, err := ds.DockerStack.Rm(stack)
+	_, out, err := ds.DockerStack.Rm(stack)
 	if err != nil {
 		return err.Error()
 	} else {

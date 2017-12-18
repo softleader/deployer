@@ -37,20 +37,19 @@ func main() {
 		Wd:          cmd.NewWd(),
 	}
 
-	out, err := s.Gpm.Version()
+	fmt.Println("Checking dependencies...")
+	cmd, out, err := s.Gpm.Version()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
-	fmt.Println("Finding dependent package: git-package-manager ", out)
-	out, err = s.GenYaml.Version()
+	fmt.Printf("  $ %v: %v", cmd, out)
+	cmd, out, err = s.GenYaml.Version()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
-	fmt.Println("Finding dependent package: container-yaml-generator ", out)
-
-
+	fmt.Printf("  $ %v: %v", cmd, out)
 	serve(*addr+":"+strconv.Itoa(*port), s)
 
 }

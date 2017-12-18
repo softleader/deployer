@@ -49,6 +49,6 @@ $ curl -X DELETE localhost:5678/${stack}
 
 ```
 $ curl -X POST \
-       -d '{"cleanUp": true, "project": "hotains", "eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "dev": "192.168.1.60/30000", "volume0": "/nfs/rpc", "net0": "", "yaml": "package.yaml"}' \
+       -d '{"cleanUp": true, "project": "hotains", "eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "dev": "192.168.1.60/30000", "volume0": "/nfs/rpc", "net0": "", "yaml": ["package.yaml"]}' \
        localhost:5678/
 ```

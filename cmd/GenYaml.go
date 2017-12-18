@@ -16,7 +16,7 @@ func NewGenYaml(cmd string) GenYaml {
 	return GenYaml{cmd}
 }
 
-func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, error) {
+func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, string, error) {
 
 	commands := []string{g.cmd, "-s swarm -o", output}
 	if d.Silence {
@@ -36,6 +36,6 @@ func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string
 	return Sh().Exec(commands...)
 }
 
-func (g GenYaml) Version() (string, error) {
-	return Sh().Exec(g.cmd, "-V")
+func (g GenYaml) Version() (string, string, error) {
+	return Sh().Exec(g.cmd, "--version")
 }

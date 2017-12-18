@@ -16,9 +16,8 @@ func Sh() sh {
 	return sh{Wd: NewWd()}
 }
 
-func (sh sh) Exec(commands ...string) (string, error) {
+func (sh sh) Exec(commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
-	fmt.Println("$", arg)
 	cmd := exec.Command("sh", "-c", arg)
 	cmd.Dir = sh.Wd.Path
 	var out bytes.Buffer
@@ -27,7 +26,7 @@ func (sh sh) Exec(commands ...string) (string, error) {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		return "", errors.New(fmt.Sprint(err) + ": " + stderr.String())
+		return "", "", errors.New(fmt.Sprint(err) + ": " + stderr.String())
 	}
-	return fmt.Sprintf("$ %v\n%v", arg, out.String()), nil
+	return arg, out.String(), nil
 }
