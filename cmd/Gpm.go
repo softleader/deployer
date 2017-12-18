@@ -21,3 +21,8 @@ func (g Gpm) Install(installDir string, yaml string) (string, error) {
 	}
 	return Sh().Exec(commands...)
 }
+
+
+func (g Gpm) Version() (string, error) {
+	return Sh().Exec(g.cmd, "-V")
+}

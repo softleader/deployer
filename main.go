@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"github.com/softleader/deployer/cmd"
+	"log"
 )
 
 // https://github.com/kataras/iris
@@ -29,22 +30,40 @@ func main() {
 		fmt.Printf("Changed working directory to [%v]\n", pwd)
 	}
 
-	app := iris.New()
-
-	service := services.DeployService{
+	s := services.DeployService{
 		DockerStack: cmd.NewDockerStack(),
 		Gpm:         cmd.NewGpm(*gpm),
 		GenYaml:     cmd.NewGenYaml(*genYaml),
 		Wd:          cmd.NewWd(),
 	}
 
-	app.Controller("/", new(controller.DeployController), service)
+	out, err := s.Gpm.Version()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	fmt.Println("Finding dependent package: git-package-manager ", out)
+	out, err = s.GenYaml.Version()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	fmt.Println("Finding dependent package: container-yaml-generator ", out)
+
+
+	serve(*addr+":"+strconv.Itoa(*port), s)
+
+}
+
+func serve(addr string, s services.DeployService) {
+	app := iris.New()
+
+	app.Controller("/", new(controller.DeployController), s)
 
 	app.Run(
-		iris.Addr(*addr+":"+strconv.Itoa(*port)),
+		iris.Addr(addr),
 		iris.WithoutVersionChecker,
 		iris.WithoutServerError(iris.ErrServerClosed),
 		iris.WithOptimizations, // enables faster json serialization and more
 	)
-
 }

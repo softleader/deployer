@@ -35,3 +35,7 @@ func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string
 
 	return Sh().Exec(commands...)
 }
+
+func (g GenYaml) Version() (string, error) {
+	return Sh().Exec(g.cmd, "-V")
+}

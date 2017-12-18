@@ -16,7 +16,8 @@ $ ./deployer/main
 - `addr` - Determine application addr, default: `empty`
 - `port` - Determine application port, default: `5678`
 - `cmd.gpm` - Command to execute softleader/git-package-manager, default: `gpm`
-- `cmd.gen-yaml` - Command to execute softleader/container-yaml-generator, default: `gen-yaml`
+- `cmd.-V
+` - Command to execute softleader/container-yaml-generator, default: `gen-yaml`
 
 eg.
 
