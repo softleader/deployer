@@ -18,7 +18,7 @@ func Sh() sh {
 
 func (sh sh) Exec(commands ...string) (string, error) {
 	arg := strings.Join(commands, " ")
-	fmt.Println("> " + arg)
+	fmt.Println("$", arg)
 	cmd := exec.Command("sh", "-c", arg)
 	cmd.Dir = sh.Wd.Path
 	var out bytes.Buffer
@@ -29,5 +29,5 @@ func (sh sh) Exec(commands ...string) (string, error) {
 	if err != nil {
 		return "", errors.New(fmt.Sprint(err) + ": " + stderr.String())
 	}
-	return out.String(), nil
+	return fmt.Sprintf("$ %v\n%v", arg, out.String()), nil
 }

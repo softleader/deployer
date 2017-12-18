@@ -6,8 +6,21 @@ Deployer is a tool for managing SoftLeader DevOps pipelines.
 
 ```
 $ go get -u github.com/kataras/iris
-$ go get -u github.com/softleader/deployer
-$ go run $GOPATH/src/github.com/softleader/deployer/main.go [path-to-working-directory]
+$ go build github.com/softleader/deployer -o main
+$ ./main
+```
+
+### Args
+
+- `wd` - Determine a working dictionary, default `$(pwd)`
+- `addr` - Determine application addr, default `empty`
+- `port` - Determine application port, default `5678`
+-
+
+eg.
+
+```
+$ ./main -wd=/tmp -port=8080
 ```
 
 ## Usage
@@ -34,9 +47,6 @@ $ curl -X DELETE localhost:5678/${stack}
 
 ```
 $ curl -X POST \
-       -d '{"project": "hotains", \
-            "eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "publishPort": 30000, \
-            "volume0": "/nfs/rpc", "net0": "softleader-cki", \
-            "yaml": "github:softleader/softleader-package/package.yaml#hotains"}' \
+       -d '{"cleanUp": true, "project": "hotains", "eurekaPort":8081, "kibanaPort":8000, "gatewayPort": 8080, "dev": "192.168.1.60/30000", "volume0": "/nfs/rpc", "net0": "", "yaml": "package.yaml", "silence": true}' \
        localhost:5678/
 ```
