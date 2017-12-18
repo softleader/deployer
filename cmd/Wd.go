@@ -10,13 +10,9 @@ type Wd struct {
 }
 
 func NewWd() Wd {
-	pwd, _ := os.Getwd()
-	pwd = path.Join(pwd, "/go")
-	wd := Wd{Path: pwd}
-	if _, err := os.Stat(pwd); os.IsNotExist(err) {
-		wd.MkdirAll()
-	}
-	return wd
+	wd, _ := os.Getwd()
+	wd = path.Join(wd, "/go")
+	return Wd{Path: wd}
 }
 
 func (wd Wd) RemoveAll() Wd {

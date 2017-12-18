@@ -27,7 +27,7 @@ func main() {
 	if *wd != "" {
 		os.Chdir(*wd)
 		pwd, _ := os.Getwd()
-		fmt.Printf("Changed working directory to [%v]\n", pwd)
+		fmt.Printf("Changed current directory to [%v]\n", pwd)
 	}
 
 	s := services.DeployService{
@@ -35,6 +35,11 @@ func main() {
 		Gpm:         cmd.NewGpm(*gpm),
 		GenYaml:     cmd.NewGenYaml(*genYaml),
 		Wd:          cmd.NewWd(),
+	}
+
+	if _, err := os.Stat(s.Wd.Path); os.IsNotExist(err) {
+		fmt.Printf("Creating working directory [%v]\n", s.Wd.Path)
+		s.Wd.MkdirAll()
 	}
 
 	fmt.Println("Checking dependencies...")
