@@ -10,5 +10,5 @@ type Deploy struct {
 	Volume0     string   `json:"volume0"`
 	Net0        string   `json:"net0"`
 	Yaml        []string `json:"yaml"`
-	Silence     bool     `json:"silence"`
+	Silently     bool     `json:"silently"`
 }

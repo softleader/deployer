@@ -19,7 +19,7 @@ func NewGenYaml(cmd string) GenYaml {
 func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, string, error) {
 
 	commands := []string{g.cmd, "-s swarm -o", output}
-	if d.Silence {
+	if d.Silently {
 		commands = append(commands, "-S")
 	}
 	if d.Net0 != "" {
