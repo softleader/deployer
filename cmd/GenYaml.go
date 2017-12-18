@@ -5,15 +5,20 @@ import (
 	"strings"
 )
 
-type GenYaml struct{}
-
-func NewGenYaml() GenYaml {
-	return GenYaml{}
+type GenYaml struct {
+	cmd string
 }
 
-func (GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, error) {
+func NewGenYaml(cmd string) GenYaml {
+	if cmd == "" {
+		cmd = "gen-yaml"
+	}
+	return GenYaml{cmd}
+}
 
-	commands := []string{"gen-yaml -s swarm -o", output}
+func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, error) {
+
+	commands := []string{g.cmd, "-s swarm -o", output}
 	if d.Silence {
 		commands = append(commands, "-S")
 	}

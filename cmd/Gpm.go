@@ -1,13 +1,18 @@
 package cmd
 
-type Gpm struct{}
-
-func NewGpm() Gpm {
-	return Gpm{}
+type Gpm struct {
+	cmd string
 }
 
-func (Gpm) Install(installDir string, yaml string) (string, error) {
-	commands := []string{"gpm install -F -c Containerfile"}
+func NewGpm(cmd string) Gpm {
+	if cmd == "" {
+		cmd = "gpm"
+	}
+	return Gpm{cmd}
+}
+
+func (g Gpm) Install(installDir string, yaml string) (string, error) {
+	commands := []string{g.cmd, "install -F -c Containerfile"}
 	if installDir != "" {
 		commands = append(commands, "-d", installDir)
 	}

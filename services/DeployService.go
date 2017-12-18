@@ -17,15 +17,6 @@ type DeployService struct {
 	cmd.Wd
 }
 
-func NewDeployService() DeployService {
-	return DeployService{
-		DockerStack: cmd.NewDockerStack(),
-		Gpm:         cmd.NewGpm(),
-		GenYaml:     cmd.NewGenYaml(),
-		Wd:          cmd.NewWd(),
-	}
-}
-
 func (ds *DeployService) GetAll() string {
 	out, err := ds.DockerStack.Ls()
 	if err != nil {
@@ -101,7 +92,6 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 			resp.WriteString(out)
 			yamls = append(yamls, yml)
 		}
-
 	}
 
 	// docker stack deploy
