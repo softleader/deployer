@@ -8,15 +8,15 @@ import (
 	"errors"
 )
 
-type sh struct {
+type Sh struct {
 	Wd
 }
 
-func Sh() sh {
-	return sh{Wd: NewWd()}
+func NewSh(wd Wd) Sh {
+	return Sh{Wd: wd}
 }
 
-func (sh sh) Exec(commands ...string) (string, string, error) {
+func (sh Sh) Exec(commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
 	cmd.Dir = sh.Wd.Path

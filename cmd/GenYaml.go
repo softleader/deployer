@@ -6,19 +6,20 @@ import (
 )
 
 type GenYaml struct {
+	sh  Sh
 	cmd string
 }
 
-func NewGenYaml(cmd string) GenYaml {
+func NewGenYaml(sh Sh, cmd string) GenYaml {
 	if cmd == "" {
 		cmd = "gen-yaml"
 	}
-	return GenYaml{cmd}
+	return GenYaml{sh: sh, cmd: cmd}
 }
 
-func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, string, error) {
+func (gy GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, string, error) {
 
-	commands := []string{g.cmd, "-s swarm -o", output}
+	commands := []string{gy.cmd, "-s swarm -o", output}
 	if d.Silently {
 		commands = append(commands, "-S")
 	}
@@ -33,9 +34,9 @@ func (g GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string
 	}
 	commands = append(commands, strings.Join(dirs, " "))
 
-	return Sh().Exec(commands...)
+	return gy.sh.Exec(commands...)
 }
 
-func (g GenYaml) Version() (string, string, error) {
-	return Sh().Exec(g.cmd, "--version")
+func (gy GenYaml) Version() (string, string, error) {
+	return gy.sh.Exec(gy.cmd, "--version")
 }

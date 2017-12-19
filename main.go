@@ -15,7 +15,7 @@ import (
 // https://github.com/kataras/iris
 func main() {
 
-	wd := flag.String("wd", "", "Determine a working dictionary, default: $(pwd)")
+	wd := flag.String("wd", "", "Determine a working dictionary, default: $(pwd)/wd")
 	addr := flag.String("addr", "", " Determine application addr, default: empty")
 	port := flag.Int("port", 5678, "Determine application port, default: 5678")
 	gpm := flag.String("cmd.gpm", "", "Command to execute softleader/git-package-manager, default: gpm")
@@ -24,22 +24,16 @@ func main() {
 
 	flag.Parse()
 
-	if *wd != "" {
-		os.Chdir(*wd)
-		pwd, _ := os.Getwd()
-		fmt.Printf("Changed current directory to [%v]\n", pwd)
-	}
+	fmt.Printf("Setting up working directory to '%v'\n", *wd)
+	cmdWd := cmd.NewWd(*wd)
+
+	cmdSh := cmd.NewSh(cmdWd)
 
 	s := services.DeployService{
-		DockerStack: cmd.NewDockerStack(),
-		Gpm:         cmd.NewGpm(*gpm),
-		GenYaml:     cmd.NewGenYaml(*genYaml),
-		Wd:          cmd.NewWd(),
-	}
-
-	if _, err := os.Stat(s.Wd.Path); os.IsNotExist(err) {
-		fmt.Printf("Creating working directory [%v]\n", s.Wd.Path)
-		s.Wd.MkdirAll()
+		DockerStack: cmd.NewDockerStack(cmdSh),
+		Gpm:         cmd.NewGpm(cmdSh, *gpm),
+		GenYaml:     cmd.NewGenYaml(cmdSh, *genYaml),
+		Wd:          cmdWd,
 	}
 
 	fmt.Println("Checking dependencies...")
@@ -55,8 +49,8 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("  $ %v: %v", cmd, out)
-	serve(*addr+":"+strconv.Itoa(*port), s)
 
+	serve(*addr+":"+strconv.Itoa(*port), s)
 }
 
 func serve(addr string, s services.DeployService) {

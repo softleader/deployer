@@ -1,14 +1,15 @@
 package cmd
 
 type Gpm struct {
+	sh  Sh
 	cmd string
 }
 
-func NewGpm(cmd string) Gpm {
+func NewGpm(sh Sh, cmd string) Gpm {
 	if cmd == "" {
 		cmd = "gpm"
 	}
-	return Gpm{cmd}
+	return Gpm{sh: sh, cmd: cmd}
 }
 
 func (g Gpm) Install(installDir string, yaml string) (string, string, error) {
@@ -19,10 +20,9 @@ func (g Gpm) Install(installDir string, yaml string) (string, string, error) {
 	if yaml != "" {
 		commands = append(commands, "-y", yaml)
 	}
-	return Sh().Exec(commands...)
+	return g.sh.Exec(commands...)
 }
 
-
 func (g Gpm) Version() (string, string, error) {
-	return Sh().Exec(g.cmd, "--version")
+	return g.sh.Exec(g.cmd, "--version")
 }
