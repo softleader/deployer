@@ -10,11 +10,11 @@ type GenYaml struct {
 	cmd string
 }
 
-func NewGenYaml(sh Sh, cmd string) GenYaml {
+func NewGenYaml(sh *Sh, cmd string) *GenYaml {
 	if cmd == "" {
 		cmd = "gen-yaml"
 	}
-	return GenYaml{sh: sh, cmd: cmd}
+	return &GenYaml{sh: *sh, cmd: cmd}
 }
 
 func (gy GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (string, string, error) {

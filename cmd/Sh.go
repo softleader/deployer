@@ -12,8 +12,8 @@ type Sh struct {
 	Wd
 }
 
-func NewSh(wd Wd) Sh {
-	return Sh{Wd: wd}
+func NewSh(wd *Wd) *Sh {
+	return &Sh{Wd: *wd}
 }
 
 func (sh Sh) Exec(commands ...string) (string, string, error) {

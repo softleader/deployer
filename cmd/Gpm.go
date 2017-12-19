@@ -5,17 +5,17 @@ type Gpm struct {
 	cmd string
 }
 
-func NewGpm(sh Sh, cmd string) Gpm {
+func NewGpm(sh *Sh, cmd string) *Gpm {
 	if cmd == "" {
 		cmd = "gpm"
 	}
-	return Gpm{sh: sh, cmd: cmd}
+	return &Gpm{sh: *sh, cmd: cmd}
 }
 
-func (g Gpm) Install(installDir string, yaml string) (string, string, error) {
+func (g Gpm) Install(dir string, yaml string) (string, string, error) {
 	commands := []string{g.cmd, "install -F -c Containerfile"}
-	if installDir != "" {
-		commands = append(commands, "-d", installDir)
+	if dir != "" {
+		commands = append(commands, "-d", dir)
 	}
 	if yaml != "" {
 		commands = append(commands, "-y", yaml)

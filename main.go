@@ -30,7 +30,7 @@ func main() {
 	serve(args, service)
 }
 
-func newArgs() args {
+func newArgs() *args {
 	a := args{}
 	flag.StringVar(&a.wd, "wd", "", "Determine a working dictionary, default: $(pwd)/wd")
 	flag.StringVar(&a.addr, "addr", "", " Determine application addr, default: empty")
@@ -38,21 +38,21 @@ func newArgs() args {
 	flag.StringVar(&a.gpm, "cmd.gpm", "", "Command to execute softleader/git-package-manager, default: gpm")
 	flag.StringVar(&a.genYaml, "cmd.gen-yaml", "", "Command to execute softleader/container-yaml-generator, default: gen-yaml")
 	flag.Parse()
-	return a
+	return &a
 }
 
-func newService(args args) services.DeployService {
+func newService(args *args) *services.DeployService {
 	cmdWd := cmd.NewWd(args.wd)
 	cmdSh := cmd.NewSh(cmdWd)
-	return services.DeployService{
-		DockerStack: cmd.NewDockerStack(cmdSh),
-		Gpm:         cmd.NewGpm(cmdSh, args.gpm),
-		GenYaml:     cmd.NewGenYaml(cmdSh, args.genYaml),
-		Wd:          cmdWd,
+	return &services.DeployService{
+		DockerStack: *cmd.NewDockerStack(cmdSh),
+		Gpm:         *cmd.NewGpm(cmdSh, args.gpm),
+		GenYaml:     *cmd.NewGenYaml(cmdSh, args.genYaml),
+		Wd:          *cmdWd,
 	}
 }
 
-func checkDependencies(s services.DeployService) {
+func checkDependencies(s *services.DeployService) {
 	fmt.Println("Checking dependencies...")
 	cmd, out, err := s.Gpm.Version()
 	if err != nil {
@@ -68,7 +68,7 @@ func checkDependencies(s services.DeployService) {
 	fmt.Printf("  $ %v: %v", cmd, out)
 }
 
-func serve(args args, s services.DeployService) {
+func serve(args *args, s *services.DeployService) {
 	app := iris.New()
 	app.Controller("/", new(controller.DeployController), s)
 	app.Run(

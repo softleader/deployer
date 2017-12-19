@@ -11,7 +11,7 @@ type Wd struct {
 	Path string
 }
 
-func NewWd(dir string) Wd {
+func NewWd(dir string) *Wd {
 	if dir == "" {
 		dir, _ = os.Getwd()
 		dir = path.Join(dir, "/wd")
@@ -46,7 +46,7 @@ func NewWd(dir string) Wd {
 		os.Exit(1)
 	}
 
-	return wd
+	return &wd
 }
 
 func (wd Wd) checkWd() (bool, error) {

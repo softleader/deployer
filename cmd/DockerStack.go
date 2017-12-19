@@ -4,8 +4,8 @@ type DockerStack struct {
 	sh Sh
 }
 
-func NewDockerStack(sh Sh) DockerStack {
-	return DockerStack{sh: sh}
+func NewDockerStack(sh *Sh) *DockerStack {
+	return &DockerStack{sh: *sh}
 }
 
 func (ds DockerStack) Ls() (string, string, error) {
