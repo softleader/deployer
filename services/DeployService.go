@@ -19,6 +19,11 @@ type DeployService struct {
 	cmd.Wd
 }
 
+type compose struct {
+	group string
+	yaml  string
+}
+
 func (ds *DeployService) GetAll() string {
 	_, out, err := ds.DockerStack.Ls()
 	if err != nil {
@@ -43,6 +48,8 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 		ds.Wd.MkdirAll()
 	}
 
+	d.Dev.PublishPort = d.Dev.Port
+
 	var buf bytes.Buffer
 	msg := fmt.Sprintf("\nDeploying '%v'...\n", d.Yaml)
 	fmt.Print(msg)
@@ -51,37 +58,47 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	gpmDir := "repo"
 	group, err := ds.gpmInstall(&buf, gpmDir, &d)
 	if err != nil {
-		return err.Error()
+		buf.WriteString(err.Error())
+		return buf.String()
 	}
-
-	var yamls []string
+	var c []compose
 	repo := path.Join(ds.Wd.Path, gpmDir)
 
 	if !group {
 		yml, err := ds.genYaml(&buf, repo, "docker-compose.yml", &d)
 		if err != nil {
-			return err.Error()
+			buf.WriteString(err.Error())
+			return buf.String()
 		}
-		yamls = append(yamls, yml)
+		c = append(c, compose{
+			group: "",
+			yaml:  yml,
+		})
 	} else {
 		// 目前只支援一層的 group..
 		groups, err := ioutil.ReadDir(repo)
 		if err != nil {
-			return err.Error()
+			buf.WriteString(err.Error())
+			return buf.String()
 		}
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
 			yml, err := ds.genYaml(&buf, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
 			if err != nil {
-				return err.Error()
+				buf.WriteString(err.Error())
+				return buf.String()
 			}
-			yamls = append(yamls, yml)
+			c = append(c, compose{
+				group: group.Name(),
+				yaml:  yml,
+			})
 		}
 	}
 
-	err = ds.delpoyDocker(&buf, yamls, &d)
+	err = ds.deployDocker(&buf, c, &d)
 	if err != nil {
-		return err.Error()
+		buf.WriteString(err.Error())
+		return buf.String()
 	}
 
 	buf.WriteString("\n")
@@ -135,23 +152,26 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 		}
 		res := re.FindStringSubmatch(out)
 		if len(res) > 1 {
-			d.Dev.Port, err = strconv.Atoi(res[1])
+			d.Dev.PublishPort, err = strconv.Atoi(res[1])
 			if err != nil {
 				return err
 			}
-			d.Dev.Port++
+			d.Dev.PublishPort++
 		}
 	}
 	return nil
 }
 
-func (ds *DeployService) delpoyDocker(buf *bytes.Buffer, yamls []string, d *datamodels.Deploy) error {
-	for _, yaml := range yamls {
-		stack := d.Project
+func (ds *DeployService) deployDocker(buf *bytes.Buffer, composes []compose, d *datamodels.Deploy) error {
+	for _, c := range composes {
+		stack := []string{d.Project}
 		if d.Dev.Addr != "" {
-			stack += "_" + strconv.Itoa(d.Dev.Port)
+			stack = append(stack, strconv.Itoa(d.Dev.Port))
 		}
-		cmd, out, err := ds.DockerStack.Deploy(stack, yaml)
+		if c.group != "" {
+			stack = append(stack, c.group)
+		}
+		cmd, out, err := ds.DockerStack.Deploy(strings.Join(stack, "-"), c.yaml)
 		if err != nil {
 			return err
 		}
