@@ -29,8 +29,8 @@ func (gy GenYaml) Gen(output string, d datamodels.Deploy, dirs ...string) (strin
 	if d.Volume0 != "" {
 		commands = append(commands, "--volume0", d.Volume0)
 	}
-	if d.Dev != "" {
-		commands = append(commands, "--dev", d.Dev)
+	if d.Dev.Addr != "" {
+		commands = append(commands, "--dev", d.Dev.String())
 	}
 	commands = append(commands, strings.Join(dirs, " "))
 

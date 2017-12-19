@@ -5,7 +5,6 @@ import (
 	"path"
 	"log"
 	"fmt"
-	"os/user"
 )
 
 type Wd struct {
@@ -14,16 +13,22 @@ type Wd struct {
 
 func NewWd(dir string) Wd {
 	if dir == "" {
-		dir, _ := os.Getwd()
+		dir, _ = os.Getwd()
 		dir = path.Join(dir, "/wd")
 	}
 	wd := Wd{Path: dir}
+	fmt.Printf("Setting up working directory to '%v'\n", dir)
 
 	stat, err := os.Stat(wd.Path)
 
 	if err != nil {
 		if os.IsNotExist(err) {
 			wd.MkdirAll()
+			stat, err = os.Stat(wd.Path)
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(1)
+			}
 		} else {
 			log.Fatal(err)
 			os.Exit(1)
@@ -31,17 +36,13 @@ func NewWd(dir string) Wd {
 	}
 
 	if !stat.IsDir() {
-		log.Fatal(fmt.Sprintf("'requires a dictionary"))
+		log.Fatal(fmt.Sprintf("requires a dictionary: %v", wd.Path))
 		os.Exit(1)
 	}
 
-	if stat.Mode().Perm() != os.ModePerm {
-		u, err := user.Current()
-		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
-		}
-		log.Fatal(fmt.Sprintf("requires permission '%v' on '%v'", os.ModePerm, u.Name))
+	_, err = os.Open(wd.Path)
+	if err != nil {
+		log.Fatal(err)
 		os.Exit(1)
 	}
 

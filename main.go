@@ -5,37 +5,54 @@ import (
 	"github.com/softleader/deployer/web/controller"
 	"github.com/softleader/deployer/services"
 	"os"
-	"flag"
 	"fmt"
 	"strconv"
 	"github.com/softleader/deployer/cmd"
 	"log"
+	"flag"
 )
 
-// https://github.com/kataras/iris
+type args struct {
+	wd      string
+	addr    string
+	port    int
+	gpm     string
+	genYaml string
+}
+
 func main() {
+	args := newArgs()
 
-	wd := flag.String("wd", "", "Determine a working dictionary, default: $(pwd)/wd")
-	addr := flag.String("addr", "", " Determine application addr, default: empty")
-	port := flag.Int("port", 5678, "Determine application port, default: 5678")
-	gpm := flag.String("cmd.gpm", "", "Command to execute softleader/git-package-manager, default: gpm")
-	genYaml :=
-		flag.String("cmd.gen-yaml", "", "Command to execute softleader/container-yaml-generator, default: gen-yaml")
+	service := newService(args)
+	checkDependencies(service)
 
+	// https://github.com/kataras/iris
+	serve(args, service)
+}
+
+func newArgs() args {
+	a := args{}
+	flag.StringVar(&a.wd, "wd", "", "Determine a working dictionary, default: $(pwd)/wd")
+	flag.StringVar(&a.addr, "addr", "", " Determine application addr, default: empty")
+	flag.IntVar(&a.port, "port", 5678, "Determine application port, default: 5678")
+	flag.StringVar(&a.gpm, "cmd.gpm", "", "Command to execute softleader/git-package-manager, default: gpm")
+	flag.StringVar(&a.genYaml, "cmd.gen-yaml", "", "Command to execute softleader/container-yaml-generator, default: gen-yaml")
 	flag.Parse()
+	return a
+}
 
-	fmt.Printf("Setting up working directory to '%v'\n", *wd)
-	cmdWd := cmd.NewWd(*wd)
-
+func newService(args args) services.DeployService {
+	cmdWd := cmd.NewWd(args.wd)
 	cmdSh := cmd.NewSh(cmdWd)
-
-	s := services.DeployService{
+	return services.DeployService{
 		DockerStack: cmd.NewDockerStack(cmdSh),
-		Gpm:         cmd.NewGpm(cmdSh, *gpm),
-		GenYaml:     cmd.NewGenYaml(cmdSh, *genYaml),
+		Gpm:         cmd.NewGpm(cmdSh, args.gpm),
+		GenYaml:     cmd.NewGenYaml(cmdSh, args.genYaml),
 		Wd:          cmdWd,
 	}
+}
 
+func checkDependencies(s services.DeployService) {
 	fmt.Println("Checking dependencies...")
 	cmd, out, err := s.Gpm.Version()
 	if err != nil {
@@ -49,17 +66,13 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("  $ %v: %v", cmd, out)
-
-	serve(*addr+":"+strconv.Itoa(*port), s)
 }
 
-func serve(addr string, s services.DeployService) {
+func serve(args args, s services.DeployService) {
 	app := iris.New()
-
 	app.Controller("/", new(controller.DeployController), s)
-
 	app.Run(
-		iris.Addr(addr),
+		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),
 		iris.WithoutVersionChecker,
 		iris.WithoutServerError(iris.ErrServerClosed),
 		iris.WithOptimizations, // enables faster json serialization and more

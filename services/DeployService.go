@@ -41,22 +41,13 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	}
 
 	var resp bytes.Buffer
-	for _, y := range d.Yaml {
-		resp.WriteString(ds.deploy(y, d))
-	}
-
-	return resp.String()
-}
-
-func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
-	var resp bytes.Buffer
-	msg := fmt.Sprintf("\nDeploying '%v'...\n", y)
+	msg := fmt.Sprintf("\nDeploying '%v'...\n", d.Yaml)
 	fmt.Print(msg)
 	resp.WriteString(msg)
 
 	// gpm install
 	installDir := "repo"
-	cmd, out, err := ds.Gpm.Install(installDir, y)
+	cmd, out, err := ds.Gpm.Install(installDir, d.Yaml)
 	if err != nil {
 		return err.Error()
 	}
@@ -87,10 +78,14 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
+
 			yml, cmd, out, err := ds.genYaml(groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), d)
 			if err != nil {
 				return err.Error()
 			}
+
+			d.Dev.Port = retrieveDevPort(out)
+
 			resp.WriteString(fmt.Sprintf("$ %v", cmd))
 			resp.WriteString(out)
 			yamls = append(yamls, yml)
@@ -113,7 +108,11 @@ func (ds *DeployService) deploy(y string, d datamodels.Deploy) string {
 	return resp.String()
 }
 
-func (ds *DeployService) genYaml(dirname string, yaml string, d datamodels.Deploy) (string, string, string, error) {
+func retrieveDevPort(out string) int {
+	return 1
+}
+
+func (ds *DeployService) genYaml(dirname string, outYaml string, d datamodels.Deploy) (string, string, string, error) {
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
 		return "", "", "", err
@@ -123,7 +122,7 @@ func (ds *DeployService) genYaml(dirname string, yaml string, d datamodels.Deplo
 		dirs = append(dirs, path.Join(dirname, f.Name()))
 	}
 
-	yml := path.Join(dirname, "docker-compose.yml")
+	yml := path.Join(dirname, outYaml)
 	cmd, out, err := ds.GenYaml.Gen(yml, d, strings.Join(dirs, " "))
 	if err != nil {
 		return "", "", "", err
