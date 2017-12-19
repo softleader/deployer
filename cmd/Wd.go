@@ -31,7 +31,7 @@ func NewWd(dir string) Wd {
 	}
 
 	if !stat.IsDir() {
-		log.Fatal(fmt.Sprintf("'%v' requires a dir", dir))
+		log.Fatal(fmt.Sprintf("'requires a dictionary"))
 		os.Exit(1)
 	}
 
@@ -41,7 +41,7 @@ func NewWd(dir string) Wd {
 			log.Fatal(err)
 			os.Exit(1)
 		}
-		log.Fatal(fmt.Sprintf("'%v' requires permission '%v' to '%v'", dir, os.ModePerm, u.Name))
+		log.Fatal(fmt.Sprintf("requires permission '%v' on '%v'", os.ModePerm, u.Name))
 		os.Exit(1)
 	}
 

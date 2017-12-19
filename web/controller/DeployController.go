@@ -28,7 +28,6 @@ func (c *DeployController) Post() string {
 	c.Ctx.ReadJSON(d)
 	start := time.Now()
 	indent, _ := json.MarshalIndent(d, "", " ")
-
 	var resp bytes.Buffer
 	msg := fmt.Sprintf("\n[%v] Receiving %v\n", start.Format(time.Stamp), string(indent))
 	fmt.Print(msg)
