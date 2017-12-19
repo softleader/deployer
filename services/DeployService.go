@@ -8,6 +8,8 @@ import (
 	"strings"
 	"path"
 	"fmt"
+	"regexp"
+	"strconv"
 )
 
 type DeployService struct {
@@ -37,16 +39,17 @@ func (ds *DeployService) GetServices(stack string) string {
 
 func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	if d.CleanUp {
-		ds.Wd.RemoveAll().MkdirAll()
+		ds.Wd.RemoveAll()
+		ds.Wd.MkdirAll()
 	}
 
-	var buffer bytes.Buffer
+	var buf bytes.Buffer
 	msg := fmt.Sprintf("\nDeploying '%v'...\n", d.Yaml)
 	fmt.Print(msg)
-	buffer.WriteString(msg)
+	buf.WriteString(msg)
 
 	gpmDir := "repo"
-	group, err := ds.gpmInstall(&buffer, gpmDir, &d)
+	group, err := ds.gpmInstall(&buf, gpmDir, &d)
 	if err != nil {
 		return err.Error()
 	}
@@ -55,7 +58,7 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	repo := path.Join(ds.Wd.Path, gpmDir)
 
 	if !group {
-		yml, err := ds.genYaml(&buffer, repo, "docker-compose.yml", &d)
+		yml, err := ds.genYaml(&buf, repo, "docker-compose.yml", &d)
 		if err != nil {
 			return err.Error()
 		}
@@ -68,7 +71,7 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 		}
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
-			yml, err := ds.genYaml(&buffer, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
+			yml, err := ds.genYaml(&buf, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
 			if err != nil {
 				return err.Error()
 			}
@@ -76,67 +79,90 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 		}
 	}
 
-	err = ds.delpoyDocker(&buffer, yamls, &d)
+	err = ds.delpoyDocker(&buf, yamls, &d)
 	if err != nil {
 		return err.Error()
 	}
 
-	buffer.WriteString("\n")
+	buf.WriteString("\n")
 
-	return buffer.String()
+	return buf.String()
 }
 
-func (ds *DeployService) gpmInstall(buffer *bytes.Buffer, dir string, d *datamodels.Deploy) (bool, error) {
+func (ds *DeployService) gpmInstall(buf *bytes.Buffer, dir string, d *datamodels.Deploy) (bool, error) {
 	cmd, out, err := ds.Gpm.Install(dir, d.Yaml)
 	if err != nil {
 		return false, err
 	}
-	buffer.WriteString(fmt.Sprintf("$ %v", cmd))
-	buffer.WriteString(out)
+	buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
+	buf.WriteString(out)
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
 
-func (ds *DeployService) genYaml(buffer *bytes.Buffer, dirname string, outYaml string, d *datamodels.Deploy) (string, error) {
+func (ds *DeployService) genYaml(buf *bytes.Buffer, dirname string, outYaml string, d *datamodels.Deploy) (string, error) {
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
 		return "", err
 	}
 	var dirs []string
 	for _, f := range files {
-		dirs = append(dirs, path.Join(dirname, f.Name()))
+		if f.IsDir() {
+			dirs = append(dirs, path.Join(dirname, f.Name()))
+		}
 	}
 
 	yml := path.Join(dirname, outYaml)
-	cmd, out, err := ds.GenYaml.Gen(yml, *d, strings.Join(dirs, " "))
+	cmd, out, err := ds.GenYaml.Gen(yml, d, strings.Join(dirs, " "))
 	if err != nil {
 		return "", err
 	}
 
-	d.Dev.Port = retrieveDevPort(out)
+	err = updateDevPort(out, d)
+	if err != nil {
+		return "", err;
+	}
 
-	buffer.WriteString(fmt.Sprintf("$ %v", cmd))
-	buffer.WriteString(out)
+	buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
+	buf.WriteString(out)
 	return yml, nil
 }
 
-func retrieveDevPort(out string) int {
-	return 1
-}
-
-func (ds *DeployService) delpoyDocker(buffer *bytes.Buffer, yamls []string, d *datamodels.Deploy) error {
-	for _, yaml := range yamls {
-		cmd, out, err := ds.DockerStack.Deploy(d.Project, yaml)
+func updateDevPort(out string, d *datamodels.Deploy) error {
+	if d.Dev.Addr != "" {
+		re, err := regexp.Compile(`Auto publish port from \[\d*\] to \[(\d*)\]`)
 		if err != nil {
 			return err
 		}
-		buffer.WriteString(fmt.Sprintf("$ %v", cmd))
-		buffer.WriteString(out)
+		res := re.FindStringSubmatch(out)
+		if len(res) > 1 {
+			d.Dev.Port, err = strconv.Atoi(res[1])
+			if err != nil {
+				return err
+			}
+			d.Dev.Port++
+		}
+	}
+	return nil
+}
+
+func (ds *DeployService) delpoyDocker(buf *bytes.Buffer, yamls []string, d *datamodels.Deploy) error {
+	for _, yaml := range yamls {
+		stack := d.Project
+		if d.Dev.Addr != "" {
+			stack += "_" + strconv.Itoa(d.Dev.Port)
+		}
+		cmd, out, err := ds.DockerStack.Deploy(stack, yaml)
+		if err != nil {
+			return err
+		}
+		buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
+		buf.WriteString(out)
 	}
 	return nil
 }
 
 func (ds *DeployService) Delete(stack string) string {
-	_, out, err := ds.DockerStack.Rm(stack)
+	_, out, err := ds.DockerStack.RmLike(stack)
 	if err != nil {
 		return err.Error()
 	} else {

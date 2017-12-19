@@ -49,7 +49,7 @@ func NewWd(dir string) *Wd {
 	return &wd
 }
 
-func (wd Wd) checkWd() (bool, error) {
+func (wd *Wd) checkWd() (bool, error) {
 	stat, err := os.Stat(wd.Path)
 	if err == nil {
 		if stat.IsDir() && stat.Mode().Perm() == os.ModePerm {
@@ -62,12 +62,10 @@ func (wd Wd) checkWd() (bool, error) {
 	return false, err
 }
 
-func (wd Wd) RemoveAll() Wd {
+func (wd *Wd) RemoveAll() {
 	os.RemoveAll(wd.Path)
-	return wd
 }
 
-func (wd Wd) MkdirAll() Wd {
+func (wd *Wd) MkdirAll() {
 	os.MkdirAll(wd.Path, os.ModeDir|os.ModePerm)
-	return wd
 }

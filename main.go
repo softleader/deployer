@@ -24,10 +24,10 @@ func main() {
 	args := newArgs()
 
 	service := newService(args)
-	checkDependencies(service)
+	checkDependencies(*service)
 
 	// https://github.com/kataras/iris
-	serve(args, service)
+	serve(*args, *service)
 }
 
 func newArgs() *args {
@@ -43,16 +43,16 @@ func newArgs() *args {
 
 func newService(args *args) *services.DeployService {
 	cmdWd := cmd.NewWd(args.wd)
-	cmdSh := cmd.NewSh(cmdWd)
+	cmdSh := cmd.NewSh(*cmdWd)
 	return &services.DeployService{
-		DockerStack: *cmd.NewDockerStack(cmdSh),
-		Gpm:         *cmd.NewGpm(cmdSh, args.gpm),
-		GenYaml:     *cmd.NewGenYaml(cmdSh, args.genYaml),
+		DockerStack: *cmd.NewDockerStack(*cmdSh),
+		Gpm:         *cmd.NewGpm(*cmdSh, args.gpm),
+		GenYaml:     *cmd.NewGenYaml(*cmdSh, args.genYaml),
 		Wd:          *cmdWd,
 	}
 }
 
-func checkDependencies(s *services.DeployService) {
+func checkDependencies(s services.DeployService) {
 	fmt.Println("Checking dependencies...")
 	cmd, out, err := s.Gpm.Version()
 	if err != nil {
@@ -68,7 +68,7 @@ func checkDependencies(s *services.DeployService) {
 	fmt.Printf("  $ %v: %v", cmd, out)
 }
 
-func serve(args *args, s *services.DeployService) {
+func serve(args args, s services.DeployService) {
 	app := iris.New()
 	app.Controller("/", new(controller.DeployController), s)
 	app.Run(
