@@ -12,7 +12,7 @@ $ ./deployer/main
 
 ### Args
 
-- `wd` - Determine a working dictionary, default: `$(pwd)`
+- `ws` - Determine a workspace, default: `$(pwd)/workspace`
 - `addr` - Determine application addr, default: `empty`
 - `port` - Determine application port, default: `5678`
 - `cmd.gpm` - Command to execute softleader/git-package-manager, default: `gpm`

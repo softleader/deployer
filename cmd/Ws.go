@@ -7,17 +7,17 @@ import (
 	"fmt"
 )
 
-type Wd struct {
+type Ws struct {
 	Path string
 }
 
-func NewWd(dir string) *Wd {
+func NewWs(dir string) *Ws {
 	if dir == "" {
 		dir, _ = os.Getwd()
-		dir = path.Join(dir, "/wd")
+		dir = path.Join(dir, "/workspace")
 	}
-	wd := Wd{Path: dir}
-	fmt.Printf("Setting up working directory to '%v'\n", dir)
+	wd := Ws{Path: dir}
+	fmt.Printf("Setting up workspace to '%v'\n", dir)
 
 	stat, err := os.Stat(wd.Path)
 
@@ -36,7 +36,7 @@ func NewWd(dir string) *Wd {
 	}
 
 	if !stat.IsDir() {
-		log.Fatal(fmt.Sprintf("requires a dictionary: %v", wd.Path))
+		log.Fatal(fmt.Sprintf("Workspace requires a dictionary: %v", wd.Path))
 		os.Exit(1)
 	}
 
@@ -49,7 +49,7 @@ func NewWd(dir string) *Wd {
 	return &wd
 }
 
-func (wd *Wd) checkWd() (bool, error) {
+func (wd *Ws) checkWs() (bool, error) {
 	stat, err := os.Stat(wd.Path)
 	if err == nil {
 		if stat.IsDir() && stat.Mode().Perm() == os.ModePerm {
@@ -62,10 +62,10 @@ func (wd *Wd) checkWd() (bool, error) {
 	return false, err
 }
 
-func (wd *Wd) RemoveAll() {
+func (wd *Ws) RemoveAll() {
 	os.RemoveAll(wd.Path)
 }
 
-func (wd *Wd) MkdirAll() {
+func (wd *Ws) MkdirAll() {
 	os.MkdirAll(wd.Path, os.ModeDir|os.ModePerm)
 }

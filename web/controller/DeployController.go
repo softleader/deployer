@@ -8,7 +8,6 @@ import (
 	"time"
 	"encoding/json"
 	"bytes"
-	"log"
 )
 
 type DeployController struct {

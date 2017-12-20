@@ -16,7 +16,7 @@ type DeployService struct {
 	cmd.DockerStack
 	cmd.Gpm
 	cmd.GenYaml
-	cmd.Wd
+	cmd.Ws
 }
 
 type compose struct {
@@ -44,8 +44,8 @@ func (ds *DeployService) GetServices(stack string) string {
 
 func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	if d.CleanUp {
-		ds.Wd.RemoveAll()
-		ds.Wd.MkdirAll()
+		ds.Ws.RemoveAll()
+		ds.Ws.MkdirAll()
 	}
 
 	d.Dev.PublishPort = d.Dev.Port
@@ -62,7 +62,7 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 		return buf.String()
 	}
 	var c []compose
-	repo := path.Join(ds.Wd.Path, gpmDir)
+	repo := path.Join(ds.Ws.Path, gpmDir)
 
 	if !group {
 		yml, err := ds.genYaml(&buf, repo, "docker-compose.yml", &d)

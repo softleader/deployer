@@ -13,7 +13,7 @@ import (
 )
 
 type args struct {
-	wd      string
+	ws      string
 	addr    string
 	port    int
 	gpm     string
@@ -32,23 +32,23 @@ func main() {
 
 func newArgs() *args {
 	a := args{}
-	flag.StringVar(&a.wd, "wd", "", "Determine a working dictionary, default: $(pwd)/wd")
-	flag.StringVar(&a.addr, "addr", "", " Determine application addr, default: empty")
-	flag.IntVar(&a.port, "port", 5678, "Determine application port, default: 5678")
-	flag.StringVar(&a.gpm, "cmd.gpm", "", "Command to execute softleader/git-package-manager, default: gpm")
-	flag.StringVar(&a.genYaml, "cmd.gen-yaml", "", "Command to execute softleader/container-yaml-generator, default: gen-yaml")
+	flag.StringVar(&a.ws, "workspace", "", "Determine a workspace (default $(pwd)/workspace)")
+	flag.StringVar(&a.addr, "addr", "", " Determine application address (default blank)")
+	flag.IntVar(&a.port, "port", 5678, "Determine application port")
+	flag.StringVar(&a.gpm, "cmd.gpm", "gpm", "Command to execute softleader/git-package-manager")
+	flag.StringVar(&a.genYaml, "cmd.gen-yaml", "gen-yaml", "Command to execute softleader/container-yaml-generator")
 	flag.Parse()
 	return &a
 }
 
 func newService(args *args) *services.DeployService {
-	cmdWd := cmd.NewWd(args.wd)
-	cmdSh := cmd.NewSh(*cmdWd)
+	ws := cmd.NewWs(args.ws)
+	sh := cmd.NewSh(*ws)
 	return &services.DeployService{
-		DockerStack: *cmd.NewDockerStack(*cmdSh),
-		Gpm:         *cmd.NewGpm(*cmdSh, args.gpm),
-		GenYaml:     *cmd.NewGenYaml(*cmdSh, args.genYaml),
-		Wd:          *cmdWd,
+		DockerStack: *cmd.NewDockerStack(*sh),
+		Gpm:         *cmd.NewGpm(*sh, args.gpm),
+		GenYaml:     *cmd.NewGenYaml(*sh, args.genYaml),
+		Ws:          *ws,
 	}
 }
 

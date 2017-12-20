@@ -9,17 +9,17 @@ import (
 )
 
 type Sh struct {
-	Wd
+	Ws
 }
 
-func NewSh(wd Wd) *Sh {
-	return &Sh{Wd: wd}
+func NewSh(wd Ws) *Sh {
+	return &Sh{Ws: wd}
 }
 
 func (sh *Sh) Exec(commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
-	cmd.Dir = sh.Wd.Path
+	cmd.Dir = sh.Ws.Path
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
