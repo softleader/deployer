@@ -38,7 +38,7 @@ $ systemctl status deployer
 # 服務開關
 $ systemctl start deployer
 $ systemctl stop deployer
-$ systemctl reload deployer
+$ systemctl restart deployer
 
 # 開機自動啟動服務
 $ systemctl enable deployer

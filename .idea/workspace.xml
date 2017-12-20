@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c5d68073-0caf-4ddd-a7a4-cb8bdcb26518" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change beforePath="$PROJECT_DIR$/cmd/DockerStack.go" afterPath="$PROJECT_DIR$/cmd/DockerStack.go" />
-      <change beforePath="$PROJECT_DIR$/services/DeployService.go" afterPath="$PROJECT_DIR$/services/DeployService.go" />
-      <change beforePath="$PROJECT_DIR$/web/controller/DeployController.go" afterPath="$PROJECT_DIR$/web/controller/DeployController.go" />
     </list>
     <ignored path="$PROJECT_DIR$/.idea/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -67,8 +64,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="127">
-                <caret line="64" column="26" lean-forward="true" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+              <first_editor relative-caret-position="294">
+                <caret line="40" column="19" lean-forward="false" selection-start-line="40" selection-start-column="19" selection-end-line="40" selection-end-column="19" />
                 <folding />
               </first_editor>
               <second_editor>
@@ -739,8 +736,8 @@
       </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;MarkdownPreviewEditor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="127">
-            <caret line="64" column="26" lean-forward="true" selection-start-line="64" selection-start-column="26" selection-end-line="64" selection-end-column="26" />
+          <first_editor relative-caret-position="294">
+            <caret line="40" column="19" lean-forward="false" selection-start-line="40" selection-start-column="19" selection-end-line="40" selection-end-column="19" />
             <folding />
           </first_editor>
           <second_editor>
