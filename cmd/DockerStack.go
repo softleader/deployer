@@ -1,5 +1,7 @@
 package cmd
 
+import "github.com/kataras/iris"
+
 type DockerStack struct {
 	sh Sh
 }
@@ -28,6 +30,6 @@ func (ds *DockerStack) RmLike(stack string) (string, string, error) {
 	return ds.sh.Exec("docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
 }
 
-func (ds *DockerStack) Deploy(stack string, file string) (string, string, error) {
-	return ds.sh.Exec("docker stack deploy -c", file, stack)
+func (ds *DockerStack) Deploy(ctx *iris.Context, stack string, file string) {
+	ds.sh.ExecPipe(ctx, "docker stack deploy -c", file, stack)
 }

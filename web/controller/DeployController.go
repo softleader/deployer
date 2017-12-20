@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 	"encoding/json"
-	"bytes"
 	"github.com/kataras/iris"
+	"io"
 )
 
 type DeployController struct {
@@ -40,26 +40,27 @@ func (c *DeployController) GetPsBy(serviceId string) (string, int) {
 	return out, iris.StatusOK
 }
 
-func (c *DeployController) Post() (string, int) {
+func (c *DeployController) Post() {
 	d := &datamodels.Deploy{}
 	c.Ctx.ReadJSON(d)
 	start := time.Now()
 	indent, _ := json.MarshalIndent(d, "", " ")
-	var buf bytes.Buffer
-	msg := fmt.Sprintf("Receiving deploy request: %v", string(indent))
-	c.Ctx.Application().Logger().Info(msg)
-	buf.WriteString(msg)
-	out, err := c.Service.Deploy(*d)
+
+	c.Ctx.StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintf(w, "Receiving deploy request: %v", string(indent))
+		return false
+	})
+	err := c.Service.Deploy(&c.Ctx, *d)
 	if err != nil {
 		c.Ctx.Application().Logger().Warn(err.Error())
-		buf.WriteString(err.Error())
-		return buf.String(), iris.StatusInternalServerError
+		c.Ctx.WriteString(err.Error())
+		return
 	}
-	buf.WriteString(out)
-	msg = fmt.Sprintf("Resolving in '%v', done.", time.Since(start))
-	c.Ctx.Application().Logger().Info(msg)
-	buf.WriteString("\n" + msg)
-	return buf.String(), iris.StatusOK
+	c.Ctx.StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintf(w, "Resolving in '%v', done.", time.Since(start))
+		return false
+	})
+	return
 }
 
 func (c *DeployController) DeleteBy(stack string) (string, int) {

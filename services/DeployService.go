@@ -3,13 +3,14 @@ package services
 import (
 	"github.com/softleader/deployer/datamodels"
 	"github.com/softleader/deployer/cmd"
-	"bytes"
 	"io/ioutil"
 	"strings"
 	"path"
 	"fmt"
 	"regexp"
 	"strconv"
+	"io"
+	"github.com/kataras/iris"
 )
 
 type DeployService struct {
@@ -34,13 +35,12 @@ func (ds *DeployService) GetServices(stack string) (string, error) {
 	return out, err
 }
 
-
 func (ds *DeployService) Ps(id string) (string, error) {
 	_, out, err := ds.DockerStack.Ps(id)
 	return out, err
 }
 
-func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
+func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	if d.CleanUp {
 		ds.Ws.RemoveAll()
 		ds.Ws.MkdirAll()
@@ -48,23 +48,25 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
 
 	d.Dev.PublishPort = d.Dev.Port
 
-	var buf bytes.Buffer
 	msg := fmt.Sprintf("\nDeploying '%v'...\n", d.Yaml)
 	fmt.Print(msg)
-	buf.WriteString(msg)
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintf(w, msg)
+		return false
+	})
 
 	gpmDir := "repo"
-	group, err := ds.gpmInstall(&buf, gpmDir, &d)
+	group, err := ds.gpmInstall(ctx, gpmDir, &d)
 	if err != nil {
-		return buf.String(), err
+		return err
 	}
 	var c []compose
 	repo := path.Join(ds.Ws.Path, gpmDir)
 
 	if !group {
-		yml, err := ds.genYaml(&buf, repo, "docker-compose.yml", &d)
+		yml, err := ds.genYaml(ctx, repo, "docker-compose.yml", &d)
 		if err != nil {
-			return buf.String(), err
+			return err
 		}
 		c = append(c, compose{
 			group: "",
@@ -74,13 +76,13 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
 		// 目前只支援一層的 group..
 		groups, err := ioutil.ReadDir(repo)
 		if err != nil {
-			return buf.String(), err
+			return err
 		}
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
-			yml, err := ds.genYaml(&buf, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
+			yml, err := ds.genYaml(ctx, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
 			if err != nil {
-				return buf.String(), err
+				return err
 			}
 			c = append(c, compose{
 				group: group.Name(),
@@ -89,27 +91,36 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
 		}
 	}
 
-	err = ds.deployDocker(&buf, c, &d)
+	err = ds.deployDocker(ctx, c, &d)
 	if err != nil {
-		return buf.String(), err
+		return err
 	}
 
-	buf.WriteString("\n")
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintln(w)
+		return false
+	})
 
-	return buf.String(), nil
+	return nil
 }
 
-func (ds *DeployService) gpmInstall(buf *bytes.Buffer, dir string, d *datamodels.Deploy) (bool, error) {
+func (ds *DeployService) gpmInstall(ctx *iris.Context, dir string, d *datamodels.Deploy) (bool, error) {
 	cmd, out, err := ds.Gpm.Install(dir, d.Yaml)
 	if err != nil {
 		return false, err
 	}
-	buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
-	buf.WriteString(out)
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintf(w, "$ %v\n", cmd)
+		return false
+	})
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprint(w, out)
+		return false
+	})
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
 
-func (ds *DeployService) genYaml(buf *bytes.Buffer, dirname string, outYaml string, d *datamodels.Deploy) (string, error) {
+func (ds *DeployService) genYaml(ctx *iris.Context, dirname string, outYaml string, d *datamodels.Deploy) (string, error) {
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
 		return "", err
@@ -132,8 +143,14 @@ func (ds *DeployService) genYaml(buf *bytes.Buffer, dirname string, outYaml stri
 		return "", err;
 	}
 
-	buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
-	buf.WriteString(out)
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprintf(w, "$ %v\n", cmd)
+		return false
+	})
+	(*ctx).StreamWriter(func(w io.Writer) bool {
+		fmt.Fprint(w, out)
+		return false
+	})
 	return yml, nil
 }
 
@@ -155,7 +172,7 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 	return nil
 }
 
-func (ds *DeployService) deployDocker(buf *bytes.Buffer, composes []compose, d *datamodels.Deploy) error {
+func (ds *DeployService) deployDocker(ctx *iris.Context, composes []compose, d *datamodels.Deploy) error {
 	for _, c := range composes {
 		stack := []string{d.Project}
 		if d.Dev.Addr != "" {
@@ -164,12 +181,7 @@ func (ds *DeployService) deployDocker(buf *bytes.Buffer, composes []compose, d *
 		if c.group != "" {
 			stack = append(stack, c.group)
 		}
-		cmd, out, err := ds.DockerStack.Deploy(strings.Join(stack, "-"), c.yaml)
-		if err != nil {
-			return err
-		}
-		buf.WriteString(fmt.Sprintf("$ %v\n", cmd))
-		buf.WriteString(out)
+		ds.DockerStack.Deploy(ctx, strings.Join(stack, "-"), c.yaml)
 	}
 	return nil
 }
