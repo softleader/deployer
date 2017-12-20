@@ -16,51 +16,48 @@ type DeployController struct {
 	Service services.DeployService
 }
 
-func (c *DeployController) Get() string {
+func (c *DeployController) Get() (string, int) {
 	out, err := c.Service.GetAll()
 	if err != nil {
-		c.Ctx.StatusCode(iris.StatusInternalServerError)
-		return err.Error()
+		return err.Error(), iris.StatusInternalServerError
 	}
-	return out
+	return out, iris.StatusOK
 }
 
-func (c *DeployController) GetBy(stack string) string {
+func (c *DeployController) GetBy(stack string) (string, int) {
 	out, err := c.Service.GetServices(stack)
 	if err != nil {
-		c.Ctx.StatusCode(iris.StatusInternalServerError)
-		return err.Error()
+		return err.Error(), iris.StatusInternalServerError
 	}
-	return out
+	return out, iris.StatusOK
 }
 
-func (c *DeployController) Post() string {
+func (c *DeployController) Post() (string, int) {
 	d := &datamodels.Deploy{}
 	c.Ctx.ReadJSON(d)
 	start := time.Now()
 	indent, _ := json.MarshalIndent(d, "", " ")
 	var buf bytes.Buffer
-	msg := fmt.Sprintf("\n[%v] Receiving %v\n", start.Format(time.Stamp), string(indent))
-	fmt.Print(msg)
+	msg := fmt.Sprintf("Receiving deploy request: %v", string(indent))
+	c.Ctx.Application().Logger().Info(msg)
 	buf.WriteString(msg)
 	out, err := c.Service.Deploy(*d)
 	if err != nil {
-		c.Ctx.StatusCode(iris.StatusInternalServerError)
-		fmt.Println(err.Error())
+		c.Ctx.Application().Logger().Warn(err.Error())
 		buf.WriteString(err.Error())
+		return buf.String(), iris.StatusInternalServerError
 	}
 	buf.WriteString(out)
-	msg = fmt.Sprintf("[%v] Resolving in '%v', done.\n", time.Now().Format(time.Stamp), time.Since(start))
-	fmt.Print(msg)
+	msg = fmt.Sprintf("Resolving in '%v', done.", time.Since(start))
+	c.Ctx.Application().Logger().Info(msg)
 	buf.WriteString("\n" + msg)
-	return buf.String()
+	return buf.String(), iris.StatusOK
 }
 
-func (c *DeployController) DeleteBy(stack string) string {
+func (c *DeployController) DeleteBy(stack string) (string, int) {
 	out, err := c.Service.Delete(stack)
 	if err != nil {
-		c.Ctx.StatusCode(iris.StatusInternalServerError)
-		return err.Error()
+		return err.Error(), iris.StatusInternalServerError
 	}
-	return out
+	return out, iris.StatusOK
 }
