@@ -25,6 +25,26 @@ eg.
 $ ./main -wd=/tmp -port=8080
 ```
 
+### Install as Ubuntu service
+
+- Copy `deployer.service` to the directory `/etc/systemd/system/`
+- Modify `ExecStart` in `deployer.service`
+- Then it should be possible to control daemon using:
+
+```
+# 服務狀態
+$ systemctl status deployer
+
+# 服務開關
+$ systemctl start deployer
+$ systemctl stop deployer
+$ systemctl reload deployer
+
+# 開機自動啟動服務
+$ systemctl enable deployer
+$ systemctl disable deployer
+```
+
 ## Usage
 
 - List all stacks

@@ -1,0 +1,14 @@
+[Unit]
+Description=SoftLeader Deployer
+
+[Service]
+Type=simple
+ExecStart=/devops/deployer/main \
+        -workspace=/devops/deployer/workspace \
+        -cmd.gpm=/devops/git-package-manager/index.js \
+        -cmd.gen-yaml=/devops/container-yaml-generator/index.js
+User=root
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
