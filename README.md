@@ -12,7 +12,7 @@ $ ./deployer/main
 
 ### Args
 
-- `ws` - Determine a workspace, default: `$(pwd)/workspace`
+- `workspace` - Determine a workspace, default: `$(pwd)/workspace`
 - `addr` - Determine application addr, default: `empty`
 - `port` - Determine application port, default: `5678`
 - `cmd.gpm` - Command to execute softleader/git-package-manager, default: `gpm`
@@ -22,7 +22,7 @@ $ ./deployer/main
 eg.
 
 ```
-$ ./main -wd=/tmp -port=8080
+$ ./main -workspace=/tmp -port=8080
 ```
 
 ### Install as Ubuntu service
