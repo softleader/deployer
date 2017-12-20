@@ -24,25 +24,17 @@ type compose struct {
 	yaml  string
 }
 
-func (ds *DeployService) GetAll() string {
+func (ds *DeployService) GetAll() (string, error) {
 	_, out, err := ds.DockerStack.Ls()
-	if err != nil {
-		return err.Error()
-	} else {
-		return out
-	}
+	return out, err
 }
 
-func (ds *DeployService) GetServices(stack string) string {
+func (ds *DeployService) GetServices(stack string) (string, error) {
 	_, out, err := ds.DockerStack.Services(stack)
-	if err != nil {
-		return err.Error()
-	} else {
-		return out
-	}
+	return out, err
 }
 
-func (ds *DeployService) Deploy(d datamodels.Deploy) string {
+func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
 	if d.CleanUp {
 		ds.Ws.RemoveAll()
 		ds.Ws.MkdirAll()
@@ -58,8 +50,7 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	gpmDir := "repo"
 	group, err := ds.gpmInstall(&buf, gpmDir, &d)
 	if err != nil {
-		buf.WriteString(err.Error())
-		return buf.String()
+		return buf.String(), err
 	}
 	var c []compose
 	repo := path.Join(ds.Ws.Path, gpmDir)
@@ -67,8 +58,7 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 	if !group {
 		yml, err := ds.genYaml(&buf, repo, "docker-compose.yml", &d)
 		if err != nil {
-			buf.WriteString(err.Error())
-			return buf.String()
+			return buf.String(), err
 		}
 		c = append(c, compose{
 			group: "",
@@ -78,15 +68,13 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 		// 目前只支援一層的 group..
 		groups, err := ioutil.ReadDir(repo)
 		if err != nil {
-			buf.WriteString(err.Error())
-			return buf.String()
+			return buf.String(), err
 		}
 		for _, group := range groups {
 			groupRepo := path.Join(repo, group.Name())
 			yml, err := ds.genYaml(&buf, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
 			if err != nil {
-				buf.WriteString(err.Error())
-				return buf.String()
+				return buf.String(), err
 			}
 			c = append(c, compose{
 				group: group.Name(),
@@ -97,13 +85,12 @@ func (ds *DeployService) Deploy(d datamodels.Deploy) string {
 
 	err = ds.deployDocker(&buf, c, &d)
 	if err != nil {
-		buf.WriteString(err.Error())
-		return buf.String()
+		return buf.String(), err
 	}
 
 	buf.WriteString("\n")
 
-	return buf.String()
+	return buf.String(), nil
 }
 
 func (ds *DeployService) gpmInstall(buf *bytes.Buffer, dir string, d *datamodels.Deploy) (bool, error) {
@@ -181,11 +168,7 @@ func (ds *DeployService) deployDocker(buf *bytes.Buffer, composes []compose, d *
 	return nil
 }
 
-func (ds *DeployService) Delete(stack string) string {
+func (ds *DeployService) Delete(stack string) (string, error) {
 	_, out, err := ds.DockerStack.RmLike(stack)
-	if err != nil {
-		return err.Error()
-	} else {
-		return out
-	}
+	return out, err
 }
