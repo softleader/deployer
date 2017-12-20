@@ -59,7 +59,13 @@ $ curl localhost:5678
 $ curl localhost:5678/${stack}
 ```
 
-- Remove stack ${stack}
+- Ps service
+
+```
+$ curl localhost:5678/ps/${serviceId}
+```
+
+- Remove stack ${stack}, 模糊刪除: %stack%
 
 ```
 $ curl -X DELETE localhost:5678/${stack}

@@ -16,6 +16,10 @@ func (ds *DockerStack) Services(stack string) (string, string, error) {
 	return ds.sh.Exec("docker stack services", stack)
 }
 
+func (ds *DockerStack) Ps(id string) (string, string, error) {
+	return ds.sh.Exec("docker service ps", id, "--no-trunc")
+}
+
 func (ds *DockerStack) Rm(stack string) (string, string, error) {
 	return ds.sh.Exec("docker stack rm", stack)
 }

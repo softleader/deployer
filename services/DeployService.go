@@ -34,6 +34,12 @@ func (ds *DeployService) GetServices(stack string) (string, error) {
 	return out, err
 }
 
+
+func (ds *DeployService) Ps(id string) (string, error) {
+	_, out, err := ds.DockerStack.Ps(id)
+	return out, err
+}
+
 func (ds *DeployService) Deploy(d datamodels.Deploy) (string, error) {
 	if d.CleanUp {
 		ds.Ws.RemoveAll()

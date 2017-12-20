@@ -32,6 +32,14 @@ func (c *DeployController) GetBy(stack string) (string, int) {
 	return out, iris.StatusOK
 }
 
+func (c *DeployController) GetPsBy(serviceId string) (string, int) {
+	out, err := c.Service.Ps(serviceId)
+	if err != nil {
+		return err.Error(), iris.StatusInternalServerError
+	}
+	return out, iris.StatusOK
+}
+
 func (c *DeployController) Post() (string, int) {
 	d := &datamodels.Deploy{}
 	c.Ctx.ReadJSON(d)
