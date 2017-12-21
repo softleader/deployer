@@ -1,6 +1,8 @@
 package cmd
 
-import "github.com/kataras/iris"
+import (
+	"github.com/kataras/iris"
+)
 
 type DockerStack struct {
 	sh Sh

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"errors"
 	"github.com/kataras/iris"
-	"io"
+	"github.com/softleader/deployer/pipe"
 )
 
 type Sh struct {
@@ -38,23 +38,19 @@ func (sh *Sh) ExecPipe(ctx *iris.Context, commands ...string) {
 	cmd := exec.Command("sh", "-c", arg)
 	cmd.Dir = sh.Ws.Path
 
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "$ %v\n", arg)
-		return false
-	})
-	cmd.Stdout = pipe{ctx: ctx}
-	cmd.Stderr = pipe{ctx: ctx}
+	(*ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
+
+	sw := streamWriter{ctx: ctx}
+	cmd.Stdout = sw
+	cmd.Stderr = sw
 	cmd.Run()
 }
 
-type pipe struct {
+type streamWriter struct {
 	ctx *iris.Context
 }
 
-func (p pipe) Write(bs []byte) (n int, err error) {
-	(*p.ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprint(w, string(bs))
-		return false
-	})
+func (sw streamWriter) Write(bs []byte) (n int, err error) {
+	(*sw.ctx).StreamWriter(pipe.Print(string(bs)))
 	return len(bs), nil
 }

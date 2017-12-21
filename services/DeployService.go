@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"io"
 	"github.com/kataras/iris"
+	"github.com/softleader/deployer/pipe"
 )
 
 type DeployService struct {
@@ -48,12 +48,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 
 	d.Dev.PublishPort = d.Dev.Port
 
-	msg := fmt.Sprintf("\nDeploying '%v'...\n", d.Yaml)
-	fmt.Print(msg)
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, msg)
-		return false
-	})
+	(*ctx).StreamWriter(pipe.Printf("\nDeploying '%v'...\n", d.Yaml))
 
 	gpmDir := "repo"
 	group, err := ds.gpmInstall(ctx, gpmDir, &d)
@@ -96,11 +91,6 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		return err
 	}
 
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintln(w)
-		return false
-	})
-
 	return nil
 }
 
@@ -109,14 +99,8 @@ func (ds *DeployService) gpmInstall(ctx *iris.Context, dir string, d *datamodels
 	if err != nil {
 		return false, err
 	}
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "$ %v\n", cmd)
-		return false
-	})
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprint(w, out)
-		return false
-	})
+	(*ctx).StreamWriter(pipe.Printf("$ %v\n", cmd))
+	(*ctx).StreamWriter(pipe.Print(out))
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
 
@@ -143,14 +127,8 @@ func (ds *DeployService) genYaml(ctx *iris.Context, dirname string, outYaml stri
 		return "", err;
 	}
 
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "$ %v\n", cmd)
-		return false
-	})
-	(*ctx).StreamWriter(func(w io.Writer) bool {
-		fmt.Fprint(w, out)
-		return false
-	})
+	(*ctx).StreamWriter(pipe.Printf("$ %v\n", cmd))
+	(*ctx).StreamWriter(pipe.Print(out))
 	return yml, nil
 }
 
@@ -182,6 +160,7 @@ func (ds *DeployService) deployDocker(ctx *iris.Context, composes []compose, d *
 			stack = append(stack, c.group)
 		}
 		ds.DockerStack.Deploy(ctx, strings.Join(stack, "-"), c.yaml)
+
 	}
 	return nil
 }
