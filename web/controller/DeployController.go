@@ -4,11 +4,10 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/softleader/deployer/datamodels"
 	"github.com/softleader/deployer/services"
-	"fmt"
 	"time"
 	"encoding/json"
 	"github.com/kataras/iris"
-	"io"
+	"github.com/softleader/deployer/pipe"
 )
 
 type DeployController struct {
@@ -46,20 +45,14 @@ func (c *DeployController) Post() {
 	start := time.Now()
 	indent, _ := json.MarshalIndent(d, "", " ")
 
-	c.Ctx.StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "Receiving deploy request: %v", string(indent))
-		return false
-	})
+	c.Ctx.StreamWriter(pipe.Printf("Receiving deploy request: %v", string(indent)))
 	err := c.Service.Deploy(&c.Ctx, *d)
 	if err != nil {
 		c.Ctx.Application().Logger().Warn(err.Error())
 		c.Ctx.WriteString(err.Error())
 		return
 	}
-	c.Ctx.StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "Resolving in %v, done.", time.Since(start))
-		return false
-	})
+	c.Ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
 	return
 }
 
