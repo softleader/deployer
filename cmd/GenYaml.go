@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/softleader/deployer/datamodels"
 	"strings"
+	"github.com/kataras/iris"
 )
 
 type GenYaml struct {
@@ -17,7 +18,7 @@ func NewGenYaml(sh Sh, cmd string) *GenYaml {
 	return &GenYaml{sh: sh, cmd: cmd}
 }
 
-func (gy *GenYaml) Gen(output string, d *datamodels.Deploy, dirs ...string) (string, string, error) {
+func (gy *GenYaml) Gen(ctx *iris.Context, output string, d *datamodels.Deploy, dirs ...string) (string, string, error) {
 
 	commands := []string{gy.cmd, "-s swarm -o", output}
 	if d.Silently {
@@ -34,9 +35,9 @@ func (gy *GenYaml) Gen(output string, d *datamodels.Deploy, dirs ...string) (str
 	}
 	commands = append(commands, strings.Join(dirs, " "))
 
-	return gy.sh.Exec(commands...)
+	return gy.sh.Exec(ctx, commands...)
 }
 
 func (gy *GenYaml) Version() (string, string, error) {
-	return gy.sh.Exec(gy.cmd, "--version")
+	return gy.sh.Exec(nil, gy.cmd, "--version")
 }

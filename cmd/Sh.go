@@ -18,39 +18,37 @@ func NewSh(wd Ws) *Sh {
 	return &Sh{Ws: wd}
 }
 
-func (sh *Sh) Exec(commands ...string) (string, string, error) {
+type out struct {
+	ctx *iris.Context
+	buf bytes.Buffer
+}
+
+func (sh *Sh) Exec(ctx *iris.Context, commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
 	cmd.Dir = sh.Ws.Path
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
+
+	if ctx != nil {
+		(*ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
+	}
+
+	stdout := out{ctx: ctx}
+	stderr := out{ctx: ctx}
+	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
+
 	err := cmd.Run()
 	if err != nil {
-		return "", "", errors.New(fmt.Sprint(err) + ": " + stderr.String())
+		return "", "", errors.New(fmt.Sprint(err) + ": " + stderr.buf.String())
 	}
-	return arg, out.String(), nil
+
+	return arg, stdout.buf.String(), nil
 }
 
-func (sh *Sh) ExecPipe(ctx *iris.Context, commands ...string) {
-	arg := strings.Join(commands, " ")
-	cmd := exec.Command("sh", "-c", arg)
-	cmd.Dir = sh.Ws.Path
-
-	(*ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
-
-	sw := streamWriter{ctx: ctx}
-	cmd.Stdout = sw
-	cmd.Stderr = sw
-	cmd.Run()
-}
-
-type streamWriter struct {
-	ctx *iris.Context
-}
-
-func (sw streamWriter) Write(bs []byte) (n int, err error) {
-	(*sw.ctx).StreamWriter(pipe.Print(string(bs)))
-	return len(bs), nil
+func (o *out) Write(b []byte) (n int, err error) {
+	o.buf.Write(b)
+	if o.ctx != nil {
+		(*o.ctx).StreamWriter(pipe.Print(string(b)))
+	}
+	return len(b), nil
 }

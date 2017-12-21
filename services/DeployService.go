@@ -95,11 +95,10 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 }
 
 func (ds *DeployService) gpmInstall(ctx *iris.Context, dir string, d *datamodels.Deploy) (bool, error) {
-	cmd, out, err := ds.Gpm.Install(dir, d.Yaml)
+	_, out, err := ds.Gpm.Install(ctx, dir, d.Yaml)
 	if err != nil {
 		return false, err
 	}
-	(*ctx).StreamWriter(pipe.Printf("$ %v\n", cmd))
 	(*ctx).StreamWriter(pipe.Print(out))
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
@@ -117,7 +116,7 @@ func (ds *DeployService) genYaml(ctx *iris.Context, dirname string, outYaml stri
 	}
 
 	yml := path.Join(dirname, outYaml)
-	cmd, out, err := ds.GenYaml.Gen(yml, d, strings.Join(dirs, " "))
+	_, out, err := ds.GenYaml.Gen(ctx, yml, d, strings.Join(dirs, " "))
 	if err != nil {
 		return "", err
 	}
@@ -127,7 +126,6 @@ func (ds *DeployService) genYaml(ctx *iris.Context, dirname string, outYaml stri
 		return "", err;
 	}
 
-	(*ctx).StreamWriter(pipe.Printf("$ %v\n", cmd))
 	(*ctx).StreamWriter(pipe.Print(out))
 	return yml, nil
 }

@@ -13,25 +13,25 @@ func NewDockerStack(sh Sh) *DockerStack {
 }
 
 func (ds *DockerStack) Ls() (string, string, error) {
-	return ds.sh.Exec("docker stack ls")
+	return ds.sh.Exec(nil, "docker stack ls")
 }
 
 func (ds *DockerStack) Services(stack string) (string, string, error) {
-	return ds.sh.Exec("docker stack services", stack)
+	return ds.sh.Exec(nil, "docker stack services", stack)
 }
 
 func (ds *DockerStack) Ps(id string) (string, string, error) {
-	return ds.sh.Exec("docker service ps", id, "--no-trunc")
+	return ds.sh.Exec(nil, "docker service ps", id, "--no-trunc")
 }
 
 func (ds *DockerStack) Rm(stack string) (string, string, error) {
-	return ds.sh.Exec("docker stack rm", stack)
+	return ds.sh.Exec(nil, "docker stack rm", stack)
 }
 
 func (ds *DockerStack) RmLike(stack string) (string, string, error) {
-	return ds.sh.Exec("docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+	return ds.sh.Exec(nil, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
 }
 
-func (ds *DockerStack) Deploy(ctx *iris.Context, stack string, file string) {
-	ds.sh.ExecPipe(ctx, "docker stack deploy -c", file, stack)
+func (ds *DockerStack) Deploy(ctx *iris.Context, stack string, file string) (string, string, error) {
+	return ds.sh.Exec(ctx, "docker stack deploy -c", file, stack)
 }

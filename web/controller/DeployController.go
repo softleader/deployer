@@ -57,7 +57,7 @@ func (c *DeployController) Post() {
 		return
 	}
 	c.Ctx.StreamWriter(func(w io.Writer) bool {
-		fmt.Fprintf(w, "Resolving in '%v', done.", time.Since(start))
+		fmt.Fprintf(w, "Resolving in %v, done.", time.Since(start))
 		return false
 	})
 	return
