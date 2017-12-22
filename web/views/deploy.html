@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>DevOps Deployer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="https://github.com/softleader/deployer">
+        <img src="https://avatars0.githubusercontent.com/u/18475967?s=400&u=9fe4cb519c6ee3f39b96c4eac02856cd65e84e0f&v=4" width="30" height="30" class="d-inline-block align-top" alt="">
+        SoftLeader Deployer
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">List Stacks</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/deploy">Deploy YAML</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <p>
+        <form>
+            <div class="form-check">
+                <label class="form-check-label" aria-describedby="cleanUpHelp">
+                    <input type="checkbox" id="cleanUp" class="form-check-input" checked>
+                    Clean up
+                </label>
+                <small id="cleanUpHelp" class="form-text text-muted">
+                    執行前是否要先清空 workspace: /devops/deployer/workspace
+                </small>
+                <small id="cleanUpHelp" class="form-text text-muted">
+                    通常是已經將 package.yaml 放在 workspace 下了才會選擇不清空
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="project">Project</label>
+                <input type="text" class="form-control" id="project" aria-describedby="projectHelp" placeholder="my-project">
+                <small id="projectHelp" class="form-text text-muted">
+                    將會作為 stack name 的 prefix
+                </small>
+                <small id="projectHelp" class="form-text text-muted">
+                    stack name 的組成方式為: ${project}-${port}-${group}, 如: my-project-50000-svc
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="devAddr">Dev Addr</label>
+                <input type="text" class="form-control" id="devAddr" aria-describedby="devAddrHelp" value="192.168.1.60">
+                <small id="devAddrHelp" class="form-text text-muted">
+                    若此欄位放空白則不開啟 dev 模式
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="devPort">Dev Port</label>
+                <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp" placeholder="0">
+                <small id="devPortHelp" class="form-text text-muted">
+                    預設: 50000
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="yaml">YAML</label>
+                <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp" value="github:softleader/softleader-package/">
+                <small id="yamlHelp" class="form-text text-muted">
+                    yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
+                </small>
+                <small id="yamlHelp" class="form-text text-muted">
+                    如果 yaml 已經上傳到 192.168.1.60 那台, 請放在 /devops/deployer/workspace 下, 這邊就用相對路徑
+                </small>
+                <small id="yamlHelp" class="form-text text-muted">
+                    如: 放在  /devops/deployer/workspace/hello/my-project.yaml, 這邊要設定 hello/my-project.yaml
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="net0">net0</label>
+                <input type="text" class="form-control" id="net0" aria-describedby="net0Help" placeholder="softleader-my-project">
+                <small id="net0Help" class="form-text text-muted">
+                    不給的話由 docker 自動 create network, rm stack 時也會自動刪除 network
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="net0">volume0</label>
+                <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help" placeholder="/nfs/my-project">
+                <small id="volume0Help" class="form-text text-muted"></small>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label" aria-describedby="silentlyHelp">
+                    <input type="checkbox" class="form-check-input">
+                    Silently
+                </label>
+                <small id="silentlyHelp" class="form-text text-muted">
+                    在 gen-yaml 時是否要啟用安靜模式
+                </small>
+                <small id="cleanUpHelp" class="form-text text-muted">
+                    請注意: 安靜模式下不會有任何的 yaml 檢查, 如 image:tag 是否存在於 registry 中
+                </small>
+            </div>
+            <button id="deploy" type="button" class="btn btn-outline-primary" onclick="fire();">
+                <i class="fa fa-bomb" aria-hidden="true"></i> Fire in the hole
+            </button>
+        </form>
+    </p>
+    <hr>
+    <p>
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading"><i class="fa fa-terminal" aria-hidden="true"></i></h4>
+            <hr>
+            <p class="mb-0"><pre id="output"></pre></p>
+        </div>
+    </p>
+</div>
+
+<script src="https://use.fontawesome.com/c4e1e41426.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+<script>
+    function fire() {
+        var $deployBtn = $("#deploy");
+        $deployBtn.prop('disabled', true);
+
+        var $output = $("#output");
+        $output.empty()
+
+        var data = {
+            "cleanUp": $("#cleanUp").val()=="on",
+            "project": $("#project").val(),
+            "dev": {
+                "addr": $("#devAddr").val(),
+                "port": parseInt($("#devPort").val()),
+            },
+            "net0": $("#net0").val(),
+            "volume0": $("#volume0").val(),
+            "yaml": $("#yaml").val(),
+            "silently":$("#silently").val()=="on"
+        }
+
+        console.log(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            processData: false,
+            xhrFields: {
+                onprogress: function(e) {
+                    $output.text(e.currentTarget.response);
+                }
+            }
+        }).done(function() {
+            $deployBtn.prop('disabled', false);
+        }).fail(function(error) {
+            $deployBtn.prop('disabled', false);
+        });
+    }
+</script>
+
+</body>
+</html>
