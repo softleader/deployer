@@ -34,20 +34,21 @@
     <table class="table table-responsive-sm table-hover">
         <thead class="thead-light">
         <tr>
-            <th scope="col">#</th>
             <th scope="col">Stack Name</th>
             <th scope="col">Services</th>
+            <th scope="col"><span class="font-weight-bold text-uppercase">(cannot undo)</span></th>
         </tr>
         </thead>
         <tbody>
         {{range $index, $line := .}}
         <tr>
             <td>
-                <a href="/{{index $line 0}}" class="btn btn-outline-primary btn-sm"><i class="fa fa-list" aria-hidden="true"></i> List Services</a>
-                <a href="/rm/{{index $line 0}}" class="btn btn-outline-secondary btn-sm"><i class="fa fa-trash" aria-hidden="true"></i> Rm Stack <span class="font-weight-bold text-uppercase">(cannot undo)</span></a>
+                <a href="/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
             </td>
-            <td>{{index $line 0}}</td>
             <td>{{index $line 1}}</td>
+            <td>
+                <a href="/rm/{{index $line 0}}" class="btn btn-outline-secondary btn-sm"><i class="fa fa-trash" aria-hidden="true"></i></a>
+            </td>
         </tr>
         {{end}}
         </tbody>

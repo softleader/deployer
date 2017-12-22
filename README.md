@@ -29,6 +29,7 @@ $ ./main -workspace=/tmp -port=8080
 
 - Copy `deployer.service` to the directory `/etc/systemd/system/`
 - Modify `ExecStart` in `deployer.service`
+- 執行 `systemctl daemon-reload`
 - Then it should be possible to control daemon using:
 
 ```
