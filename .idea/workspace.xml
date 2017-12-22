@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5d68073-0caf-4ddd-a7a4-cb8bdcb26518" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/web/views/ps.html" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/web/views/service.html" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/web/views/stack.html" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/cmd/DockerStack.go" afterPath="$PROJECT_DIR$/cmd/DockerStack.go" />
-      <change beforePath="$PROJECT_DIR$/main.go" afterPath="$PROJECT_DIR$/main.go" />
-      <change beforePath="$PROJECT_DIR$/services/DeployService.go" afterPath="$PROJECT_DIR$/services/DeployService.go" />
-      <change beforePath="$PROJECT_DIR$/web/controller/DeployController.go" afterPath="$PROJECT_DIR$/web/controller/DeployController.go" />
-    </list>
+    <list default="true" id="c5d68073-0caf-4ddd-a7a4-cb8bdcb26518" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.idea/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
