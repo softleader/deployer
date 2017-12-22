@@ -70,6 +70,9 @@ func checkDependencies(s services.DeployService) {
 
 func serve(args args, s services.DeployService) {
 	app := iris.New()
+
+	app.RegisterView(iris.HTML("./web/views", ".html"))
+
 	app.Controller("/", new(controller.DeployController), s)
 	app.Run(
 		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),

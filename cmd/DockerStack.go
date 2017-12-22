@@ -13,15 +13,15 @@ func NewDockerStack(sh Sh) *DockerStack {
 }
 
 func (ds *DockerStack) Ls() (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack ls")
+	return ds.sh.Exec(nil, "docker stack ls --format '{{.Name}};{{.Services}}'")
 }
 
 func (ds *DockerStack) Services(stack string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack services", stack)
+	return ds.sh.Exec(nil, "docker stack services", stack, "--format '{{.ID}};{{.Name}};{{.Mode}};{{.Replicas}};{{.Image}};{{.Ports}}'")
 }
 
 func (ds *DockerStack) Ps(id string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker service ps", id, "--no-trunc")
+	return ds.sh.Exec(nil, "docker service ps", id, "--no-trunc", "--format '{{.ID}};{{.Name}};{{.Image}};{{.Node}};{{.DesiredState}};{{.CurrentState}};{{.Error}}'")
 }
 
 func (ds *DockerStack) Rm(stack string) (string, string, error) {

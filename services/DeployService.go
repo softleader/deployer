@@ -25,19 +25,42 @@ type compose struct {
 	yaml  string
 }
 
-func (ds *DeployService) GetAll() (string, error) {
+func (ds *DeployService) GetAll() ([][]string, error) {
 	_, out, err := ds.DockerStack.Ls()
-	return out, err
+	lines := strings.Split(out, "\n")
+	var s [][]string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			s = append(s, strings.Split(line, ";"))
+		}
+	}
+	return s, err
 }
 
-func (ds *DeployService) GetServices(stack string) (string, error) {
+func (ds *DeployService) GetServices(stack string) ([][]string, error) {
 	_, out, err := ds.DockerStack.Services(stack)
-	return out, err
+	lines := strings.Split(out, "\n")
+	var s [][]string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			s = append(s, strings.Split(line, ";"))
+		}
+	}
+	return s, err
 }
 
-func (ds *DeployService) Ps(id string) (string, error) {
+func (ds *DeployService) Ps(id string) ([][]string, error) {
 	_, out, err := ds.DockerStack.Ps(id)
-	return out, err
+	lines := strings.Split(out, "\n")
+	var s [][]string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			fields := strings.Split(line, ";")
+			fields[2] = strings.Split(fields[2], "@sha256")[0]
+			s = append(s, fields)
+		}
+	}
+	return s, err
 }
 
 func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {

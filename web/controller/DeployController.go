@@ -6,7 +6,6 @@ import (
 	"github.com/softleader/deployer/services"
 	"time"
 	"encoding/json"
-	"github.com/kataras/iris"
 	"github.com/softleader/deployer/pipe"
 )
 
@@ -15,28 +14,37 @@ type DeployController struct {
 	Service services.DeployService
 }
 
-func (c *DeployController) Get() (string, int) {
+func (c *DeployController) Get() mvc.Result {
 	out, err := c.Service.GetAll()
 	if err != nil {
-		return err.Error(), iris.StatusInternalServerError
+		out = append(out, []string{err.Error()})
 	}
-	return out, iris.StatusOK
+	return mvc.View{
+		Name: "stack.html",
+		Data: out,
+	}
 }
 
-func (c *DeployController) GetBy(stack string) (string, int) {
+func (c *DeployController) GetBy(stack string) mvc.Result {
 	out, err := c.Service.GetServices(stack)
 	if err != nil {
-		return err.Error(), iris.StatusInternalServerError
+		out = append(out, []string{err.Error()})
 	}
-	return out, iris.StatusOK
+	return mvc.View{
+		Name: "service.html",
+		Data: out,
+	}
 }
 
-func (c *DeployController) GetPsBy(serviceId string) (string, int) {
+func (c *DeployController) GetPsBy(serviceId string) mvc.Result {
 	out, err := c.Service.Ps(serviceId)
 	if err != nil {
-		return err.Error(), iris.StatusInternalServerError
+		out = append(out, []string{err.Error()})
 	}
-	return out, iris.StatusOK
+	return mvc.View{
+		Name: "ps.html",
+		Data: out,
+	}
 }
 
 func (c *DeployController) Post() {
@@ -56,10 +64,19 @@ func (c *DeployController) Post() {
 	return
 }
 
-func (c *DeployController) DeleteBy(stack string) (string, int) {
-	out, err := c.Service.Delete(stack)
+//func (c *DeployController) DeleteBy(stack string) (string, int) {
+//	out, err := c.Service.Delete(stack)
+//	if err != nil {
+//		return err.Error(), iris.StatusInternalServerError
+//	}
+//	return out, iris.StatusOK
+//}
+
+func (c *DeployController) GetRmBy(stack string) mvc.Result {
+	var out [][]string
+	_, err := c.Service.Delete(stack)
 	if err != nil {
-		return err.Error(), iris.StatusInternalServerError
+		out = append(out, []string{err.Error()})
 	}
-	return out, iris.StatusOK
+	return c.Get()
 }
