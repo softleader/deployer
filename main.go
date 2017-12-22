@@ -71,7 +71,7 @@ func checkDependencies(s services.DeployService) {
 func serve(args args, s services.DeployService) {
 	app := iris.New()
 
-	tmpl := iris.HTML("templates", ".html")
+	tmpl := iris.HTML("web/views", ".html")
 	tmpl.Reload(true)
 
 	app.RegisterView(tmpl)

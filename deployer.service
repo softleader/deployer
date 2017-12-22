@@ -3,10 +3,11 @@ Description=SoftLeader Deployer
 
 [Service]
 Type=simple
-ExecStart=/devops/deployer/main \
-        -workspace=/devops/deployer/workspace \
-        -cmd.gpm=/devops/git-package-manager/index.js \
-        -cmd.gen-yaml=/devops/container-yaml-generator/index.js
+ExecStart=/usr/bin/go run main.go \
+	-workspace=/devops/deployer/workspace \
+	-cmd.gpm=/devops/git-package-manager/index.js \
+	-cmd.gen-yaml=/devops/container-yaml-generator/index.js
+WorkingDirectory=/root/go/src/github.com/softleader/deployer
 User=root
 ExecReload=/bin/kill -HUP $MAINPID
 
