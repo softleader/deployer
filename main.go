@@ -77,6 +77,7 @@ func serve(args args, s services.DeployService) {
 	app.RegisterView(tmpl)
 
 	app.Get("/deploy", func(ctx iris.Context) {
+		ctx.ViewData("workspace", args.ws)
 		ctx.View("deploy.html")
 	})
 

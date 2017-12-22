@@ -38,7 +38,7 @@
                     Clean up
                 </label>
                 <small id="cleanUpHelp" class="form-text text-muted">
-                    執行前是否要先清空 workspace: /devops/deployer/workspace
+                    執行前是否要先清空 workspace: {{.workspace}}
                 </small>
                 <small id="cleanUpHelp" class="form-text text-muted">
                     通常是已經將 package.yaml 放在 workspace 下了才會選擇不清空
@@ -75,10 +75,10 @@
                     yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
                 </small>
                 <small id="yamlHelp" class="form-text text-muted">
-                    如果 yaml 已經上傳到 192.168.1.60 那台, 請放在 /devops/deployer/workspace 下, 這邊就用相對路徑
+                    如果 yaml 已經上傳到 192.168.1.60 那台, 請放在 {{.workspace}} 下, 這邊就用相對路徑
                 </small>
                 <small id="yamlHelp" class="form-text text-muted">
-                    如: 放在  /devops/deployer/workspace/hello/my-project.yaml, 這邊要設定 hello/my-project.yaml
+                    如: 放在  {{.workspace}}/hello/my-project.yaml, 這邊要設定 hello/my-project.yaml
                 </small>
             </div>
             <div class="form-group">
