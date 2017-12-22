@@ -159,9 +159,7 @@
                     $output.text(e.currentTarget.response);
                 }
             }
-        }).done(function() {
-            $deployBtn.prop('disabled', false);
-        }).fail(function(error) {
+        }).always(function() {
             $deployBtn.prop('disabled', false);
         });
     }
