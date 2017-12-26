@@ -121,10 +121,6 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	return nil
 }
 
-func contains([]string) {
-
-}
-
 func (ds *DeployService) gpmInstall(ctx *iris.Context, dir string, d *datamodels.Deploy) (bool, error) {
 	_, out, err := ds.Gpm.Install(ctx, dir, d.Yaml)
 	if err != nil {
