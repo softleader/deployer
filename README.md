@@ -45,3 +45,11 @@ $ systemctl restart deployer
 $ systemctl enable deployer
 $ systemctl disable deployer
 ```
+
+### Update 192.168.1.60 Service
+
+```
+$ sudo su
+$ go get -u github.com/softleader/deployer
+$ systemctl restart deployer
+```
