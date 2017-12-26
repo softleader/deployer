@@ -82,6 +82,13 @@
                 </small>
             </div>
             <div class="form-group">
+                <label for="yaml">Group</label>
+                <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="">
+                <small id="groupHelp" class="form-text text-muted">
+                    如果 yaml 有分 group, 就可以在這邊指定要部署的 group, 若空白則會自動部署所有的 group, 可用逗號分隔指定多個 group
+                </small>
+            </div>
+            <div class="form-group">
                 <label for="net0">net0</label>
                 <input type="text" class="form-control" id="net0" aria-describedby="net0Help" placeholder="softleader-my-project">
                 <small id="net0Help" class="form-text text-muted">
@@ -143,6 +150,7 @@
             "net0": $("#net0").val(),
             "volume0": $("#volume0").val(),
             "yaml": $("#yaml").val(),
+            "group": $("#group").val(),
             "silently":$("#silently").val()=="on"
         }
 

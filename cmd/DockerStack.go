@@ -24,12 +24,16 @@ func (ds *DockerStack) Ps(id string) (string, string, error) {
 	return ds.sh.Exec(nil, "docker service ps", id, "--no-trunc", "--format '{{.ID}};{{.Name}};{{.Image}};{{.Node}};{{.DesiredState}};{{.CurrentState}};{{.Error}}'")
 }
 
-func (ds *DockerStack) Rm(stack string) (string, string, error) {
+func (ds *DockerStack) RmStack(stack string) (string, string, error) {
 	return ds.sh.Exec(nil, "docker stack rm", stack)
 }
 
-func (ds *DockerStack) RmLike(stack string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+//func (ds *DockerStack) RmLike(stack string) (string, string, error) {
+//	return ds.sh.Exec(nil, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+//}
+
+func (ds *DockerStack) RmService(service string) (string, string, error) {
+	return ds.sh.Exec(nil, "docker service rm", service)
 }
 
 func (ds *DockerStack) Deploy(ctx *iris.Context, stack string, file string) (string, string, error) {

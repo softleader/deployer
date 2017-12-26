@@ -97,6 +97,10 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 			return err
 		}
 		for _, group := range groups {
+			if d.Group != "" && !d.GroupContains(group.Name()) {
+				(*ctx).StreamWriter(pipe.Printf("Skip deploying group [%v] because it does not match any of '%v'\n", group.Name(), d.Group))
+				continue
+			}
 			groupRepo := path.Join(repo, group.Name())
 			yml, err := ds.genYaml(ctx, groupRepo, fmt.Sprintf("docker-compose-%v.yml", group.Name()), &d)
 			if err != nil {
@@ -115,6 +119,10 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	}
 
 	return nil
+}
+
+func contains([]string) {
+
 }
 
 func (ds *DeployService) gpmInstall(ctx *iris.Context, dir string, d *datamodels.Deploy) (bool, error) {
@@ -146,7 +154,7 @@ func (ds *DeployService) genYaml(ctx *iris.Context, dirname string, outYaml stri
 
 	err = updateDevPort(out, d)
 	if err != nil {
-		return "", err;
+		return "", err
 	}
 
 	(*ctx).StreamWriter(pipe.Print(out))
@@ -186,7 +194,12 @@ func (ds *DeployService) deployDocker(ctx *iris.Context, composes []compose, d *
 	return nil
 }
 
-func (ds *DeployService) Delete(stack string) (string, error) {
-	_, out, err := ds.DockerStack.RmLike(stack)
+func (ds *DeployService) DeleteStack(stack string) (string, error) {
+	_, out, err := ds.DockerStack.RmStack(stack)
+	return out, err
+}
+
+func (ds *DeployService) DeleteService(service string) (string, error) {
+	_, out, err := ds.DockerStack.RmService(service)
 	return out, err
 }

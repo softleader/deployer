@@ -81,7 +81,8 @@ func serve(args args, s services.DeployService) {
 		ctx.View("deploy.html")
 	})
 
-	app.Controller("/", new(controller.DeployController), s)
+	app.Controller("/", new(controller.StackController), s)
+	app.Controller("/services", new(controller.ServiceController), s)
 
 	app.Run(
 		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),

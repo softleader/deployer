@@ -45,37 +45,3 @@ $ systemctl restart deployer
 $ systemctl enable deployer
 $ systemctl disable deployer
 ```
-
-## Usage
-
-- List all stacks
-
-```
-$ curl localhost:5678
-```
-
-- List services in stack
-
-```
-$ curl localhost:5678/${stack}
-```
-
-- Ps service
-
-```
-$ curl localhost:5678/ps/${serviceId}
-```
-
-- Remove stack ${stack}, 模糊刪除: %stack%
-
-```
-$ curl -X DELETE localhost:5678/${stack}
-```
-
-- Deploy a `package.yaml`
-
-```
-$ curl -X POST \
-       -d '{"cleanUp": true, "project": "base", "dev": {"addr": "192.168.1.60", "port": 50000}, "net0": "", "yaml": "github:softleader/softleader-package/softleader-base.yaml#master"}' \
-       localhost:5678/
-```
