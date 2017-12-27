@@ -199,6 +199,13 @@
             $deployBtn.prop('disabled', false);
         });
     }
+
+    $(window).on('beforeunload',function(){
+        if ($('#deploy').is(':disabled')) {
+            return "";
+        }
+        return;
+    });
 </script>
 
 </body>
