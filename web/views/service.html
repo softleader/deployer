@@ -4,16 +4,19 @@
     <title>DevOps Deployer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="https://github.com/softleader/deployer">
-        <img src="https://avatars0.githubusercontent.com/u/18475967?s=400&u=9fe4cb519c6ee3f39b96c4eac02856cd65e84e0f&v=4" width="30" height="30" class="d-inline-block align-top" alt="">
+        <img src="https://avatars0.githubusercontent.com/u/18475967?s=400&u=9fe4cb519c6ee3f39b96c4eac02856cd65e84e0f&v=4"
+             width="30" height="30" class="d-inline-block align-top" alt="">
         SoftLeader Deployer
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -56,7 +59,8 @@
             <td>{{index $line 4}}</td>
             <td>{{index $line 5}}</td>
             <td>
-                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$stack}}/{{index $line 0}}">
+                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                   name="{{$stack}}/{{index $line 0}}">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </a>
             </td>
@@ -67,7 +71,8 @@
     </p>
 </div>
 
-<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -92,16 +97,22 @@
 </div>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
 
 <script>
-    $(".fa-trash").parent().click(function() {
+    $(".fa-trash").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#removeModal");
         $modal.find(".text-danger").html(n.split("/")[1]);
-        $modal.find("#proceed").attr("href", "/services/rm/"+n);
+        $modal.find("#proceed").attr("href", "/services/rm/" + n);
     });
 </script>
 
