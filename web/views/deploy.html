@@ -38,7 +38,7 @@
                     Clean up
                 </label>
                 <small id="cleanUpHelp" class="form-text text-muted">
-                    執行前是否要先清空 workspace: {{.workspace}}
+                    執行前是否要先清空 workspace: {{.workspace}}/${project}
                 </small>
                 <small id="cleanUpHelp" class="form-text text-muted">
                     通常是已經將 package.yaml 放在 workspace 下了才會選擇不清空
@@ -48,7 +48,10 @@
                 <label for="project">Project</label>
                 <input type="text" class="form-control" id="project" aria-describedby="projectHelp" placeholder="my-project">
                 <small id="projectHelp" class="form-text text-muted">
-                    將會作為 stack name 的 prefix
+                    將會作為 workspace 的子目錄及 stack name 的 prefix
+                </small>
+                <small id="projectHelp" class="form-text text-muted">
+                    workspace 將會是:  {{.workspace}}/${project}
                 </small>
                 <small id="projectHelp" class="form-text text-muted">
                     stack name 的組成方式為: ${project}-${port}-${group}, 如: my-project-50000-svc

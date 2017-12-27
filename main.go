@@ -43,7 +43,7 @@ func newArgs() *args {
 
 func newService(args *args) *services.DeployService {
 	ws := cmd.NewWs(args.ws)
-	sh := cmd.NewSh(*ws)
+	sh := cmd.NewSh()
 	return &services.DeployService{
 		DockerStack: *cmd.NewDockerStack(*sh),
 		Gpm:         *cmd.NewGpm(*sh, args.gpm),

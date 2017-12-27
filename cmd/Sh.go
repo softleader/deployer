@@ -11,11 +11,15 @@ import (
 )
 
 type Sh struct {
-	Ws
 }
 
-func NewSh(wd Ws) *Sh {
-	return &Sh{Ws: wd}
+type Options struct {
+	Ctx *iris.Context
+	Pwd string
+}
+
+func NewSh() *Sh {
+	return &Sh{}
 }
 
 type out struct {
@@ -23,17 +27,19 @@ type out struct {
 	buf bytes.Buffer
 }
 
-func (sh *Sh) Exec(ctx *iris.Context, commands ...string) (string, string, error) {
+func (sh *Sh) Exec(opts *Options, commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
-	cmd.Dir = sh.Ws.Path
-
-	if ctx != nil {
-		(*ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
+	if opts.Pwd != "" {
+		cmd.Dir = opts.Pwd
 	}
 
-	stdout := out{ctx: ctx}
-	stderr := out{ctx: ctx}
+	if opts.Ctx != nil {
+		(*opts.Ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
+	}
+
+	stdout := out{ctx: opts.Ctx}
+	stderr := out{ctx: opts.Ctx}
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 

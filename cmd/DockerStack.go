@@ -1,9 +1,5 @@
 package cmd
 
-import (
-	"github.com/kataras/iris"
-)
-
 type DockerStack struct {
 	sh Sh
 }
@@ -13,19 +9,19 @@ func NewDockerStack(sh Sh) *DockerStack {
 }
 
 func (ds *DockerStack) Ls() (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack ls --format '{{.Name}};{{.Services}}'")
+	return ds.sh.Exec(&Options{}, "docker stack ls --format '{{.Name}};{{.Services}}'")
 }
 
 func (ds *DockerStack) Services(stack string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack services", stack, "--format '{{.ID}};{{.Name}};{{.Mode}};{{.Replicas}};{{.Image}};{{.Ports}}'")
+	return ds.sh.Exec(&Options{}, "docker stack services", stack, "--format '{{.ID}};{{.Name}};{{.Mode}};{{.Replicas}};{{.Image}};{{.Ports}}'")
 }
 
 func (ds *DockerStack) Ps(id string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker service ps", id, "--no-trunc", "--format '{{.ID}};{{.Name}};{{.Image}};{{.Node}};{{.DesiredState}};{{.CurrentState}};{{.Error}}'")
+	return ds.sh.Exec(&Options{}, "docker service ps", id, "--no-trunc", "--format '{{.ID}};{{.Name}};{{.Image}};{{.Node}};{{.DesiredState}};{{.CurrentState}};{{.Error}}'")
 }
 
 func (ds *DockerStack) RmStack(stack string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker stack rm", stack)
+	return ds.sh.Exec(&Options{}, "docker stack rm", stack)
 }
 
 //func (ds *DockerStack) RmLike(stack string) (string, string, error) {
@@ -33,9 +29,9 @@ func (ds *DockerStack) RmStack(stack string) (string, string, error) {
 //}
 
 func (ds *DockerStack) RmService(service string) (string, string, error) {
-	return ds.sh.Exec(nil, "docker service rm", service)
+	return ds.sh.Exec(&Options{}, "docker service rm", service)
 }
 
-func (ds *DockerStack) Deploy(ctx *iris.Context, stack string, file string) (string, string, error) {
-	return ds.sh.Exec(ctx, "docker stack deploy -c", file, stack)
+func (ds *DockerStack) Deploy(opts *Options, stack string, file string) (string, string, error) {
+	return ds.sh.Exec(opts, "docker stack deploy -c", file, stack)
 }
