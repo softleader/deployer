@@ -20,11 +20,6 @@ type DeployService struct {
 	cmd.Ws
 }
 
-type compose struct {
-	group string
-	yaml  string
-}
-
 func (ds *DeployService) GetAll() ([][]string, error) {
 	_, out, err := ds.DockerStack.Ls()
 	lines := strings.Split(out, "\n")
@@ -79,7 +74,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	if err != nil {
 		return err
 	}
-	var c []compose
+	y := datamodels.Yamls{}
 	repo := path.Join(ds.Ws.Pwd(d.Project), gpmDir)
 
 	if !group {
@@ -87,9 +82,9 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		if err != nil {
 			return err
 		}
-		c = append(c, compose{
-			group: "",
-			yaml:  yml,
+		y = append(y, datamodels.Yaml{
+			Group: "",
+			Path:  yml,
 		})
 	} else {
 		// 目前只支援一層的 group..
@@ -107,17 +102,19 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 			if err != nil {
 				return err
 			}
-			c = append(c, compose{
-				group: group.Name(),
-				yaml:  yml,
+			y = append(y, datamodels.Yaml{
+				Group: group.Name(),
+				Path:  yml,
 			})
 		}
 	}
 
-	err = ds.deployDocker(&opts, c, &d)
+	err = ds.deployDocker(&opts, y, &d)
 	if err != nil {
 		return err
 	}
+
+	y.ZipTo(opts.Pwd)
 
 	return nil
 }
@@ -176,16 +173,16 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 	return nil
 }
 
-func (ds *DeployService) deployDocker(opts *cmd.Options, composes []compose, d *datamodels.Deploy) error {
-	for _, c := range composes {
+func (ds *DeployService) deployDocker(opts *cmd.Options, yamls datamodels.Yamls, d *datamodels.Deploy) error {
+	for _, y := range yamls {
 		stack := []string{d.Project}
 		if d.Dev.Hostname != "" {
 			stack = append(stack, strconv.Itoa(d.Dev.Port))
 		}
-		if c.group != "" {
-			stack = append(stack, c.group)
+		if y.Group != "" {
+			stack = append(stack, y.Group)
 		}
-		ds.DockerStack.Deploy(opts, strings.Join(stack, "-"), c.yaml)
+		ds.DockerStack.Deploy(opts, strings.Join(stack, "-"), y.Path)
 
 	}
 	return nil

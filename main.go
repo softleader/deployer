@@ -11,6 +11,7 @@ import (
 	"log"
 	"flag"
 	"github.com/softleader/deployer/datamodels"
+	"path"
 )
 
 type args struct {
@@ -95,6 +96,12 @@ func serve(args args, s services.DeployService) {
 
 	app.Controller("/", new(controller.StackController), s)
 	app.Controller("/services", new(controller.ServiceController), s)
+
+	app.Get("/download/{project:string}", func(ctx iris.Context) {
+		p := ctx.Params().Get("project")
+		zip := datamodels.ZipFile(s.Ws.Pwd(p))
+		ctx.SendFile(zip, path.Base(zip))
+	})
 
 	app.Run(
 		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),
