@@ -10,6 +10,7 @@ import (
 	"github.com/softleader/deployer/cmd"
 	"log"
 	"flag"
+	"github.com/softleader/deployer/datamodels"
 )
 
 type args struct {
@@ -78,6 +79,17 @@ func serve(args args, s services.DeployService) {
 
 	app.Get("/deploy", func(ctx iris.Context) {
 		ctx.ViewData("workspace", args.ws)
+		ctx.ViewData("dft", datamodels.Deploy{
+			Dev: datamodels.Dev{
+				Hostname: "192.168.1.60",
+				Port:     0,
+				Ignore:   "elasticsearch,kibana,logstash,redis,eureka",
+			},
+			Yaml:    "github:softleader/softleader-package/",
+			Volume0: "",
+			Net0:    "",
+			Group:   "",
+		})
 		ctx.View("deploy.html")
 	})
 
