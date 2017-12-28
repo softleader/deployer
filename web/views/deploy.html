@@ -50,7 +50,7 @@
         <div class="form-group">
             <label for="project">Project</label>
             <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
-                   placeholder="my-project">
+                   placeholder="my-project" required>
             <small id="projectHelp" class="form-text text-muted">
                 將會作為 workspace 的子目錄及 stack name 的 prefix
             </small>
@@ -71,9 +71,10 @@
         </div>
         <div class="form-group">
             <label for="devPort">Dev Port</label>
-            <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp" value="{{.dft.Dev.Port}}">
+            <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
+                   value="{{.dft.Dev.Port}}">
             <small id="devPortHelp" class="form-text text-muted">
-                若 <= 0 則會以 gen-yaml 套件預設的 50000 port 來 publish
+                若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
             </small>
         </div>
         <div class="form-group">
@@ -81,7 +82,7 @@
             <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
                    value="{{.dft.Dev.Ignore}}">
             <small id="devIgnoreHelp" class="form-text text-muted">
-                dev 模式下要忽略套用的 service name, 可用逗號分隔多個 service
+                開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
             </small>
             <small id="devIgnoreHelp" class="form-text text-muted">
                 service name 一般會定義在每個專案的 Containerfile 中的第二行
@@ -90,7 +91,7 @@
         <div class="form-group">
             <label for="yaml">YAML</label>
             <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
-                   value="{{.dft.Yaml}}">
+                   value="{{.dft.Yaml}}" required>
             <small id="yamlHelp" class="form-text text-muted">
                 yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
             </small>
@@ -136,7 +137,7 @@
                 請注意: 安靜模式下不會有任何的 yaml 檢查, 如 image:tag 是否存在於 registry 中
             </small>
         </div>
-        <button id="deploy" type="button" class="btn btn-outline-primary" onclick="fire();">
+        <button id="deploy" type="submit" class="btn btn-outline-primary">
             <i class="fa fa-bomb" aria-hidden="true"></i> Fire in the hole
         </button>
     </form>
@@ -161,57 +162,61 @@
         crossorigin="anonymous"></script>
 
 <script>
-    function fire() {
-        var $deployBtn = $("#deploy");
-        $deployBtn.prop('disabled', true);
 
-        var $output = $("#output");
-        $output.empty().parent().removeClass().addClass("alert alert-success")
+    $(function() {
+        $("form").submit(function(event) {
+            event.preventDefault();
 
-        var data = {
-            "cleanUp": $("#cleanUp").val() == "on",
-            "project": $("#project").val(),
-            "dev": {
-                "hostname": $("#devHostname").val(),
-                "port": parseInt($("#devPort").val()),
-                "ignore": $("#devIgnore").val()
-            },
-            "net0": $("#net0").val(),
-            "volume0": $("#volume0").val(),
-            "yaml": $("#yaml").val(),
-            "group": $("#group").val(),
-            "silently": $("#silently").val() == "on"
-        }
+            var $deployBtn = $("#deploy");
+            $deployBtn.prop('disabled', true);
 
-        console.log(data);
+            var $output = $("#output");
+            $output.empty().parent().removeClass().addClass("alert alert-success")
 
-        $.ajax({
-            type: 'post',
-            url: '/',
-            data: JSON.stringify(data),
-            dataType: 'json',
-            processData: false,
-            xhrFields: {
-                onprogress: function (e) {
-                    $output.text(e.currentTarget.response);
+            var data = {
+                "cleanUp": $("#cleanUp").val() == "on",
+                "project": $("#project").val(),
+                "dev": {
+                    "hostname": $("#devHostname").val(),
+                    "port": parseInt($("#devPort").val()),
+                    "ignore": $("#devIgnore").val()
+                },
+                "net0": $("#net0").val(),
+                "volume0": $("#volume0").val(),
+                "yaml": $("#yaml").val(),
+                "group": $("#group").val(),
+                "silently": $("#silently").val() == "on"
+            }
+
+            console.log(data);
+
+            $.ajax({
+                type: 'post',
+                url: '/',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                processData: false,
+                xhrFields: {
+                    onprogress: function (e) {
+                        $output.text(e.currentTarget.response);
+                    }
                 }
-            }
-        }).always(function () {
-            $deployBtn.prop('disabled', false);
-
-            var done = $output.text().match(/.+, done.$/g)
-            if (!done) {
-                $output.parent().removeClass().addClass("alert alert-danger")
-            }
+            }).always(function () {
+                $deployBtn.prop('disabled', false);
+                var done = $output.text().match(/.+, done.$/g)
+                if (!done) {
+                    $output.parent().removeClass().addClass("alert alert-danger")
+                }
+            });
         });
-    }
 
-    $(window).on('beforeunload', function () {
-        if ($('#deploy').is(':disabled')) {
-            return "Are you sure you want to leave this page while deploying?";
-        }
-        return;
-    });
+        $(window).on('beforeunload', function () {
+            if ($('#deploy').is(':disabled')) {
+                return "Are you sure you want to leave this page while deploying?";
+            }
+            return;
+        });
+    })
 </script>
 
 </body>

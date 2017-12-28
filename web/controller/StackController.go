@@ -31,7 +31,7 @@ func (c *StackController) Post() {
 	start := time.Now()
 	indent, _ := json.MarshalIndent(d, "", " ")
 
-	c.Ctx.StreamWriter(pipe.Printf("Receiving deploy request: %v", string(indent)))
+	c.Ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
 	err := c.Service.Deploy(&c.Ctx, *d)
 	if err != nil {
 		c.Ctx.Application().Logger().Warn(err.Error())
