@@ -66,11 +66,11 @@
         </div>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="devHelp">
-                <input type="checkbox" id="dev" class="form-check-input">
+                <input type="checkbox" id="dev" class="form-check-input" checked>
                 Dev Mode
             </label>
             <small id="devHelp" class="form-text text-muted">
-                開啟 dev 模式, 會自動將這次部署的所有服務都 publish 出來, 讓工程師可以從 local 連進去
+                開啟 dev 模式, 會自動將這次部署的所有服務都 publish 出來, 讓工程師可以從 local 連進去 docker 環境中
             </small>
         </div>
         <div class="form-group">
@@ -78,7 +78,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
                 <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
-                       value="{{.dft.Dev.Hostname}}" disabled>
+                       value="{{.dft.Dev.Hostname}}">
             </div>
             <small id="devHostnameHelp" class="form-text text-muted">
                 若此欄位放空白則不開啟 dev 模式
@@ -89,7 +89,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
                 <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
-                       value="{{.dft.Dev.Port}}" disabled>
+                       value="{{.dft.Dev.Port}}">
             </div>
             <small id="devPortHelp" class="form-text text-muted">
                 若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
@@ -100,7 +100,7 @@
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
                 <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
-                       value="{{.dft.Dev.Ignore}}" disabled>
+                       value="{{.dft.Dev.Ignore}}">
             </div>
             <small id="devIgnoreHelp" class="form-text text-muted">
                 開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
