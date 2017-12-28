@@ -47,10 +47,13 @@
                 通常是已經將 package.yaml 放在 workspace 下了才會選擇不清空
             </small>
         </div>
-        <div class="form-group">
+        <div class="form-group disabled">
             <label for="project">Project</label>
-            <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
-                   placeholder="my-project" required>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-book" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
+                       placeholder="my-project" required>
+            </div>
             <small id="projectHelp" class="form-text text-muted">
                 將會作為 workspace 的子目錄及 stack name 的 prefix
             </small>
@@ -61,26 +64,44 @@
                 stack name 的組成方式為: ${project}-${port}-${group}, 如: my-project-50000-svc
             </small>
         </div>
+        <div class="form-check">
+            <label class="form-check-label" aria-describedby="devHelp">
+                <input type="checkbox" id="dev" class="form-check-input">
+                Dev Mode
+            </label>
+            <small id="devHelp" class="form-text text-muted">
+                開啟 dev 模式, 會自動將這次部署的所有服務都 publish 出來, 讓工程師可以從 local 連進去
+            </small>
+        </div>
         <div class="form-group">
             <label for="devHostname">Dev Hostname</label>
-            <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
-                   value="{{.dft.Dev.Hostname}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
+                       value="{{.dft.Dev.Hostname}}" disabled>
+            </div>
             <small id="devHostnameHelp" class="form-text text-muted">
                 若此欄位放空白則不開啟 dev 模式
             </small>
         </div>
         <div class="form-group">
             <label for="devPort">Dev Port</label>
-            <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
-                   value="{{.dft.Dev.Port}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
+                <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
+                       value="{{.dft.Dev.Port}}" disabled>
+            </div>
             <small id="devPortHelp" class="form-text text-muted">
                 若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
             </small>
         </div>
         <div class="form-group">
             <label for="devIgnore">Dev Ignore</label>
-            <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
-                   value="{{.dft.Dev.Ignore}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
+                       value="{{.dft.Dev.Ignore}}" disabled>
+            </div>
             <small id="devIgnoreHelp" class="form-text text-muted">
                 開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
             </small>
@@ -90,8 +111,11 @@
         </div>
         <div class="form-group">
             <label for="yaml">YAML</label>
-            <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
-                   value="{{.dft.Yaml}}" required>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
+                       value="{{.dft.Yaml}}" required>
+            </div>
             <small id="yamlHelp" class="form-text text-muted">
                 yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
             </small>
@@ -104,15 +128,21 @@
         </div>
         <div class="form-group">
             <label for="yaml">Group</label>
-            <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="{{.dft.Group}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-object-group" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="{{.dft.Group}}">
+            </div>
             <small id="groupHelp" class="form-text text-muted">
                 如果 yaml 有分 group, 就可以在這邊指定要部署的 group, 若空白則會自動部署所有的 group, 可用逗號分隔指定多個 group
             </small>
         </div>
         <div class="form-group">
             <label for="net0">net0</label>
-            <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
-                   placeholder="" value="{{.dft.Net0}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-link" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
+                       placeholder="" value="{{.dft.Net0}}">
+            </div>
             <small id="net0Help" class="form-text text-muted">
                 docker network 名稱, 不給的話會由 docker 自動建立 network, 移除 stack 時也會自動刪除 network
             </small>
@@ -122,15 +152,18 @@
         </div>
         <div class="form-group">
             <label for="net0">volume0</label>
-            <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
-                   placeholder="" value="{{.dft.Volume0}}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-hdd-o" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
+                       placeholder="" value="{{.dft.Volume0}}">
+            </div>
             <small id="volume0Help" class="form-text text-muted">
                 在 192.168.1.60 的 /nfs 下的絕對路徑, 如: /nfs/my-project
             </small>
         </div>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="silentlyHelp">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" id="silently" class="form-check-input">
                 Silently
             </label>
             <small id="silentlyHelp" class="form-text text-muted">
@@ -177,7 +210,7 @@
             $output.empty().parent().removeClass().addClass("alert alert-success")
 
             var data = {
-                "cleanUp": $("#cleanUp").val() == "on",
+                "cleanUp": $("#cleanUp").is(":checked"),
                 "project": $("#project").val(),
                 "dev": {
                     "hostname": $("#devHostname").val(),
@@ -188,7 +221,10 @@
                 "volume0": $("#volume0").val(),
                 "yaml": $("#yaml").val(),
                 "group": $("#group").val(),
-                "silently": $("#silently").val() == "on"
+                "silently": $("#silently").is(":checked")
+            }
+            if (!$("#dev").is(":checked")) {
+                data.dev = {}
             }
 
             console.log(data);
@@ -211,6 +247,12 @@
                     $output.parent().removeClass().addClass("alert alert-danger")
                 }
             });
+        });
+
+        $("#dev").click(function() {
+            $('#devHostname').prop('disabled', function(i, v) { return !v; });
+            $('#devPort').prop('disabled', function(i, v) { return !v; });
+            $('#devIgnore').prop('disabled', function(i, v) { return !v; });
         });
 
         $(window).on('beforeunload', function () {
