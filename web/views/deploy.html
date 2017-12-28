@@ -202,8 +202,8 @@
 
 <script>
 
-    $(function() {
-        $("form").submit(function(event) {
+    $(function () {
+        $("form").submit(function (event) {
             event.preventDefault();
 
             var $deployBtn = $("#deploy");
@@ -215,19 +215,17 @@
             var data = {
                 "cleanUp": $("#cleanUp").is(":checked"),
                 "project": $("#project").val(),
-                "dev": {
-                    "hostname": $("#devHostname").val(),
-                    "port": parseInt($("#devPort").val()),
-                    "ignore": $("#devIgnore").val()
-                },
+                "dev": {},
                 "net0": $("#net0").val(),
                 "volume0": $("#volume0").val(),
                 "yaml": $("#yaml").val(),
                 "group": $("#group").val(),
                 "silently": $("#silently").is(":checked")
             }
-            if (!$("#dev").is(":checked")) {
-                data.dev = {}
+            if ($("#dev").is(":checked")) {
+                data.dev.hostname = $("#devHostname").val();
+                data.dev.port = parseInt($("#devPort").val());
+                data.dev.ignore = $("#devIgnore").val();
             }
 
             console.log(data);
@@ -256,10 +254,16 @@
             });
         });
 
-        $("#dev").click(function() {
-            $('#devHostname').prop('disabled', function(i, v) { return !v; });
-            $('#devPort').prop('disabled', function(i, v) { return !v; });
-            $('#devIgnore').prop('disabled', function(i, v) { return !v; });
+        $("#dev").click(function () {
+            $('#devHostname').prop('disabled', function (i, v) {
+                return !v;
+            });
+            $('#devPort').prop('disabled', function (i, v) {
+                return !v;
+            });
+            $('#devIgnore').prop('disabled', function (i, v) {
+                return !v;
+            });
         });
 
         $(window).on('beforeunload', function () {
