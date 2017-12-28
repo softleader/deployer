@@ -116,6 +116,9 @@
             <small id="net0Help" class="form-text text-muted">
                 docker network 名稱, 不給的話會由 docker 自動建立 network, 移除 stack 時也會自動刪除 network
             </small>
+            <small id="net0Help" class="form-text text-muted">
+                注意: 如果 package.yaml 有分 group, 則這邊一定必填, 否則 group 就會分別被建立在不同的 network 中
+            </small>
         </div>
         <div class="form-group">
             <label for="net0">volume0</label>
