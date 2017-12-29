@@ -69,7 +69,7 @@ func (wd *Wd) CompressDeployedDir() error {
 		if f.Name() == compressOutput {
 			continue
 		}
-		
+
 		zipfile, err := os.Open(path.Join(wd.Path, deployedDir, f.Name()))
 		if err != nil {
 			return err
