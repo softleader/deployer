@@ -59,13 +59,7 @@ func (ds *DeployService) Ps(id string) ([][]string, error) {
 }
 
 func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
-	wd := ds.Ws.GetWd(d.Project)
-
-	if d.CleanUp {
-		wd.RemoveAll()
-		wd.MkdirAll()
-	}
-
+	wd := ds.Ws.GetWd(d.CleanUp, d.Project)
 	opts := cmd.Options{Ctx: ctx, Pwd: wd.Path}
 	d.Dev.PublishPort = d.Dev.Port
 
@@ -76,7 +70,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	if err != nil {
 		return err
 	}
-	y := datamodels.Yamls{}
+	var yamls []datamodels.Yaml
 	repo := path.Join(wd.Path, gpmDir)
 
 	if !group {
@@ -89,7 +83,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		if err != nil {
 			return err
 		}
-		y = append(y, datamodels.Yaml{
+		yamls = append(yamls, datamodels.Yaml{
 			Group: "",
 			Path:  yml,
 		})
@@ -125,7 +119,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 			if err != nil {
 				return err
 			}
-			y = append(y, datamodels.Yaml{
+			yamls = append(yamls, datamodels.Yaml{
 				Group: "",
 				Path:  yml,
 			})
@@ -136,7 +130,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 				if err != nil {
 					return err
 				}
-				y = append(y, datamodels.Yaml{
+				yamls = append(yamls, datamodels.Yaml{
 					Group: group,
 					Path:  yml,
 				})
@@ -144,12 +138,20 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		}
 	}
 
-	err = ds.deployDocker(&opts, y, &d)
+	err = ds.deployDocker(&opts, yamls, &d)
 	if err != nil {
 		return err
 	}
 
-	y.ZipTo(opts.Pwd)
+	err = wd.MoveToDeployedDir(yamls)
+	if err != nil {
+		return err
+	}
+
+	err = wd.CompressDeployedDir()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -208,7 +210,7 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 	return nil
 }
 
-func (ds *DeployService) deployDocker(opts *cmd.Options, yamls datamodels.Yamls, d *datamodels.Deploy) error {
+func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []datamodels.Yaml, d *datamodels.Deploy) error {
 	for _, y := range yamls {
 		stack := []string{d.Project}
 		if d.Dev.Hostname != "" {

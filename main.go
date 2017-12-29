@@ -99,7 +99,7 @@ func serve(args args, s services.DeployService) {
 
 	app.Get("/download/{project:string}", func(ctx iris.Context) {
 		pj := ctx.Params().Get("project")
-		zip := datamodels.ZipFile(s.Ws.GetWd(pj).Path)
+		zip := s.Ws.GetWd(false, pj).GetCompressPath()
 		ctx.SendFile(zip, pj+"-"+path.Base(zip))
 	})
 

@@ -63,6 +63,6 @@ func (wd *Ws) checkWs() (bool, error) {
 	return false, err
 }
 
-func (ws *Ws) GetWd(project string) Wd {
-	return Wd{Path: path.Join(ws.path, project)}
+func (ws *Ws) GetWd(cleanUp bool, project string) *Wd {
+	return NewWd(cleanUp, path.Join(ws.path, project))
 }
