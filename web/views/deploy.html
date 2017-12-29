@@ -49,11 +49,8 @@
         </div>
         <div class="form-group disabled">
             <label for="project">Project</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-book" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
-                       placeholder="my-project" required>
-            </div>
+            <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
+                   placeholder="my-project" required>
             <small id="projectHelp" class="form-text text-muted">
                 將會作為 workspace 的子目錄及 stack name 的 prefix
             </small>
@@ -78,33 +75,24 @@
         </div>
         <div class="form-group">
             <label for="devHostname">Dev Hostname</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
-                       value="{{.dft.Dev.Hostname}}">
-            </div>
+            <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
+                   value="{{.dft.Dev.Hostname}}">
             <small id="devHostnameHelp" class="form-text text-muted">
                 若此欄位放空白則不開啟 dev 模式
             </small>
         </div>
         <div class="form-group">
             <label for="devPort">Dev Port</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
-                <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
-                       value="{{.dft.Dev.Port}}">
-            </div>
+            <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
+                   value="{{.dft.Dev.Port}}">
             <small id="devPortHelp" class="form-text text-muted">
                 若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
             </small>
         </div>
         <div class="form-group">
             <label for="devIgnore">Dev Ignore</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-wrench" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
-                       value="{{.dft.Dev.Ignore}}">
-            </div>
+            <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
+                   value="{{.dft.Dev.Ignore}}">
             <small id="devIgnoreHelp" class="form-text text-muted">
                 開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
             </small>
@@ -114,11 +102,8 @@
         </div>
         <div class="form-group">
             <label for="yaml">YAML</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
-                       value="{{.dft.Yaml}}" required>
-            </div>
+            <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
+                   value="{{.dft.Yaml}}" required>
             <small id="yamlHelp" class="form-text text-muted">
                 yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
             </small>
@@ -131,21 +116,24 @@
         </div>
         <div class="form-group">
             <label for="yaml">Group</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-object-group" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="{{.dft.Group}}">
-            </div>
+            <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="{{.dft.Group}}">
             <small id="groupHelp" class="form-text text-muted">
                 如果 yaml 有分 group, 就可以在這邊指定要部署的 group, 若空白則會自動部署所有的 group, 可用逗號分隔指定多個 group
             </small>
         </div>
+        <div class="form-check">
+            <label class="form-check-label" aria-describedby="flatGroupHelp">
+                <input type="checkbox" id="flatGroup" class="form-check-input">
+                Flat Group
+            </label>
+            <small id="flatGroupHelp" class="form-text text-muted">
+                是否要將 Group 扁平化, 部署在同一個 Stack 中, 只會作用於有分 group 的 package.yaml
+            </small>
+        </div>
         <div class="form-group">
             <label for="net0">net0</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-link" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
-                       placeholder="" value="{{.dft.Net0}}">
-            </div>
+            <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
+                   placeholder="" value="{{.dft.Net0}}">
             <small id="net0Help" class="form-text text-muted">
                 docker network 名稱, 不給的話會由 docker 自動建立 network, 移除 stack 時也會自動刪除 network
             </small>
@@ -155,11 +143,8 @@
         </div>
         <div class="form-group">
             <label for="net0">volume0</label>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-hdd-o" aria-hidden="true"></i></span>
-                <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
-                       placeholder="" value="{{.dft.Volume0}}">
-            </div>
+            <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
+                   placeholder="" value="{{.dft.Volume0}}">
             <small id="volume0Help" class="form-text text-muted">
                 在 192.168.1.60 的 /nfs 下的絕對路徑, 如: /nfs/my-project
             </small>
@@ -220,6 +205,7 @@
                 "volume0": $("#volume0").val(),
                 "yaml": $("#yaml").val(),
                 "group": $("#group").val(),
+                "flatGroup": $("#flatGroup").is(":checked"),
                 "silently": $("#silently").is(":checked")
             }
             if ($("#dev").is(":checked")) {

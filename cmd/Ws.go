@@ -7,6 +7,7 @@ import (
 	"fmt"
 )
 
+// workspace, 一個 golang app 會有唯一的一個 workspace
 type Ws struct {
 	path string
 }
@@ -23,7 +24,7 @@ func NewWs(dir string) *Ws {
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			wd.MkdirAll("")
+			os.MkdirAll(dir, os.ModeDir|os.ModePerm)
 			stat, err = os.Stat(wd.path)
 			if err != nil {
 				log.Fatal(err)
@@ -62,14 +63,6 @@ func (wd *Ws) checkWs() (bool, error) {
 	return false, err
 }
 
-func (ws *Ws) Pwd(project string) string {
-	return path.Join(ws.path, project)
-}
-
-func (wd *Ws) RemoveAll(project string) {
-	os.RemoveAll(wd.Pwd(project))
-}
-
-func (wd *Ws) MkdirAll(project string) {
-	os.MkdirAll(wd.Pwd(project), os.ModeDir|os.ModePerm)
+func (ws *Ws) GetWd(project string) Wd {
+	return Wd{Path: path.Join(ws.path, project)}
 }
