@@ -1,11 +1,11 @@
 package cmd
 
 type Gpm struct {
-	sh  Sh
+	sh  Shell
 	cmd string
 }
 
-func NewGpm(sh Sh, cmd string) *Gpm {
+func NewGpm(sh Shell, cmd string) *Gpm {
 	if cmd == "" {
 		cmd = "gpm"
 	}

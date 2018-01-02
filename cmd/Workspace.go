@@ -8,16 +8,16 @@ import (
 )
 
 // workspace, 一個 golang app 會有唯一的一個 workspace
-type Ws struct {
+type Workspace struct {
 	path string
 }
 
-func NewWs(dir string) *Ws {
+func NewWorkspace(dir string) *Workspace {
 	if dir == "" {
 		dir, _ = os.Getwd()
 		dir = path.Join(dir, "/workspace")
 	}
-	wd := Ws{path: dir}
+	wd := Workspace{path: dir}
 	fmt.Printf("Setting up workspace to '%v'\n", dir)
 
 	stat, err := os.Stat(wd.path)
@@ -50,7 +50,7 @@ func NewWs(dir string) *Ws {
 	return &wd
 }
 
-func (wd *Ws) checkWs() (bool, error) {
+func (wd *Workspace) checkWorkspace() (bool, error) {
 	stat, err := os.Stat(wd.path)
 	if err == nil {
 		if stat.IsDir() && stat.Mode().Perm() == os.ModePerm {
@@ -63,6 +63,6 @@ func (wd *Ws) checkWs() (bool, error) {
 	return false, err
 }
 
-func (ws *Ws) GetWd(cleanUp bool, project string) *Wd {
-	return NewWd(cleanUp, path.Join(ws.path, project))
+func (ws *Workspace) GetWd(cleanUp bool, project string) *WorkDir {
+	return NewWorkDir(cleanUp, path.Join(ws.path, project))
 }

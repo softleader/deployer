@@ -6,11 +6,11 @@ import (
 )
 
 type GenYaml struct {
-	sh  Sh
+	sh  Shell
 	cmd string
 }
 
-func NewGenYaml(sh Sh, cmd string) *GenYaml {
+func NewGenYaml(sh Shell, cmd string) *GenYaml {
 	if cmd == "" {
 		cmd = "gen-yaml"
 	}

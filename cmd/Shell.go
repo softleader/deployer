@@ -10,7 +10,7 @@ import (
 	"github.com/softleader/deployer/pipe"
 )
 
-type Sh struct {
+type Shell struct {
 }
 
 type Options struct {
@@ -18,8 +18,8 @@ type Options struct {
 	Pwd string
 }
 
-func NewSh() *Sh {
-	return &Sh{}
+func NewShell() *Shell {
+	return &Shell{}
 }
 
 type out struct {
@@ -27,7 +27,7 @@ type out struct {
 	buf bytes.Buffer
 }
 
-func (sh *Sh) Exec(opts *Options, commands ...string) (string, string, error) {
+func (sh *Shell) Exec(opts *Options, commands ...string) (string, string, error) {
 	arg := strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
 	if opts.Pwd != "" {

@@ -17,7 +17,7 @@ type DeployService struct {
 	cmd.DockerStack
 	cmd.Gpm
 	cmd.GenYaml
-	cmd.Ws
+	cmd.Workspace
 }
 
 func (ds *DeployService) GetAll() ([][]string, error) {
@@ -59,7 +59,7 @@ func (ds *DeployService) Ps(id string) ([][]string, error) {
 }
 
 func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
-	wd := ds.Ws.GetWd(d.CleanUp, d.Project)
+	wd := ds.Workspace.GetWd(d.CleanUp, d.Project)
 	opts := cmd.Options{Ctx: ctx, Pwd: wd.Path}
 	d.Dev.PublishPort = d.Dev.Port
 

@@ -1,10 +1,10 @@
 package cmd
 
 type DockerStack struct {
-	sh Sh
+	sh Shell
 }
 
-func NewDockerStack(sh Sh) *DockerStack {
+func NewDockerStack(sh Shell) *DockerStack {
 	return &DockerStack{sh: sh}
 }
 

@@ -15,12 +15,12 @@ var (
 )
 
 // 當前的 working directory, 通常是 workspace/${project}
-type Wd struct {
+type WorkDir struct {
 	Path string
 }
 
-func NewWd(cleanUp bool, p string) *Wd {
-	wd := Wd{Path: p}
+func NewWorkDir(cleanUp bool, p string) *WorkDir {
+	wd := WorkDir{Path: p}
 
 	if cleanUp {
 		reMkdir(wd.Path)
@@ -36,7 +36,7 @@ func reMkdir(path string) {
 	os.MkdirAll(path, os.ModeDir|os.ModePerm)
 }
 
-func (wd *Wd) MoveToDeployedDir(files []datamodels.Yaml) error {
+func (wd *WorkDir) MoveToDeployedDir(files []datamodels.Yaml) error {
 	for _, f := range files {
 		newpath := path.Join(wd.Path, deployedDir, path.Base(f.Path))
 		err := os.Rename(f.Path, newpath)
@@ -47,11 +47,11 @@ func (wd *Wd) MoveToDeployedDir(files []datamodels.Yaml) error {
 	return nil
 }
 
-func (wd *Wd) GetCompressPath() string {
+func (wd *WorkDir) GetCompressPath() string {
 	return path.Join(wd.Path, deployedDir, compressOutput)
 }
 
-func (wd *Wd) CompressDeployedDir() error {
+func (wd *WorkDir) CompressDeployedDir() error {
 	newfile, err := os.Create(wd.GetCompressPath())
 	if err != nil {
 		return err

@@ -44,13 +44,13 @@ func newArgs() *args {
 }
 
 func newService(args *args) *services.DeployService {
-	ws := cmd.NewWs(args.ws)
-	sh := cmd.NewSh()
+	ws := cmd.NewWorkspace(args.ws)
+	sh := cmd.NewShell()
 	return &services.DeployService{
 		DockerStack: *cmd.NewDockerStack(*sh),
 		Gpm:         *cmd.NewGpm(*sh, args.gpm),
 		GenYaml:     *cmd.NewGenYaml(*sh, args.genYaml),
-		Ws:          *ws,
+		Workspace:   *ws,
 	}
 }
 
@@ -99,7 +99,7 @@ func serve(args args, s services.DeployService) {
 
 	app.Get("/download/{project:string}", func(ctx iris.Context) {
 		pj := ctx.Params().Get("project")
-		zip := s.Ws.GetWd(false, pj).GetCompressPath()
+		zip := s.Workspace.GetWd(false, pj).GetCompressPath()
 		ctx.SendFile(zip, pj+"-"+path.Base(zip))
 	})
 
