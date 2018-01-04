@@ -138,17 +138,17 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		}
 	}
 
-	err = ds.deployDocker(&opts, yamls, &d)
-	if err != nil {
-		return err
-	}
-
-	err = wd.MoveToDeployedDir(yamls)
+	err = wd.CopyToDeployedDir(yamls)
 	if err != nil {
 		return err
 	}
 
 	err = wd.CompressDeployedDir()
+	if err != nil {
+		return err
+	}
+
+	err = ds.deployDocker(&opts, yamls, &d)
 	if err != nil {
 		return err
 	}

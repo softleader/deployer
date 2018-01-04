@@ -24,10 +24,11 @@ func NewWorkDir(cleanUp bool, p string) *WorkDir {
 
 	if cleanUp {
 		reMkdir(wd.Path)
+
+		d := path.Join(wd.Path, deployedDir)
+		reMkdir(d)
 	}
 
-	d := path.Join(wd.Path, deployedDir)
-	reMkdir(d)
 	return &wd
 }
 
@@ -36,15 +37,35 @@ func reMkdir(path string) {
 	os.MkdirAll(path, os.ModeDir|os.ModePerm)
 }
 
-func (wd *WorkDir) MoveToDeployedDir(files []datamodels.Yaml) error {
+func (wd *WorkDir) CopyToDeployedDir(files []datamodels.Yaml) error {
 	for _, f := range files {
 		newpath := path.Join(wd.Path, deployedDir, path.Base(f.Path))
-		err := os.Rename(f.Path, newpath)
+		err := copy(f.Path, newpath)
 		if err != nil {
 			return nil
 		}
 	}
 	return nil
+}
+
+func copy(src string, dst string) error {
+	s, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer s.Close()
+
+	d, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+
+	if _, err := io.Copy(d, s); err != nil {
+		d.Close()
+		return err
+	}
+
+	return d.Close()
 }
 
 func (wd *WorkDir) GetCompressPath() string {
