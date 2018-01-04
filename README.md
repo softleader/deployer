@@ -50,6 +50,6 @@ $ systemctl disable deployer
 
 ```
 $ sudo su
-$ go get -u github.com/softleader/deployer
+$ go get github.com/softleader/deployer
 $ systemctl restart deployer
 ```
