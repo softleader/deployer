@@ -2,13 +2,19 @@
 
 Deployer is a tool for managing SoftLeader DevOps pipelines.
 
-## Installation
+## Installation & Run
+
+```shell
+$ go get -u github.com/softleader/deployer
+$ $GOPATH/src/github.com/softleader/deployer/build/main-macos-amd64 # main-linux-amd64, main-windows-amd64.exe
+```
+
+### Build
 
 ```shell
 $ go get -u github.com/softleader/deployer
 $ cd $GOPATH/src/github.com/softleader/deployer
 $ make
-$ ./build/main-macos-amd64 # main-linux-amd64, main-windows-amd64.exe
 ```
 
 ### Args
