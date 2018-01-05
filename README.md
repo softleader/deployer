@@ -4,10 +4,11 @@ Deployer is a tool for managing SoftLeader DevOps pipelines.
 
 ## Installation
 
-```
+```shell
 $ go get -u github.com/softleader/deployer
-$ go build -o deployer/main github.com/softleader/deployer
-$ ./deployer/main
+$ cd $GOPATH/src/github.com/softleader/deployer
+$ make
+$ ./build/main-macos-amd64 # main-linux-amd64, main-windows-amd64.exe
 ```
 
 ### Args
@@ -16,39 +17,47 @@ $ ./deployer/main
 - `addr` - Determine application addr, default: `empty`
 - `port` - Determine application port, default: `5678`
 - `cmd.gpm` - Command to execute softleader/git-package-manager, default: `gpm`
-- `cmd.-V
-` - Command to execute softleader/container-yaml-generator, default: `gen-yaml`
+- `cmd.-V` - Command to execute softleader/container-yaml-generator, default: `gen-yaml`
 
 eg.
 
-```
-$ ./main -workspace=/tmp -port=8080
+```shell
+$ ./build/main-macos-amd64 -workspace=/tmp -port=8080
 ```
 
-### Install as Ubuntu service
+### Install as Ubuntu service (192.168.1.60)
 
 - Copy `deployer.service` to the directory `/etc/systemd/system/`
-- Modify `ExecStart` in `deployer.service`
-- 執行 `systemctl daemon-reload`
+
+  ````shell
+  $ cp /devops/deployer/deployer.service /etc/systemd/system/
+  ````
+
+- 執行
+
+  ````shell
+  $ systemctl daemon-reload
+  ````
+
 - Then it should be possible to control daemon using:
 
-```
-# 服務狀態
-$ systemctl status deployer
+  ```shell
+  # 服務狀態
+  $ systemctl status deployer
 
-# 服務開關
-$ systemctl start deployer
-$ systemctl stop deployer
-$ systemctl restart deployer
+  # 服務開關
+  $ systemctl start deployer
+  $ systemctl stop deployer
+  $ systemctl restart deployer
 
-# 開機自動啟動服務
-$ systemctl enable deployer
-$ systemctl disable deployer
-```
+  # 開機自動啟動服務
+  $ systemctl enable deployer
+  $ systemctl disable deployer
+  ```
 
-### Update 192.168.1.60 Service
+### Update deployer service (192.168.1.60)
 
-```
+```shell
 $ sudo su
 $ go get github.com/softleader/deployer
 $ systemctl restart deployer

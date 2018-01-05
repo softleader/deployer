@@ -1,7 +1,10 @@
 GOARCH=amd64
 BINARY=build
 
-all: clean linux windows
+all: clean macos linux windows
+
+macos:
+	GOOS=darwin GOARCH=${GOARCH} go build -o ${BINARY}/main-macos-${GOARCH} .
 
 linux:
 	GOOS=linux GOARCH=${GOARCH} go build -o ${BINARY}/main-linux-${GOARCH} .
