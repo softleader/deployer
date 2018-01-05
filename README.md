@@ -17,7 +17,7 @@ $ ./build/main-macos-amd64 # main-linux-amd64, main-windows-amd64.exe
 - `addr` - Determine application addr, default: `empty`
 - `port` - Determine application port, default: `5678`
 - `cmd.gpm` - Command to execute [softleader/git-package-manager](https://github.com/softleader/git-package-manager), default: `gpm`
-- `cmd.-V` - Command to execute [softleader/container-yaml-generator](https://github.com/softleader/container-yaml-generator), default: `gen-yaml`
+- `cmd.gen-yaml` - Command to execute [softleader/container-yaml-generator](https://github.com/softleader/container-yaml-generator), default: `gen-yaml`
 
 eg.
 
