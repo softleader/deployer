@@ -84,7 +84,7 @@ func serve(args args, s services.DeployService) {
 			Dev: datamodels.Dev{
 				Hostname: "192.168.1.60",
 				Port:     0,
-				Ignore:   "elasticsearch,kibana,logstash,redis,eureka",
+				Ignore:   "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
 			},
 			Yaml:    "github:softleader/softleader-package/",
 			Volume0: "",
