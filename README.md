@@ -33,7 +33,7 @@ $ ./build/main-macos-amd64 -workspace=/tmp -port=8080
   $ cp /devops/deployer/deployer.service /etc/systemd/system/
   ````
 
-- 執行
+- Reload systemd manager configuration
 
   ````shell
   $ systemctl daemon-reload
