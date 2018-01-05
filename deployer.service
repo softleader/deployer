@@ -3,7 +3,7 @@ Description=SoftLeader Deployer
 
 [Service]
 Type=simple
-ExecStart=/root/go/src/github.com/softleader/deployer/main-linux-amd64 \
+ExecStart=/root/go/src/github.com/softleader/deployer/build/main-linux-amd64 \
 	-workspace=/devops/deployer/workspace \
 	-cmd.gpm=/devops/git-package-manager/index.js \
 	-cmd.gen-yaml=/devops/container-yaml-generator/index.js
