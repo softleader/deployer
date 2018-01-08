@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/kataras/iris"
-	"github.com/softleader/deployer/web/controller"
 	"github.com/softleader/deployer/services"
 	"os"
 	"fmt"
@@ -10,8 +9,12 @@ import (
 	"github.com/softleader/deployer/cmd"
 	"log"
 	"flag"
-	"github.com/softleader/deployer/datamodels"
+	"github.com/softleader/deployer/models"
 	"path"
+	"strings"
+	"time"
+	"github.com/softleader/deployer/pipe"
+	"encoding/json"
 )
 
 type args struct {
@@ -29,7 +32,14 @@ func main() {
 	checkDependencies(*service)
 
 	// https://github.com/kataras/iris
-	serve(*args, *service)
+	app := newApp(*args, *service)
+
+	app.Run(
+		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),
+		iris.WithoutVersionChecker,
+		iris.WithoutServerError(iris.ErrServerClosed),
+		iris.WithOptimizations, // enables faster json serialization and more
+	)
 }
 
 func newArgs() *args {
@@ -70,18 +80,20 @@ func checkDependencies(s services.DeployService) {
 	fmt.Printf("  $ %v: %v", cmd, out)
 }
 
-func serve(args args, s services.DeployService) {
+func newApp(args args, s services.DeployService) *iris.Application {
 	app := iris.New()
 
-	tmpl := iris.HTML("web/views", ".html")
+	tmpl := iris.HTML("templates", ".html")
 	tmpl.Reload(true)
 
 	app.RegisterView(tmpl)
 
+	// deploy
+
 	app.Get("/deploy", func(ctx iris.Context) {
 		ctx.ViewData("workspace", args.ws)
-		ctx.ViewData("dft", datamodels.Deploy{
-			Dev: datamodels.Dev{
+		ctx.ViewData("dft", models.Deploy{
+			Dev: models.Dev{
 				IpAddress: "192.168.1.60",
 				Port:      0,
 				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
@@ -94,19 +106,108 @@ func serve(args args, s services.DeployService) {
 		ctx.View("deploy.html")
 	})
 
-	app.Controller("/", new(controller.StackController), s)
-	app.Controller("/services", new(controller.ServiceController), s)
-
 	app.Get("/download/{project:string}", func(ctx iris.Context) {
 		pj := ctx.Params().Get("project")
 		zip := s.Workspace.GetWd(false, pj).GetCompressPath()
 		ctx.SendFile(zip, pj+"-"+path.Base(zip))
 	})
 
-	app.Run(
-		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),
-		iris.WithoutVersionChecker,
-		iris.WithoutServerError(iris.ErrServerClosed),
-		iris.WithOptimizations, // enables faster json serialization and more
-	)
+	// stack
+
+	stacksRoutes := app.Party("/")
+	{
+		stacksRoutes.Get("/", func(ctx iris.Context) {
+			out, err := s.GetAll()
+			if err != nil {
+				out = append(out, []string{err.Error()})
+			}
+
+			cards := make(map[string][][]string)
+			for _, line := range out {
+				splited := strings.Split(line[0], "-")
+				key := splited[0]
+				if len(splited) > 1 {
+					if publishedPort(splited[1]) { // 有 publish port 可視為有開啟 dev 模式
+						key = strings.Join(splited[:2], "-")
+					}
+				}
+				cards[key] = append(cards[key], line)
+			}
+			ctx.ViewData("cards", cards)
+			ctx.View("card.html")
+		})
+
+		stacksRoutes.Post("/", func(ctx iris.Context) {
+			d := &models.Deploy{}
+			ctx.ReadJSON(d)
+			start := time.Now()
+			indent, _ := json.MarshalIndent(d, "", " ")
+
+			ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
+			err := s.Deploy(&ctx, *d)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
+		})
+
+		stacksRoutes.Get("/rm/{stack:string}", func(ctx iris.Context) {
+			stack := ctx.Params().Get("stack")
+			_, err := s.DeleteStack(stack)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.Redirect("/")
+		})
+	}
+
+	// services
+
+	servicesRoutes := app.Party("/services")
+	{
+		servicesRoutes.Get("/{stack:string}", func(ctx iris.Context) {
+			stack := ctx.Params().Get("stack")
+			out, err := s.GetServices(stack)
+			if err != nil {
+				out = append(out, []string{err.Error()})
+			}
+			ctx.ViewData("out", out)
+			ctx.ViewData("stack", stack)
+			ctx.View("service.html")
+		})
+
+		servicesRoutes.Get("/ps/{serviceId:string}", func(ctx iris.Context) {
+			serviceId := ctx.Params().Get("serviceId")
+			out, err := s.Ps(serviceId)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.ViewData("out", out)
+			ctx.View("ps.html")
+		})
+
+		servicesRoutes.Get("/rm/{stack:string}/{service:string}", func(ctx iris.Context) {
+			stack := ctx.Params().Get("stack")
+			service := ctx.Params().Get("service")
+			_, err := s.DeleteService(service)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.Redirect("/services/" + stack)
+		})
+
+	}
+
+	return app
+}
+
+func publishedPort(s string) bool {
+	if _, err := strconv.Atoi(s); err == nil {
+		return true
+	}
+	return false
 }

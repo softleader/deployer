@@ -6,7 +6,7 @@ import (
 	"archive/zip"
 	"io"
 	"io/ioutil"
-	"github.com/softleader/deployer/datamodels"
+	"github.com/softleader/deployer/models"
 )
 
 var (
@@ -37,7 +37,7 @@ func reMkdir(path string) {
 	os.MkdirAll(path, os.ModeDir|os.ModePerm)
 }
 
-func (wd *WorkDir) CopyToDeployedDir(files []datamodels.Yaml) error {
+func (wd *WorkDir) CopyToDeployedDir(files []models.Yaml) error {
 	for _, f := range files {
 		newpath := path.Join(wd.Path, deployedDir, path.Base(f.Path))
 		err := copy(f.Path, newpath)

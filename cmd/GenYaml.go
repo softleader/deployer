@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/softleader/deployer/datamodels"
+	"github.com/softleader/deployer/models"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ func NewGenYaml(sh Shell, cmd string) *GenYaml {
 	return &GenYaml{sh: sh, cmd: cmd}
 }
 
-func (gy *GenYaml) Gen(opts *Options, output string, d *datamodels.Deploy, dirs ...string) (string, string, error) {
+func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...string) (string, string, error) {
 
 	commands := []string{gy.cmd, "-s swarm -o", output}
 	if d.Silently {

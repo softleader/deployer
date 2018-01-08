@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/softleader/deployer/datamodels"
+	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/cmd"
 	"io/ioutil"
 	"strings"
@@ -58,7 +58,7 @@ func (ds *DeployService) Ps(id string) ([][]string, error) {
 	return s, err
 }
 
-func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
+func (ds *DeployService) Deploy(ctx *iris.Context, d models.Deploy) error {
 	wd := ds.Workspace.GetWd(d.CleanUp, d.Project)
 	opts := cmd.Options{Ctx: ctx, Pwd: wd.Path}
 	d.Dev.PublishPort = d.Dev.Port
@@ -70,7 +70,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	if err != nil {
 		return err
 	}
-	var yamls []datamodels.Yaml
+	var yamls []models.Yaml
 	repo := path.Join(wd.Path, gpmDir)
 
 	if !group {
@@ -83,7 +83,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 		if err != nil {
 			return err
 		}
-		yamls = append(yamls, datamodels.Yaml{
+		yamls = append(yamls, models.Yaml{
 			Group: "",
 			Path:  yml,
 		})
@@ -119,7 +119,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 			if err != nil {
 				return err
 			}
-			yamls = append(yamls, datamodels.Yaml{
+			yamls = append(yamls, models.Yaml{
 				Group: "",
 				Path:  yml,
 			})
@@ -130,7 +130,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 				if err != nil {
 					return err
 				}
-				yamls = append(yamls, datamodels.Yaml{
+				yamls = append(yamls, models.Yaml{
 					Group: group,
 					Path:  yml,
 				})
@@ -156,7 +156,7 @@ func (ds *DeployService) Deploy(ctx *iris.Context, d datamodels.Deploy) error {
 	return nil
 }
 
-func (ds *DeployService) gpmInstall(opts *cmd.Options, dir string, d *datamodels.Deploy) (bool, error) {
+func (ds *DeployService) gpmInstall(opts *cmd.Options, dir string, d *models.Deploy) (bool, error) {
 	_, out, err := ds.Gpm.Install(opts, dir, d.Yaml)
 	if err != nil {
 		return false, err
@@ -179,7 +179,7 @@ func collectDirs(p string) ([]string, error) {
 	return dirs, nil
 }
 
-func (ds *DeployService) genYaml(opts *cmd.Options, dirs []string, output string, d *datamodels.Deploy) error {
+func (ds *DeployService) genYaml(opts *cmd.Options, dirs []string, output string, d *models.Deploy) error {
 	_, out, err := ds.GenYaml.Gen(opts, output, d, strings.Join(dirs, " "))
 	if err != nil {
 		return err
@@ -192,7 +192,7 @@ func (ds *DeployService) genYaml(opts *cmd.Options, dirs []string, output string
 	return nil
 }
 
-func updateDevPort(out string, d *datamodels.Deploy) error {
+func updateDevPort(out string, d *models.Deploy) error {
 	if d.Dev.IpAddress != "" {
 		re, err := regexp.Compile(`Auto publish port from \[\d*\] to \[(\d*)\]`)
 		if err != nil {
@@ -210,7 +210,7 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 	return nil
 }
 
-func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []datamodels.Yaml, d *datamodels.Deploy) error {
+func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []models.Yaml, d *models.Deploy) error {
 	for _, y := range yamls {
 		stack := []string{d.Project}
 		if d.Dev.IpAddress != "" {
