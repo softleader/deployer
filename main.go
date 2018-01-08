@@ -88,31 +88,30 @@ func newApp(args args, s services.DeployService) *iris.Application {
 
 	app.RegisterView(tmpl)
 
-	// deploy
-
-	app.Get("/deploy", func(ctx iris.Context) {
-		ctx.ViewData("workspace", args.ws)
-		ctx.ViewData("dft", models.Deploy{
-			Dev: models.Dev{
-				IpAddress: "192.168.1.60",
-				Port:      0,
-				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
-			},
-			Yaml:    "github:softleader/softleader-package/",
-			Volume0: "",
-			Net0:    "",
-			Group:   "",
+	deployRoutes := app.Party("/deploy")
+	{
+		deployRoutes.Get("/", func(ctx iris.Context) {
+			ctx.ViewData("workspace", args.ws)
+			ctx.ViewData("dft", models.Deploy{
+				Dev: models.Dev{
+					IpAddress: "192.168.1.60",
+					Port:      0,
+					Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
+				},
+				Yaml:    "github:softleader/softleader-package/",
+				Volume0: "",
+				Net0:    "",
+				Group:   "",
+			})
+			ctx.View("deploy.html")
 		})
-		ctx.View("deploy.html")
-	})
 
-	app.Get("/download/{project:string}", func(ctx iris.Context) {
-		pj := ctx.Params().Get("project")
-		zip := s.Workspace.GetWd(false, pj).GetCompressPath()
-		ctx.SendFile(zip, pj+"-"+path.Base(zip))
-	})
-
-	// stack
+		app.Get("/download/{project:string}", func(ctx iris.Context) {
+			pj := ctx.Params().Get("project")
+			zip := s.Workspace.GetWd(false, pj).GetCompressPath()
+			ctx.SendFile(zip, pj+"-"+path.Base(zip))
+		})
+	}
 
 	stacksRoutes := app.Party("/")
 	{
@@ -162,8 +161,6 @@ func newApp(args args, s services.DeployService) *iris.Application {
 			ctx.Redirect("/")
 		})
 	}
-
-	// services
 
 	servicesRoutes := app.Party("/services")
 	{

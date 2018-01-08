@@ -234,7 +234,7 @@
                     $output.parent().removeClass().addClass("alert alert-danger")
                 } else {
                     var $a = $("<a></a>").addClass("btn btn-outline-info").append("<i class=\"fa fa-download\" aria-hidden=\"true\"></i> Download deployed YAML files");
-                    $a.attr("href", "/download/" + $("#project").val());
+                    $a.attr("href", "/deploy/download/" + $("#project").val());
                     $output.append($("<hr/>")).append($a);
                 }
             });
