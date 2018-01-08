@@ -106,7 +106,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 			ctx.View("deploy.html")
 		})
 
-		app.Get("/download/{project:string}", func(ctx iris.Context) {
+		deployRoutes.Get("/download/{project:string}", func(ctx iris.Context) {
 			pj := ctx.Params().Get("project")
 			zip := s.Workspace.GetWd(false, pj).GetCompressPath()
 			ctx.SendFile(zip, pj+"-"+path.Base(zip))
