@@ -226,7 +226,7 @@ func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []datamodels.Yaml
 }
 
 func (ds *DeployService) DeleteStack(stack string) (string, error) {
-	_, out, err := ds.DockerStack.RmStack(stack)
+	_, out, err := ds.DockerStack.RmStackLike(stack)
 	return out, err
 }
 

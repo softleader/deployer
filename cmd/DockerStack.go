@@ -20,13 +20,13 @@ func (ds *DockerStack) Ps(id string) (string, string, error) {
 	return ds.sh.Exec(&Options{}, "docker service ps", id, "--no-trunc", "--format '{{.ID}};{{.Name}};{{.Image}};{{.Node}};{{.DesiredState}};{{.CurrentState}};{{.Error}}'")
 }
 
-func (ds *DockerStack) RmStack(stack string) (string, string, error) {
-	return ds.sh.Exec(&Options{}, "docker stack rm", stack)
-}
-
-//func (ds *DockerStack) RmLike(stack string) (string, string, error) {
-//	return ds.sh.Exec(nil, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+//func (ds *DockerStack) RmStack(stack string) (string, string, error) {
+//	return ds.sh.Exec(&Options{}, "docker stack rm", stack)
 //}
+
+func (ds *DockerStack) RmStackLike(stack string) (string, string, error) {
+	return ds.sh.Exec(&Options{}, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+}
 
 func (ds *DockerStack) RmService(service string) (string, string, error) {
 	return ds.sh.Exec(&Options{}, "docker service rm", service)
