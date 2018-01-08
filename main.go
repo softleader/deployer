@@ -82,9 +82,9 @@ func serve(args args, s services.DeployService) {
 		ctx.ViewData("workspace", args.ws)
 		ctx.ViewData("dft", datamodels.Deploy{
 			Dev: datamodels.Dev{
-				Hostname: "192.168.1.60",
-				Port:     0,
-				Ignore:   "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
+				IpAddress: "192.168.1.60",
+				Port:      0,
+				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
 			},
 			Yaml:    "github:softleader/softleader-package/",
 			Volume0: "",

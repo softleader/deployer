@@ -6,14 +6,14 @@ import (
 )
 
 type Dev struct {
-	Hostname    string `json:"hostname"`
+	IpAddress   string `json:"ipAddress"`
 	Port        int    `json:"port"` // 最初傳進來的 port
 	Ignore      string `json:"ignore"`
 	PublishPort int    `json:"-"` // 紀錄當前 publish 最後的 port
 }
 
 func (d *Dev) String() string {
-	s := []string{"--dev-hostname " + d.Hostname}
+	s := []string{"--dev-ipAddress " + d.IpAddress}
 	if d.PublishPort > 0 {
 		s = append(s, "--dev-port "+strconv.Itoa(d.PublishPort))
 	}

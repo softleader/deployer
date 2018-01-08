@@ -74,10 +74,10 @@
             </small>
         </div>
         <div class="form-group">
-            <label for="devHostname">Dev Hostname</label>
-            <input type="text" class="form-control" id="devHostname" aria-describedby="devHostnameHelp"
-                   value="{{.dft.Dev.Hostname}}">
-            <small id="devHostnameHelp" class="form-text text-muted">
+            <label for="devIpAddress">Dev IpAddress</label>
+            <input type="text" class="form-control" id="devIpAddress" aria-describedby="devIpAddressHelp"
+                   value="{{.dft.Dev.IpAddress}}">
+            <small id="devIpAddressHelp" class="form-text text-muted">
                 若此欄位放空白則不開啟 dev 模式
             </small>
         </div>
@@ -209,7 +209,7 @@
                 "silently": $("#silently").is(":checked")
             }
             if ($("#dev").is(":checked")) {
-                data.dev.hostname = $("#devHostname").val();
+                data.dev.ipAddress = $("#devIpAddress").val();
                 data.dev.port = parseInt($("#devPort").val());
                 data.dev.ignore = $("#devIgnore").val();
             }

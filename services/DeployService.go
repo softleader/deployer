@@ -193,7 +193,7 @@ func (ds *DeployService) genYaml(opts *cmd.Options, dirs []string, output string
 }
 
 func updateDevPort(out string, d *datamodels.Deploy) error {
-	if d.Dev.Hostname != "" {
+	if d.Dev.IpAddress != "" {
 		re, err := regexp.Compile(`Auto publish port from \[\d*\] to \[(\d*)\]`)
 		if err != nil {
 			return err
@@ -213,7 +213,7 @@ func updateDevPort(out string, d *datamodels.Deploy) error {
 func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []datamodels.Yaml, d *datamodels.Deploy) error {
 	for _, y := range yamls {
 		stack := []string{d.Project}
-		if d.Dev.Hostname != "" {
+		if d.Dev.IpAddress != "" {
 			stack = append(stack, strconv.Itoa(d.Dev.Port))
 		}
 		if y.Group != "" {

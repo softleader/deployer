@@ -29,7 +29,7 @@ func (gy *GenYaml) Gen(opts *Options, output string, d *datamodels.Deploy, dirs 
 	if d.Volume0 != "" {
 		commands = append(commands, "--volume0", d.Volume0)
 	}
-	if d.Dev.Hostname != "" {
+	if d.Dev.IpAddress != "" {
 		commands = append(commands, d.Dev.String())
 	}
 	commands = append(commands, strings.Join(dirs, " "))

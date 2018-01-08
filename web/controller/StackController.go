@@ -39,7 +39,7 @@ func (c *StackController) Get() mvc.Result {
 		key := splited[0]
 		if len(splited) > 1 {
 			if publishedPort(splited[1]) { // 有 publish port 可視為有開啟 dev 模式
-				key += " ( port published from " + splited[1] + " )"
+				key = strings.Join(splited[:2], "-")
 			}
 		}
 		cards[key] = append(cards[key], line)
