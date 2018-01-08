@@ -121,7 +121,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 				out = append(out, []string{err.Error()})
 			}
 
-			cards := make(map[string][][]string)
+			stacks := make(map[string][][]string)
 			for _, line := range out {
 				splited := strings.Split(line[0], "-")
 				key := splited[0]
@@ -130,10 +130,10 @@ func newApp(args args, s services.DeployService) *iris.Application {
 						key = strings.Join(splited[:2], "-")
 					}
 				}
-				cards[key] = append(cards[key], line)
+				stacks[key] = append(stacks[key], line)
 			}
-			ctx.ViewData("cards", cards)
-			ctx.View("card.html")
+			ctx.ViewData("stacks", stacks)
+			ctx.View("stack.html")
 		})
 
 		stacksRoutes.Post("/", func(ctx iris.Context) {
