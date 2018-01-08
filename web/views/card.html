@@ -34,45 +34,47 @@
 
 <div class="container">
 
-    {{range $key, $value := .}}
     <p>
-        <div class="card">
-            <div class="card-header">
-                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                   name="{{$key}}">
-                    <i class="fa fa-trash" aria-hidden="true"></i> {{$key}}
-                </a>
+        <div class="card-deck">
+            {{range $key, $value := .}}
+            <div class="card">
+                <div class="card-header">
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                       name="{{$key}}">
+                        <i class="fa fa-trash" aria-hidden="true"></i> {{$key}}
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm table-hover">
+                        {{/*<thead>*/}}
+                        {{/*<tr>*/}}
+                            {{/*<th scope="col">Name</th>*/}}
+                            {{/*<th scope="col">Services</th>*/}}
+                            {{/*<th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>*/}}
+                        {{/*</tr>*/}}
+                        {{/*</thead>*/}}
+                        <tbody>
+                        {{range $index, $line := $value}}
+                        <tr>
+                            <td>
+                                <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}} ({{index $line 1}})</a>
+                            </td>
+                            <td>{{index $line 1}}</td>
+                            <td class="text-right">
+                                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                                   name="{{index $line 0}}">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="card-body">
-                <table class="table table-responsive-sm table-hover">
-                    {{/*<thead>*/}}
-                    {{/*<tr>*/}}
-                        {{/*<th scope="col">Name</th>*/}}
-                        {{/*<th scope="col">Services</th>*/}}
-                        {{/*<th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>*/}}
-                    {{/*</tr>*/}}
-                    {{/*</thead>*/}}
-                    <tbody>
-                    {{range $index, $line := $value}}
-                    <tr>
-                        <td>
-                            <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}} ({{index $line 1}})</a>
-                        </td>
-                        {{/*<td>{{index $line 1}}</td>*/}}
-                        <td class="text-right">
-                            <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                               name="{{index $line 0}}">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {{end}}
-                    </tbody>
-                </table>
-            </div>
+            {{end}}
         </div>
     </p>
-    {{end}}
 </div>
 
 <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
