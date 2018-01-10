@@ -50,8 +50,8 @@ func NewWorkspace(dir string) *Workspace {
 	return &wd
 }
 
-func (wd *Workspace) checkWorkspace() (bool, error) {
-	stat, err := os.Stat(wd.path)
+func (ws *Workspace) checkWorkspace() (bool, error) {
+	stat, err := os.Stat(ws.path)
 	if err == nil {
 		if stat.IsDir() && stat.Mode().Perm() == os.ModePerm {
 			return true, nil
