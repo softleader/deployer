@@ -5,6 +5,7 @@ import "strings"
 type Deploy struct {
 	CleanUp   bool   `json:cleanUp`
 	Project   string `json:"project"`
+	Style     string `json:"style"`
 	Dev       Dev    `json:"dev"`
 	Volume0   string `json:"volume0"`
 	Net0      string `json:"net0"`

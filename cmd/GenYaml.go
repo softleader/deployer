@@ -19,7 +19,7 @@ func NewGenYaml(sh Shell, cmd string) *GenYaml {
 
 func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...string) (string, string, error) {
 
-	commands := []string{gy.cmd, "-s swarm -o", output}
+	commands := []string{gy.cmd, "-s", d.Style, "-o", output}
 	if d.Silently {
 		commands = append(commands, "-S")
 	}
