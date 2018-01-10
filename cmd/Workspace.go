@@ -50,19 +50,6 @@ func NewWorkspace(dir string) *Workspace {
 	return &wd
 }
 
-func (ws *Workspace) checkWorkspace() (bool, error) {
-	stat, err := os.Stat(ws.path)
-	if err == nil {
-		if stat.IsDir() && stat.Mode().Perm() == os.ModePerm {
-			return true, nil
-		}
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
 func (ws *Workspace) GetWd(cleanUp bool, project string) *WorkDir {
 	return NewWorkDir(cleanUp, path.Join(ws.path, project))
 }
