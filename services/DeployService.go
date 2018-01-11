@@ -15,6 +15,7 @@ import (
 
 type DeployService struct {
 	cmd.DockerStack
+	cmd.DockerService
 	cmd.Gpm
 	cmd.GenYaml
 	cmd.Workspace
@@ -45,7 +46,7 @@ func (ds *DeployService) GetServices(stack string) ([][]string, error) {
 }
 
 func (ds *DeployService) Ps(id string) ([][]string, error) {
-	_, out, err := ds.DockerStack.Ps(id)
+	_, out, err := ds.DockerService.Ps(id)
 	lines := strings.Split(out, "\n")
 	var s [][]string
 	for _, line := range lines {
@@ -226,11 +227,11 @@ func (ds *DeployService) deployDocker(opts *cmd.Options, yamls []models.Yaml, d 
 }
 
 func (ds *DeployService) DeleteStack(stack string) (string, error) {
-	_, out, err := ds.DockerStack.RmStackLike(stack)
+	_, out, err := ds.DockerStack.RmLike(stack)
 	return out, err
 }
 
 func (ds *DeployService) DeleteService(service string) (string, error) {
-	_, out, err := ds.DockerStack.RmService(service)
+	_, out, err := ds.DockerService.Rm(service)
 	return out, err
 }

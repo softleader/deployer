@@ -57,7 +57,9 @@
                         {{range $index, $line := $value}}
                         <tr>
                             <td>
-                                <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}} ({{index $line 1}})</a>
+                                <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">
+                                    {{index $line 0}} ({{index $line 1}}) {{index $line 2}}
+                                </a>
                             </td>
                             {{/*<td>{{index $line 1}}</td>*/}}
                             <td class="text-right">

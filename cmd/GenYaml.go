@@ -17,7 +17,7 @@ func NewGenYaml(sh Shell, cmd string) *GenYaml {
 	return &GenYaml{sh: sh, cmd: cmd}
 }
 
-func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...string) (string, string, error) {
+func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
 
 	commands := []string{gy.cmd, "-s", d.Style, "-o", output}
 	if d.Silently {
@@ -37,6 +37,6 @@ func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...s
 	return gy.sh.Exec(opts, commands...)
 }
 
-func (gy *GenYaml) Version() (string, string, error) {
+func (gy *GenYaml) Version() (arg string, out string, err error) {
 	return gy.sh.Exec(&Options{}, gy.cmd, "--version")
 }

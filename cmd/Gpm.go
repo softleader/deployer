@@ -12,7 +12,7 @@ func NewGpm(sh Shell, cmd string) *Gpm {
 	return &Gpm{sh: sh, cmd: cmd}
 }
 
-func (g *Gpm) Install(opts *Options, dir string, yaml string) (string, string, error) {
+func (g *Gpm) Install(opts *Options, dir string, yaml string) (arg string, out string, err error) {
 	commands := []string{g.cmd, "install -F -c Containerfile"}
 	if dir != "" {
 		commands = append(commands, "-d", dir)
@@ -23,6 +23,6 @@ func (g *Gpm) Install(opts *Options, dir string, yaml string) (string, string, e
 	return g.sh.Exec(opts, commands...)
 }
 
-func (g *Gpm) Version() (string, string, error) {
+func (g *Gpm) Version() (arg string, out string, err error) {
 	return g.sh.Exec(&Options{}, g.cmd, "--version")
 }

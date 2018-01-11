@@ -22,13 +22,13 @@ func NewShell() *Shell {
 	return &Shell{}
 }
 
-type out struct {
+type output struct {
 	ctx *iris.Context
 	buf bytes.Buffer
 }
 
-func (sh *Shell) Exec(opts *Options, commands ...string) (string, string, error) {
-	arg := strings.Join(commands, " ")
+func (sh *Shell) Exec(opts *Options, commands ...string) (arg string, out string, err error) {
+	arg = strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
 	if opts.Pwd != "" {
 		cmd.Dir = opts.Pwd
@@ -38,12 +38,12 @@ func (sh *Shell) Exec(opts *Options, commands ...string) (string, string, error)
 		(*opts.Ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
 	}
 
-	stdout := out{ctx: opts.Ctx}
-	stderr := out{ctx: opts.Ctx}
+	stdout := output{ctx: opts.Ctx}
+	stderr := output{ctx: opts.Ctx}
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return "", "", errors.New(fmt.Sprint(err) + ": " + stderr.buf.String())
 	}
@@ -51,7 +51,7 @@ func (sh *Shell) Exec(opts *Options, commands ...string) (string, string, error)
 	return arg, stdout.buf.String(), nil
 }
 
-func (o *out) Write(b []byte) (n int, err error) {
+func (o *output) Write(b []byte) (n int, err error) {
 	o.buf.Write(b)
 	if o.ctx != nil {
 		(*o.ctx).StreamWriter(pipe.Print(string(b)))

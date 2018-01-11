@@ -57,10 +57,11 @@ func newService(args *args) *services.DeployService {
 	ws := cmd.NewWorkspace(args.ws)
 	sh := cmd.NewShell()
 	return &services.DeployService{
-		DockerStack: *cmd.NewDockerStack(*sh),
-		Gpm:         *cmd.NewGpm(*sh, args.gpm),
-		GenYaml:     *cmd.NewGenYaml(*sh, args.genYaml),
-		Workspace:   *ws,
+		DockerStack:   *cmd.NewDockerStack(*sh),
+		DockerService: *cmd.NewDockerService(*sh),
+		Gpm:           *cmd.NewGpm(*sh, args.gpm),
+		GenYaml:       *cmd.NewGenYaml(*sh, args.genYaml),
+		Workspace:     *ws,
 	}
 }
 
@@ -130,6 +131,10 @@ func newApp(args args, s services.DeployService) *iris.Application {
 						key = strings.Join(splited[:2], "-")
 					}
 				}
+				_, out, _ := s.DockerService.GetCreatedTimeOfFirstServiceInStack(line[0])
+				out = strings.TrimSuffix(out, "\n")
+				t, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", out)
+				line = append(line, uptime(t))
 				stacks[key] = append(stacks[key], line)
 			}
 			ctx.ViewData("stacks", stacks)
@@ -200,6 +205,11 @@ func newApp(args args, s services.DeployService) *iris.Application {
 	}
 
 	return app
+}
+
+func uptime(t time.Time) string {
+	d := time.Since(t)
+	return fmt.Sprintf("up %.2f hours", d.Hours())
 }
 
 func publishedPort(s string) bool {
