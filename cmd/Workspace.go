@@ -20,12 +20,12 @@ func NewWorkspace(dir string) *Workspace {
 	wd := Workspace{path: dir}
 	fmt.Printf("Setting up workspace to '%v'\n", dir)
 
-	stat, err := os.Stat(wd.path)
+	stat, err := os.Stat(wd.Path())
 
 	if err != nil {
 		if os.IsNotExist(err) {
 			os.MkdirAll(dir, os.ModeDir|os.ModePerm)
-			stat, err = os.Stat(wd.path)
+			stat, err = os.Stat(wd.Path())
 			if err != nil {
 				log.Fatal(err)
 				os.Exit(1)
@@ -37,11 +37,11 @@ func NewWorkspace(dir string) *Workspace {
 	}
 
 	if !stat.IsDir() {
-		log.Fatal(fmt.Sprintf("Workspace requires a dictionary: %v", wd.path))
+		log.Fatal(fmt.Sprintf("Workspace requires a dictionary: %v", wd.Path()))
 		os.Exit(1)
 	}
 
-	_, err = os.Open(wd.path)
+	_, err = os.Open(wd.Path())
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
@@ -51,5 +51,9 @@ func NewWorkspace(dir string) *Workspace {
 }
 
 func (ws *Workspace) GetWd(cleanUp bool, project string) *WorkDir {
-	return NewWorkDir(cleanUp, path.Join(ws.path, project))
+	return NewWorkDir(cleanUp, path.Join(ws.Path(), project))
+}
+
+func (ws *Workspace) Path() string {
+	return ws.path
 }

@@ -28,11 +28,13 @@ type args struct {
 func main() {
 	args := newArgs()
 
-	service := newService(args)
-	checkDependencies(*service)
+	ds := newDeployService(args)
+	checkDependencies(*ds)
+
+	ps := newPracticeService(args)
 
 	// https://github.com/kataras/iris
-	app := newApp(*args, *service)
+	app := newApp(*args, *ds, *ps)
 
 	app.Run(
 		iris.Addr(args.addr+":"+strconv.Itoa(args.port)),
@@ -53,7 +55,14 @@ func newArgs() *args {
 	return &a
 }
 
-func newService(args *args) *services.DeployService {
+func newPracticeService(args *args) *services.PracticeService {
+	ws := cmd.NewWorkspace(args.ws)
+	return &services.PracticeService{
+		Workspace: *ws,
+	}
+}
+
+func newDeployService(args *args) *services.DeployService {
 	ws := cmd.NewWorkspace(args.ws)
 	sh := cmd.NewShell()
 	return &services.DeployService{
@@ -81,7 +90,7 @@ func checkDependencies(s services.DeployService) {
 	fmt.Printf("  $ %v: %v", cmd, out)
 }
 
-func newApp(args args, s services.DeployService) *iris.Application {
+func newApp(args args, ds services.DeployService, ps services.PracticeService) *iris.Application {
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -109,7 +118,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 
 		deployRoutes.Get("/download/{project:string}", func(ctx iris.Context) {
 			pj := ctx.Params().Get("project")
-			zip := s.Workspace.GetWd(false, pj).GetCompressPath()
+			zip := ds.Workspace.GetWd(false, pj).GetCompressPath()
 			ctx.SendFile(zip, pj+"-"+path.Base(zip))
 		})
 	}
@@ -117,7 +126,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 	stacksRoutes := app.Party("/")
 	{
 		stacksRoutes.Get("/", func(ctx iris.Context) {
-			out, err := s.GetAll()
+			out, err := ds.GetAll()
 			if err != nil {
 				out = append(out, []string{err.Error()})
 			}
@@ -131,7 +140,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 						key = strings.Join(splited[:2], "-")
 					}
 				}
-				_, out, _ := s.DockerService.GetCreatedTimeOfFirstServiceInStack(line[0])
+				_, out, _ := ds.DockerService.GetCreatedTimeOfFirstServiceInStack(line[0])
 				out = strings.TrimSuffix(out, "\n")
 				t, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", out)
 				line = append(line, uptime(t))
@@ -148,7 +157,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 			indent, _ := json.MarshalIndent(d, "", " ")
 
 			ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
-			err := s.Deploy(&ctx, *d)
+			err := ds.Deploy(&ctx, *d)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
@@ -158,7 +167,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 
 		stacksRoutes.Get("/rm/{stack:string}", func(ctx iris.Context) {
 			stack := ctx.Params().Get("stack")
-			_, err := s.DeleteStack(stack)
+			_, err := ds.DeleteStack(stack)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
@@ -171,7 +180,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 	{
 		servicesRoutes.Get("/{stack:string}", func(ctx iris.Context) {
 			stack := ctx.Params().Get("stack")
-			out, err := s.GetServices(stack)
+			out, err := ds.GetServices(stack)
 			if err != nil {
 				out = append(out, []string{err.Error()})
 			}
@@ -182,7 +191,7 @@ func newApp(args args, s services.DeployService) *iris.Application {
 
 		servicesRoutes.Get("/ps/{serviceId:string}", func(ctx iris.Context) {
 			serviceId := ctx.Params().Get("serviceId")
-			out, err := s.Ps(serviceId)
+			out, err := ds.Ps(serviceId)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
@@ -194,12 +203,48 @@ func newApp(args args, s services.DeployService) *iris.Application {
 		servicesRoutes.Get("/rm/{stack:string}/{service:string}", func(ctx iris.Context) {
 			stack := ctx.Params().Get("stack")
 			service := ctx.Params().Get("service")
-			_, err := s.DeleteService(service)
+			_, err := ds.DeleteService(service)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
 			}
 			ctx.Redirect("/services/" + stack)
+		})
+
+	}
+
+	practicesRoutes := app.Party("/practices")
+	{
+		practicesRoutes.Get("/", func(ctx iris.Context) {
+			out, err := ps.GetAll()
+			ctx.ViewData("err", err)
+			ctx.ViewData("out", out)
+			ctx.View("practice.html")
+		})
+
+		practicesRoutes.Post("/", func(ctx iris.Context) {
+			c := ctx.PostValue("content")
+			err := ps.Add(c)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.Redirect("/practices")
+		})
+
+		practicesRoutes.Get("/rm/{idx:int}", func(ctx iris.Context) {
+			idx, err := ctx.Params().GetInt("idx")
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+				ctx.Redirect("/practices")
+			}
+			err = ps.Delete(idx)
+			if err != nil {
+				ctx.Application().Logger().Warn(err.Error())
+				ctx.WriteString(err.Error())
+			}
+			ctx.Redirect("/practices")
 		})
 
 	}

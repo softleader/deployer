@@ -22,13 +22,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/">List Stacks</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/deploy">Deploy YAML</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="/practices">Practices</a>
             </li>
         </ul>
@@ -37,40 +37,31 @@
 
 <div class="container">
     <p>
-    <table class="table table-responsive-sm table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Service Id</th>
-            <th scope="col">Service Name</th>
-            <th scope="col">Mode</th>
-            <th scope="col">Replicas</th>
-            <th scope="col">Image</th>
-            <th scope="col">Ports</th>
-            <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
-        </tr>
-        </thead>
-        <tbody>
-        {{$stack := .stack}}
-        {{range $index, $line := .out}}
-        <tr>
-            <td>
-                <a href="/services/ps/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
-            </td>
-            <td>{{index $line 1}}</td>
-            <td>{{index $line 2}}</td>
-            <td>{{index $line 3}}</td>
-            <td>{{index $line 4}}</td>
-            <td>{{index $line 5}}</td>
-            <td>
-                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                   name="{{$stack}}/{{index $line 0}}">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </a>
-            </td>
-        </tr>
-        {{end}}
-        </tbody>
-    </table>
+    <h3>Best Practices for Production Deployment</h3>
+
+    <hr>
+
+    <form method="post" action="/practices">
+        <div class="form-group row">
+            <div class="col-sm-11">
+                <input type="text" class="form-control" name="content">
+            </div>
+            <button type="submit" class="col-sm-1 btn btn-outline-primary">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+        </div>
+    </form>
+
+    <hr>
+
+    <ul class="fa-ul">
+    {{range $idx, $value := .out}}
+        <li name="{{$idx}}">
+            <i class="fa-li fa fa-trash" data-toggle="modal" data-target="#removeModal"></i>
+            {{$value}}
+        </li>
+    {{end}}
+    </ul>
     </p>
 </div>
 
@@ -111,11 +102,10 @@
         crossorigin="anonymous"></script>
 
 <script>
-    $(".fa-trash").parent().click(function () {
-        var n = $(this).attr("name");
+    $(".fa-trash").click(function () {
+        var n = $(this).parent().attr("name");
         var $modal = $("#removeModal");
-        $modal.find(".text-danger").html(n.split("/")[1]);
-        $modal.find("#proceed").attr("href", "/services/rm/" + n);
+        $modal.find("#proceed").attr("href", "/practices/rm/" + n);
     });
 </script>
 
