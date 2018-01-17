@@ -70,6 +70,6 @@ $ ./build/main-macos-amd64 -workspace=/tmp -port=8080
 
 ```shell
 $ sudo su
-$ go get github.com/softleader/deployer
+$ cd /root/go/src/github.com/softleader/deployer/ && git pull
 $ systemctl restart deployer
 ```
