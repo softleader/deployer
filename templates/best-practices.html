@@ -42,16 +42,11 @@
     <h3>Best Practices for Production Deployment</h3>
     <p>
 
-    <form method="post" action="/best-practices">
-        <textarea id="content" name="content" hidden>{{.out}}</textarea>
-    </form>
-
+    <textarea id="content" hidden>{{.out}}</textarea>
 </div>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
         integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
         crossorigin="anonymous"></script>
@@ -60,15 +55,13 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
 
 <script>
-    // Most options demonstrate the non-default behavior
+    // https://github.com/sparksuite/simplemde-markdown-editor
     var simplemde = new SimpleMDE({
         autofocus: true,
         element: document.getElementById("content"),
         forceSync: true,
-        status: false,
         indentWithTabs: false,
         lineWrapping: false,
         placeholder: "Type here...",
@@ -78,20 +71,34 @@
             codeSyntaxHighlighting: true,
         },
         tabSize: 4,
-        toolbar: ["bold", "italic", "heading", "|",
-                    "quote", "unordered-list", "ordered-list", "table", "|",
-                    "link", "image", "horizontal-rule", "|",
-                    "preview", {
-                        name: "save",
-                        action: function (editor){
-                            $("form").submit();
-                        },
-                        className: "fa fa-floppy-o",
-                        title: "Save",
-                    }, "|",
-                    "guide"],
+        toolbar: [
+            "bold", "italic", "heading", "|",
+            "quote", "unordered-list", "ordered-list", "table", "|",
+            "link", "image", "horizontal-rule", "|",
+            "preview", {
+                name: "save",
+                action: function (editor){
+                    var $saving = $(".saving");
+                    if ($saving.length < 1) {
+                        $saving = $("<span class='saving'>Saving...</space>");
+                    }
+                    $(".editor-statusbar span").first().before($saving);
+                    $.ajax({
+                        type: 'post',
+                        url: '/best-practices',
+                        data: editor.value(),
+                    }).done(function() {
+                        $saving.remove();
+                    }).fail(function(jqXHR, textStatus, errorThrown) {
+                        $saving.html("["+textStatus+"] " + errorThrown);
+                    });
+                },
+                className: "fa fa-floppy-o",
+                title: "Save",
+            }, "|",
+            "guide"
+        ],
     });
-
     simplemde.togglePreview();
 </script>
 
