@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
 </head>
 <body>
 
@@ -38,56 +40,12 @@
 <div class="container">
     <p>
     <h3>Best Practices for Production Deployment</h3>
-
-    <hr>
+    <p>
 
     <form method="post" action="/best-practices">
-        <div class="form-group row">
-            <div class="col-sm-11">
-                <input type="text" class="form-control" name="content">
-            </div>
-            <button type="submit" class="col-sm-1 btn btn-outline-primary">
-                <i class="fa fa-pencil" aria-hidden="true"></i>
-            </button>
-        </div>
+        <textarea id="content" name="content" hidden>{{.out}}</textarea>
     </form>
 
-    <hr>
-
-    <ul class="fa-ul">
-    {{range $idx, $value := .out}}
-        <li name="{{$idx}}">
-            <i class="fa-li fa fa-trash" data-toggle="modal" data-target="#removeModal"></i>
-            {{$value}}
-        </li>
-    {{end}}
-    </ul>
-    </p>
-</div>
-
-<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Ready to remove?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to remove <span class="text-danger"></span>?
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-dismiss="modal">
-                    <i class="fa fa-ban" aria-hidden="true"></i> Cancel
-                </button>
-                <a class="btn btn-outline-primary btn-sm" id="proceed" href="login.html">
-                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Proceed
-                </a>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
@@ -100,13 +58,41 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
         integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
 
 <script>
-    $(".fa-trash").click(function () {
-        var n = $(this).parent().attr("name");
-        var $modal = $("#removeModal");
-        $modal.find("#proceed").attr("href", "/practices/rm/" + n);
+    // Most options demonstrate the non-default behavior
+    var simplemde = new SimpleMDE({
+        autofocus: true,
+        element: document.getElementById("content"),
+        forceSync: true,
+        status: false,
+        indentWithTabs: false,
+        lineWrapping: false,
+        placeholder: "Type here...",
+        promptURLs: true,
+        renderingConfig: {
+            singleLineBreaks: true,
+            codeSyntaxHighlighting: true,
+        },
+        tabSize: 4,
+        toolbar: ["bold", "italic", "heading", "|",
+                    "quote", "unordered-list", "ordered-list", "table", "|",
+                    "link", "image", "horizontal-rule", "|",
+                    "preview", {
+                        name: "save",
+                        action: function (editor){
+                            $("form").submit();
+                        },
+                        className: "fa fa-floppy-o",
+                        title: "Save",
+                    }, "|",
+                    "guide"],
     });
+
+    simplemde.togglePreview();
 </script>
 
 </body>

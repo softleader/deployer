@@ -216,37 +216,21 @@ func newApp(args args, ds services.DeployService, ps services.PracticeService) *
 	practicesRoutes := app.Party("/best-practices")
 	{
 		practicesRoutes.Get("/", func(ctx iris.Context) {
-			out, err := ps.GetAll()
+			out, err := ps.Get()
 			ctx.ViewData("err", err)
 			ctx.ViewData("out", out)
-			ctx.View("practice.html")
+			ctx.View("best-practices.html")
 		})
 
 		practicesRoutes.Post("/", func(ctx iris.Context) {
-			c := ctx.PostValue("best-practices")
-			err := ps.Add(c)
+			c := ctx.PostValue("content")
+			err := ps.Save(c)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
 			}
 			ctx.Redirect("/best-practices")
 		})
-
-		practicesRoutes.Get("/rm/{idx:int}", func(ctx iris.Context) {
-			idx, err := ctx.Params().GetInt("idx")
-			if err != nil {
-				ctx.Application().Logger().Warn(err.Error())
-				ctx.WriteString(err.Error())
-				ctx.Redirect("/best-practices")
-			}
-			err = ps.Delete(idx)
-			if err != nil {
-				ctx.Application().Logger().Warn(err.Error())
-				ctx.WriteString(err.Error())
-			}
-			ctx.Redirect("/best-practices")
-		})
-
 	}
 
 	return app
