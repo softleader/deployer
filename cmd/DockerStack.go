@@ -1,29 +1,68 @@
 package cmd
 
+import (
+	"strconv"
+	"strings"
+	"github.com/softleader/deployer/models"
+)
+
 type DockerStack struct {
-	sh Shell
 }
 
-func NewDockerStack(sh Shell) *DockerStack {
-	return &DockerStack{sh: sh}
+func NewDockerStack() *DockerStack {
+	return &DockerStack{}
 }
 
-func (ds *DockerStack) Ls() (arg string, out string, err error) {
-	return ds.sh.Exec(&Options{}, "docker stack ls --format '{{.Name}};{{.Services}}'")
+func (ds *DockerStack) Ls() ([][]string, error) {
+	_, out, err := ls()
+	lines := strings.Split(out, "\n")
+	var s [][]string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			s = append(s, strings.Split(line, ";"))
+		}
+	}
+	return s, err
 }
 
-func (ds *DockerStack) Services(stack string) (arg string, out string, err error) {
-	return ds.sh.Exec(&Options{}, "docker stack services", stack, "--format '{{.ID}};{{.Name}};{{.Mode}};{{.Replicas}};{{.Image}};{{.Ports}}'")
+func ls() (arg string, out string, err error) {
+	return Exec(&Options{}, "docker stack ls --format '{{.Name}};{{.Services}}'")
 }
 
-//func (ds *DockerStack) RmStack(stack string) (arg string, out string, err error) {
-//	return ds.sh.Exec(&Options{}, "docker stack rm", stack)
-//}
+func (ds *DockerStack) Services(name string) ([][]string, error) {
+	_, out, err := services(name)
+	lines := strings.Split(out, "\n")
+	var s [][]string
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			s = append(s, strings.Split(line, ";"))
+		}
+	}
+	return s, err
+}
+
+func services(stack string) (arg string, out string, err error) {
+	return Exec(&Options{}, "docker stack services", stack, "--format '{{.ID}};{{.Name}};{{.Mode}};{{.Replicas}};{{.Image}};{{.Ports}}'")
+}
 
 func (ds *DockerStack) RmLike(stack string) (arg string, out string, err error) {
-	return ds.sh.Exec(&Options{}, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
+	return Exec(&Options{}, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
 }
 
-func (ds *DockerStack) Deploy(opts *Options, stack string, file string) (arg string, out string, err error) {
-	return ds.sh.Exec(opts, "docker stack deploy -c", file, stack)
+func deploy(opts *Options, stack string, file string) (arg string, out string, err error) {
+	return Exec(opts, "docker stack deploy -c", file, stack)
+}
+
+func (ds *DockerStack) Deploy(opts *Options, yamls []models.Yaml, d *models.Deploy) error {
+	for _, y := range yamls {
+		stack := []string{d.Project}
+		if d.Dev.IpAddress != "" {
+			stack = append(stack, strconv.Itoa(d.Dev.Port))
+		}
+		if y.Group != "" {
+			stack = append(stack, y.Group)
+		}
+		deploy(opts, strings.Join(stack, "-"), y.Path)
+	}
+	return nil
 }

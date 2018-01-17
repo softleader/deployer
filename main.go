@@ -2,26 +2,23 @@ package main
 
 import (
 	"github.com/kataras/iris"
-	"github.com/softleader/deployer/services"
-	"os"
-	"fmt"
 	"strconv"
 	"github.com/softleader/deployer/cmd"
-	"log"
-	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/routes"
+	"github.com/softleader/deployer/app"
 )
 
 func main() {
-	args := models.NewArgs()
+	args := app.NewArgs()
+	ws := app.NewWorkspace(args.Ws)
 
-	ds := newDeployService(args)
-	checkDependencies(*ds)
-
-	ps := newPracticeService(args)
+	deployRoutes := newDeployRoutes(args, ws)
+	serviceRoutes := newServiceRoutes()
+	stackRoutes := newStackRoutes(args, ws)
+	practiceRoutes := newPracticeRoutes(ws)
 
 	// https://github.com/kataras/iris
-	app := newApp(*args, *ds, *ps)
+	app := newApp(deployRoutes, stackRoutes, serviceRoutes, practiceRoutes)
 
 	app.Run(
 		iris.Addr(args.Addr+":"+strconv.Itoa(args.Port)),
@@ -31,42 +28,37 @@ func main() {
 	)
 }
 
-func newPracticeService(args *models.Args) *services.PracticeService {
-	ws := cmd.NewWorkspace(args.Ws)
-	return &services.PracticeService{
+func newDeployRoutes(args *app.Args, ws *app.Workspace) *routes.DeployRoutes {
+	return &routes.DeployRoutes{
+		Args:      *args,
 		Workspace: *ws,
 	}
 }
 
-func newDeployService(args *models.Args) *services.DeployService {
-	ws := cmd.NewWorkspace(args.Ws)
-	sh := cmd.NewShell()
-	return &services.DeployService{
-		DockerStack:   *cmd.NewDockerStack(*sh),
-		DockerService: *cmd.NewDockerService(*sh),
-		Gpm:           *cmd.NewGpm(*sh, args.Gpm),
-		GenYaml:       *cmd.NewGenYaml(*sh, args.GenYaml),
+func newServiceRoutes() *routes.ServiceRoutes {
+	return &routes.ServiceRoutes{
+		DockerStack:   *cmd.NewDockerStack(),
+		DockerService: *cmd.NewDockerService(),
+	}
+}
+
+func newStackRoutes(args *app.Args, ws *app.Workspace) *routes.StackRoutes {
+	return &routes.StackRoutes{
 		Workspace:     *ws,
+		DockerStack:   *cmd.NewDockerStack(),
+		DockerService: *cmd.NewDockerService(),
+		Gpm:           *cmd.NewGpm(args.Gpm),
+		GenYaml:       *cmd.NewGenYaml(args.GenYaml),
 	}
 }
 
-func checkDependencies(s services.DeployService) {
-	fmt.Println("Checking dependencies...")
-	cmd, out, err := s.Gpm.Version()
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
+func newPracticeRoutes(ws *app.Workspace) *routes.PracticeRoutes {
+	return &routes.PracticeRoutes{
+		Workspace: *ws,
 	}
-	fmt.Printf("  $ %v: %v", cmd, out)
-	cmd, out, err = s.GenYaml.Version()
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
-	fmt.Printf("  $ %v: %v", cmd, out)
 }
 
-func newApp(args models.Args, ds services.DeployService, ps services.PracticeService) *iris.Application {
+func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, serviceRoutes *routes.ServiceRoutes, practiceRoutes *routes.PracticeRoutes) *iris.Application {
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -74,14 +66,12 @@ func newApp(args models.Args, ds services.DeployService, ps services.PracticeSer
 
 	app.RegisterView(tmpl)
 
-	deployRoutes := routes.NewDeployRoutes(args, ds)
 	deploy := app.Party("/deploy")
 	{
 		deploy.Get("/", deployRoutes.DeployPage)
 		deploy.Get("/download/{project:string}", deployRoutes.DownloadYAML)
 	}
 
-	stackRoutes := routes.NewStackRoutes(args, ds)
 	stacks := app.Party("/")
 	{
 		stacks.Get("/", stackRoutes.ListStack)
@@ -89,7 +79,6 @@ func newApp(args models.Args, ds services.DeployService, ps services.PracticeSer
 		stacks.Get("/rm/{stack:string}", stackRoutes.RemoveStack)
 	}
 
-	serviceRoutes := routes.NewServiceRoutes(args, ds)
 	services := app.Party("/services")
 	{
 		services.Get("/{stack:string}", serviceRoutes.ListService)
@@ -97,7 +86,6 @@ func newApp(args models.Args, ds services.DeployService, ps services.PracticeSer
 		services.Get("/rm/{stack:string}/{service:string}", serviceRoutes.RemoveService)
 	}
 
-	practiceRoutes := routes.NewPracticeRoutes(args, ps)
 	practices := app.Party("/best-practices")
 	{
 		practices.Get("/", practiceRoutes.BestPractices)

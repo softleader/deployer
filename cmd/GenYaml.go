@@ -3,23 +3,51 @@ package cmd
 import (
 	"github.com/softleader/deployer/models"
 	"strings"
+	"github.com/softleader/deployer/pipe"
+	"regexp"
+	"strconv"
+	"os"
+	"fmt"
+	"log"
 )
 
 type GenYaml struct {
-	sh  Shell
 	cmd string
 }
 
-func NewGenYaml(sh Shell, cmd string) *GenYaml {
+func NewGenYaml(cmd string) *GenYaml {
 	if cmd == "" {
 		cmd = "gen-yaml"
 	}
-	return &GenYaml{sh: sh, cmd: cmd}
+	genYaml := GenYaml{cmd: cmd}
+	cmd, out, err := genYaml.Version()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	fmt.Printf("  $ %v: %v", cmd, out)
+	return &genYaml
 }
 
-func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
+func (gy *GenYaml) Version() (arg string, out string, err error) {
+	return Exec(&Options{}, gy.cmd, "--version")
+}
 
-	commands := []string{gy.cmd, "-s", d.Style, "-o", output}
+func (gy *GenYaml) Gen(opts *Options, dirs []string, output string, d *models.Deploy) error {
+	_, out, err := gen(gy.cmd, opts, output, d, strings.Join(dirs, " "))
+	if err != nil {
+		return err
+	}
+	err = updateDevPort(out, d)
+	if err != nil {
+		return err
+	}
+	(*opts.Ctx).StreamWriter(pipe.Print(out))
+	return nil
+}
+
+func gen(cmd string, opts *Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
+	commands := []string{cmd, "-s", d.Style, "-o", output}
 	if d.Silently {
 		commands = append(commands, "-S")
 	}
@@ -34,9 +62,23 @@ func (gy *GenYaml) Gen(opts *Options, output string, d *models.Deploy, dirs ...s
 	}
 	commands = append(commands, strings.Join(dirs, " "))
 
-	return gy.sh.Exec(opts, commands...)
+	return Exec(opts, commands...)
 }
 
-func (gy *GenYaml) Version() (arg string, out string, err error) {
-	return gy.sh.Exec(&Options{}, gy.cmd, "--version")
+func updateDevPort(out string, d *models.Deploy) error {
+	if d.Dev.IpAddress != "" {
+		re, err := regexp.Compile(`Auto publish port from \[\d*\] to \[(\d*)\]`)
+		if err != nil {
+			return err
+		}
+		res := re.FindStringSubmatch(out)
+		if len(res) > 1 {
+			d.Dev.PublishPort, err = strconv.Atoi(res[1])
+			if err != nil {
+				return err
+			}
+			d.Dev.PublishPort++
+		}
+	}
+	return nil
 }

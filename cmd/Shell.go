@@ -10,16 +10,9 @@ import (
 	"github.com/softleader/deployer/pipe"
 )
 
-type Shell struct {
-}
-
 type Options struct {
 	Ctx *iris.Context
 	Pwd string
-}
-
-func NewShell() *Shell {
-	return &Shell{}
 }
 
 type output struct {
@@ -27,7 +20,7 @@ type output struct {
 	buf bytes.Buffer
 }
 
-func (sh *Shell) Exec(opts *Options, commands ...string) (arg string, out string, err error) {
+func Exec(opts *Options, commands ...string) (arg string, out string, err error) {
 	arg = strings.Join(commands, " ")
 	cmd := exec.Command("sh", "-c", arg)
 	if opts.Pwd != "" {

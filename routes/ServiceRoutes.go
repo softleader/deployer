@@ -1,26 +1,18 @@
 package routes
 
 import (
-	"github.com/softleader/deployer/models"
-	"github.com/softleader/deployer/services"
 	"github.com/kataras/iris"
+	"github.com/softleader/deployer/cmd"
 )
 
 type ServiceRoutes struct {
-	args models.Args
-	ds   services.DeployService
-}
-
-func NewServiceRoutes(args models.Args, ds services.DeployService) *ServiceRoutes {
-	return &ServiceRoutes{
-		args: args,
-		ds:   ds,
-	}
+	cmd.DockerStack
+	cmd.DockerService
 }
 
 func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
-	out, err := r.ds.GetServices(stack)
+	out, err := r.DockerStack.Services(stack)
 	if err != nil {
 		out = append(out, []string{err.Error()})
 	}
@@ -31,7 +23,7 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 
 func (r *ServiceRoutes) PsService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
-	out, err := r.ds.Ps(serviceId)
+	out, err := r.DockerService.Ps(serviceId)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -43,7 +35,7 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
 	service := ctx.Params().Get("service")
-	_, err := r.ds.DeleteService(service)
+	_, _, err := r.DockerService.Rm(service)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
