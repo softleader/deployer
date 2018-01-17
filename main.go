@@ -213,7 +213,7 @@ func newApp(args args, ds services.DeployService, ps services.PracticeService) *
 
 	}
 
-	practicesRoutes := app.Party("/practices")
+	practicesRoutes := app.Party("/best-practices")
 	{
 		practicesRoutes.Get("/", func(ctx iris.Context) {
 			out, err := ps.GetAll()
@@ -223,13 +223,13 @@ func newApp(args args, ds services.DeployService, ps services.PracticeService) *
 		})
 
 		practicesRoutes.Post("/", func(ctx iris.Context) {
-			c := ctx.PostValue("content")
+			c := ctx.PostValue("best-practices")
 			err := ps.Add(c)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
 			}
-			ctx.Redirect("/practices")
+			ctx.Redirect("/best-practices")
 		})
 
 		practicesRoutes.Get("/rm/{idx:int}", func(ctx iris.Context) {
@@ -237,14 +237,14 @@ func newApp(args args, ds services.DeployService, ps services.PracticeService) *
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
-				ctx.Redirect("/practices")
+				ctx.Redirect("/best-practices")
 			}
 			err = ps.Delete(idx)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
 			}
-			ctx.Redirect("/practices")
+			ctx.Redirect("/best-practices")
 		})
 
 	}
