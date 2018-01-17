@@ -45,7 +45,7 @@
     </h2>
     <hr>
 
-    <div class="content"></div>
+    <div class="content">{{.out}}</div>
 </div>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
@@ -63,18 +63,15 @@
 
 <script>
     $(function() {
-        $(".content").html(markdown({{.out}}));
+        $(".content").html(function(index, content) {
+            return marked(content, {
+                "breaks": true,
+                "highlight": function(code) {
+                    return hljs.highlightAuto(code).value;
+                },
+            })
+        });
     })
-
-    function markdown(content) {
-        var options = {
-            "breaks": true,
-            "highlight": function(code) {
-                return hljs.highlightAuto(code).value;
-            },
-        };
-        return marked(content, options);
-    }
 </script>
 
 </body>
