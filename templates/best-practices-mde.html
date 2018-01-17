@@ -41,40 +41,57 @@
     <p></p>
     <h2>
         Best Practices for Production Deployment
-        <small><a class="btn btn-outline-dark btn-sm" href="/best-practices/mde"><i class="fa fa-pencil" aria-hidden="true"></i></a></small>
     </h2>
     <hr>
 
-    <div class="content"></div>
+    <form action="/best-practices/mde" method="post">
+        <textarea name="content" id="content" hidden>{{.out}}</textarea>
+    </form>
 </div>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
         integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
         crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
         integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
 
 <script>
     $(function() {
-        $(".content").html(markdown({{.out}}));
-    })
-
-    function markdown(content) {
-        var options = {
-            "breaks": true,
-            "highlight": function(code) {
-                return hljs.highlightAuto(code).value;
+        // https://github.com/sparksuite/simplemde-markdown-editor
+        var simplemde = new SimpleMDE({
+            autofocus: true,
+            element: document.getElementById("content"),
+            forceSync: true,
+            indentWithTabs: false,
+            lineWrapping: false,
+            placeholder: "Type here...",
+            promptURLs: true,
+            renderingConfig: {
+                singleLineBreaks: true,
+                codeSyntaxHighlighting: true,
             },
-        };
-        return marked(content, options);
-    }
+            tabSize: 4,
+            toolbar: [
+                "bold", "italic", "heading", "|",
+                "quote", "unordered-list", "ordered-list", "table", "|",
+                "link", "image", "horizontal-rule", "|",
+                "preview", {
+                    name: "save",
+                    action: function (editor){
+                        $("form").submit();
+                    },
+                    className: "fa fa-floppy-o",
+                    title: "Save",
+                }, "|",
+                "guide"
+            ],
+        });
+    })
 </script>
 
 </body>

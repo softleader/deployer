@@ -15,7 +15,6 @@ import (
 	"time"
 	"github.com/softleader/deployer/pipe"
 	"encoding/json"
-	"io/ioutil"
 )
 
 type args struct {
@@ -223,13 +222,21 @@ func newApp(args args, ds services.DeployService, ps services.PracticeService) *
 			ctx.View("best-practices.html")
 		})
 
-		practicesRoutes.Post("/", func(ctx iris.Context) {
-			c, err := ioutil.ReadAll(ctx.Request().Body)
-			err = ps.Save(string(c))
+		practicesRoutes.Get("/mde", func(ctx iris.Context) {
+			out, err := ps.Get()
+			ctx.ViewData("err", err)
+			ctx.ViewData("out", out)
+			ctx.View("best-practices-mde.html")
+		})
+
+		practicesRoutes.Post("/mde", func(ctx iris.Context) {
+			c := ctx.PostValue("content");
+			err := ps.Save(c)
 			if err != nil {
 				ctx.Application().Logger().Warn(err.Error())
 				ctx.WriteString(err.Error())
 			}
+			ctx.Redirect("/best-practices")
 		})
 	}
 
