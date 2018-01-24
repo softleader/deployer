@@ -33,12 +33,10 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 }
 
 func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
-	stack := ctx.Params().Get("stack")
 	service := ctx.Params().Get("service")
 	_, _, err := r.DockerService.Rm(service)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
-	ctx.Redirect("/services/" + stack)
 }

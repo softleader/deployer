@@ -69,7 +69,6 @@ func (r *StackRoutes) RemoveStack(ctx iris.Context) {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
-	ctx.Redirect("/")
 }
 
 func uptime(t time.Time) string {

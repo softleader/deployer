@@ -6,6 +6,7 @@ import (
 	"github.com/softleader/deployer/cmd"
 	"github.com/softleader/deployer/routes"
 	"github.com/softleader/deployer/app"
+	"github.com/kataras/iris/context"
 )
 
 func main() {
@@ -66,6 +67,13 @@ func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, 
 
 	app.RegisterView(tmpl)
 
+	api := app.Party("/api")
+	{
+		api.Post("/stacks", stackRoutes.DeployStack)
+		api.Delete("/stacks/{stack:string}", stackRoutes.RemoveStack)
+		api.Delete("/services/{service:string}", serviceRoutes.RemoveService)
+	}
+
 	deploy := app.Party("/deploy")
 	{
 		deploy.Get("/", deployRoutes.DeployPage)
@@ -76,14 +84,21 @@ func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, 
 	{
 		stacks.Get("/", stackRoutes.ListStack)
 		stacks.Post("/", stackRoutes.DeployStack)
-		stacks.Get("/rm/{stack:string}", stackRoutes.RemoveStack)
+		stacks.Get("/rm/{stack:string}", func(ctx context.Context) {
+			stackRoutes.RemoveStack(ctx)
+			ctx.Redirect("/")
+		})
 	}
 
 	services := app.Party("/services")
 	{
 		services.Get("/{stack:string}", serviceRoutes.ListService)
 		services.Get("/ps/{serviceId:string}", serviceRoutes.PsService)
-		services.Get("/rm/{stack:string}/{service:string}", serviceRoutes.RemoveService)
+		services.Get("/rm/{stack:string}/{service:string}", func(ctx context.Context) {
+			serviceRoutes.RemoveService(ctx)
+			stack := ctx.Params().Get("stack")
+			ctx.Redirect("/services/" + stack)
+		})
 	}
 
 	practices := app.Party("/best-practices")
