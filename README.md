@@ -127,8 +127,8 @@ POST /api/stacks
 
 ```sh
 $ curl -X POST \
-  -d '{"cleanUp":true,"project":"example","style":"swarm","yaml":"github:softleader/softleader-package/softleader-base.yaml#master"}' \
-  http://localhost:5678/api/stacks
+    -d '{"cleanUp":true,"project":"example","style":"swarm","yaml":"github:softleader/softleader-package/softleader-base.yaml#master"}' \
+    http://localhost:5678/api/stacks
 ```
 
 ### Remove a Stack
