@@ -106,10 +106,10 @@ POST /api/stacks
 ```json
 {
     "cleanUp": true,
-    "project": "my-project",
+    "project": "example",
     "yaml": "github:softleader/softleader-package/softleader-base.yaml#master",
     "style": "swarm",
-    "net0": "my-project-network",
+    "net0": "example-network",
     "volume0": "",
     "group": "",
     "flatGroup": false,
