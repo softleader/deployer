@@ -92,17 +92,16 @@ POST /api/stacks
 |------|------|-------------|---------------|
 | `cleanUp` | `bool` | 執行前是否要先清空 workspace | false |
 | `project` | `string` | **Required.** 用來組 stack name, 組成方式為: `${project}-${port}-${group}` ( `-${port}` 及 `-${group}` 視部署條件不同決定是否會加上) | |
+| `yaml` | `string` | **Required.** yaml 位置 | |
 | `style` | `string` | 部署 yaml 的樣式: swarm, k8s | k8s |
+| `volume0` | `string` | `Containerfile` 中 `volumn0` 變數的實際目錄 | |
+| `net0` | `string` | `Containerfile` 中 `net0` 的 network 名稱, 無傳值則由 docker 自動建立 network | |
+| `group` | `string` | 指定要部署的 group, 可用`,`串起多個, 沒傳入則部署所有 group | |
+| `flatGroup` | `bool` | 是否要打平 group, 讓所有 group 都部署在同一個 stack 中 | false |
+| `silently` | `bool` | 安靜模式 | false |
 | `dev.ipAddress` | `string` | dev 模式的 ip, 有傳值則開啟 dev 模式, 反之則關閉 dev 模式 | |
 | `dev.port` | `int` | dev 模式下的 port | |
 | `dev.ignore` | `string` | dev 模式下要忽略的 group 名稱, 可用`,`串起多個 | |
-| `yaml` | `string` | **Required.** yaml 位置 | |
-| `volume0` | `string` | `Containerfile` 中 `volumn0` 變數的實際目錄 | |
-| `net0` | `string` | `Containerfile` 中 `net0` 的 network 名稱, 無傳值則由 docker 自動建立 network | |
-| `group` | `string` | 指定要部署的 group, 可用`,`串起多個 | |
-| `flatGroup` | `bool` | 是否要打平 group | false |
-| `silently` | `bool` | 安靜模式 | false |
-
 
 ```json
 {
