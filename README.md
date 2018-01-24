@@ -91,7 +91,7 @@ POST /api/stacks
 | Name | Type | Description | Default Value |
 |------|------|-------------|---------------|
 | `cleanUp` | `bool` | 執行前是否要先清空 workspace | false |
-| `project` | `string` | **Required.** 用來組 stack name, 組成方式為: `${project}-${port}-${group}` ( `-${port}` 及 `-${group}` 視部署參數決定是否會加上) | |
+| `project` | `string` | **Required.** 用來組 stack name, 組成方式為: `${project}-${port}-${group}` ( `-${port}` 及 `-${group}` 視部署條件不同決定是否會加上) | |
 | `style` | `string` | 部署 yaml 的樣式: swarm, k8s | k8s |
 | `dev.ipAddress` | `string` | dev 模式的 ip, 有傳值則開啟 dev 模式, 反之則關閉 dev 模式 | |
 | `dev.port` | `int` | dev 模式下的 port | |
