@@ -24,10 +24,9 @@ func NewWorkDir(cleanUp bool, p string) *WorkDir {
 
 	if cleanUp {
 		reMkdir(wd.Path)
-
-		d := path.Join(wd.Path, deployedDir)
-		reMkdir(d)
 	}
+	d := path.Join(wd.Path, deployedDir)
+	reMkdir(d)
 
 	return &wd
 }
@@ -68,12 +67,12 @@ func copy(src string, dst string) error {
 	return d.Close()
 }
 
-func (wd *WorkDir) GetCompressPath() string {
-	return path.Join(wd.Path, deployedDir, compressOutput)
+func GetCompressPath(workDirPath string) string {
+	return path.Join(workDirPath, deployedDir, compressOutput)
 }
 
 func (wd *WorkDir) CompressDeployedDir() error {
-	newfile, err := os.Create(wd.GetCompressPath())
+	newfile, err := os.Create(GetCompressPath(wd.Path))
 	if err != nil {
 		return err
 	}

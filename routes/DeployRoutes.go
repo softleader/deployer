@@ -30,6 +30,6 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 
 func (r *DeployRoutes) DownloadYAML(ctx iris.Context) {
 	pj := ctx.Params().Get("project")
-	zip := r.Workspace.GetWd(false, pj).GetCompressPath()
+	zip := app.GetCompressPath(r.Workspace.Path())
 	ctx.SendFile(zip, pj+"-"+path.Base(zip))
 }
