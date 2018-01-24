@@ -86,7 +86,6 @@ $ systemctl restart deployer
 POST /api/stacks
 ```
 
-
 #### Parameter
 
 | Name | Type | Description | Default Value |
@@ -128,8 +127,8 @@ POST /api/stacks
 
 ```sh
 $ curl -X POST \
-		-d '{"cleanUp":true,"project":"example","style":"swarm","yaml":"github:softleader/softleader-package/softleader-base.yaml#master"}' \
-		http://localhost:5678/api/stacks
+  -d '{"cleanUp":true,"project":"example","style":"swarm","yaml":"github:softleader/softleader-package/softleader-base.yaml#master"}' \
+  http://localhost:5678/api/stacks
 ```
 
 ### Remove a Stack
@@ -152,7 +151,7 @@ $ curl -X DELETE http://localhost:5678/api/stacks/:stack
 DELETE /api/services/:service
 ```
 
-`:service` - 完整比對, 可以是 service 名稱或 service id
+`:service` - 完整比對, 可以是 service id 或 service name
 
 #### Example
 
