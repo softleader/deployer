@@ -107,18 +107,18 @@ POST /api/stacks
 {
     "cleanUp": true,
     "project": "my-project",
+    "yaml": "github:softleader/softleader-package/softleader-base.yaml#master",
     "style": "swarm",
+    "net0": "my-project-network",
+    "volume0": "",
+    "group": "",
+    "flatGroup": false,
+    "silently": false,
     "dev": {
     	"ipAddress": "192.168.1.60",
     	"port": 50001,
     	"ignore": "elasticsearch,kibana,logstash"
-    },
-    "net0": "my-project-network",
-    "volume0": "",
-    "yaml": "github:softleader/softleader-package/softleader-base.yaml#master",
-    "group": "",
-    "flatGroup": false,
-    "silently": false
+    }
 }
 ```
 
