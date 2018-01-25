@@ -3,8 +3,8 @@ package routes
 import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
-	"path"
 	"github.com/softleader/deployer/app"
+	"path"
 )
 
 type DeployRoutes struct {
@@ -30,6 +30,6 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 
 func (r *DeployRoutes) DownloadYAML(ctx iris.Context) {
 	pj := ctx.Params().Get("project")
-	zip := app.GetCompressPath(r.Workspace.Path())
+	zip := app.GetCompressPath(path.Join(r.Workspace.Path(), pj))
 	ctx.SendFile(zip, pj+"-"+path.Base(zip))
 }

@@ -77,7 +77,12 @@ func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, 
 	deploy := app.Party("/deploy")
 	{
 		deploy.Get("/", deployRoutes.DeployPage)
-		deploy.Get("/download/{project:string}", deployRoutes.DownloadYAML)
+	}
+
+	yamls := app.Party("/yamls")
+	{
+		yamls.Get("/{project:string}", deployRoutes.DownloadYAML)
+		yamls.Post("/", stackRoutes.GenerateYAML)
 	}
 
 	stacks := app.Party("/")

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	deployedDir    = "deployed"
-	compressOutput = "deployed.zip"
+	yamlDir        = "yaml"
+	compressOutput = "deployment.zip"
 )
 
 // 當前的 working directory, 通常是 workspace/${project}
@@ -25,7 +25,7 @@ func NewWorkDir(cleanUp bool, p string) *WorkDir {
 	if cleanUp {
 		reMkdir(wd.Path)
 	}
-	d := path.Join(wd.Path, deployedDir)
+	d := path.Join(wd.Path, yamlDir)
 	reMkdir(d)
 
 	return &wd
@@ -36,9 +36,9 @@ func reMkdir(path string) {
 	os.MkdirAll(path, os.ModeDir|os.ModePerm)
 }
 
-func (wd *WorkDir) CopyToDeployedDir(files []models.Yaml) error {
+func (wd *WorkDir) CopyToYamlDir(files []models.Yaml) error {
 	for _, f := range files {
-		newpath := path.Join(wd.Path, deployedDir, path.Base(f.Path))
+		newpath := path.Join(wd.Path, yamlDir, path.Base(f.Path))
 		err := copy(f.Path, newpath)
 		if err != nil {
 			return nil
@@ -68,10 +68,10 @@ func copy(src string, dst string) error {
 }
 
 func GetCompressPath(workDirPath string) string {
-	return path.Join(workDirPath, deployedDir, compressOutput)
+	return path.Join(workDirPath, yamlDir, compressOutput)
 }
 
-func (wd *WorkDir) CompressDeployedDir() error {
+func (wd *WorkDir) CompressYamlDir() error {
 	newfile, err := os.Create(GetCompressPath(wd.Path))
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func (wd *WorkDir) CompressDeployedDir() error {
 
 	zipWriter := zip.NewWriter(newfile)
 	defer zipWriter.Close()
-	d, err := ioutil.ReadDir(path.Join(wd.Path, deployedDir))
+	d, err := ioutil.ReadDir(path.Join(wd.Path, yamlDir))
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (wd *WorkDir) CompressDeployedDir() error {
 			continue
 		}
 
-		zipfile, err := os.Open(path.Join(wd.Path, deployedDir, f.Name()))
+		zipfile, err := os.Open(path.Join(wd.Path, yamlDir, f.Name()))
 		if err != nil {
 			return err
 		}

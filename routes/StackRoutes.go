@@ -54,12 +54,57 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 	indent, _ := json.MarshalIndent(d, "", " ")
 
 	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
-	err := r.deploy(&ctx, *d)
+
+	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path}
+	d.Dev.PublishPort = d.Dev.Port
+
+	y, err := r.generate(&ctx, d, wd, opts)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
+
+	err = r.deploy(&ctx, d, opts, y)
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+
 	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
+}
+
+func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
+	d := &models.Deploy{}
+	ctx.ReadJSON(d)
+	start := time.Now()
+	indent, _ := json.MarshalIndent(d, "", " ")
+
+	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
+
+	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path}
+	d.Dev.PublishPort = d.Dev.Port
+
+	yamls, err := r.generate(&ctx, d, wd, opts)
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+
+	err = wd.CopyToYamlDir(yamls)
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+
+	err = wd.CompressYamlDir()
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+
+	ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
 }
 
 func (r *StackRoutes) RemoveStack(ctx iris.Context) {
@@ -83,30 +128,25 @@ func publishedPort(s string) bool {
 	return false
 }
 
-func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
-	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
-	opts := cmd.Options{Ctx: ctx, Pwd: wd.Path}
-	d.Dev.PublishPort = d.Dev.Port
-
-	(*ctx).StreamWriter(pipe.Printf("\nDeploying '%v'...\n", d.Yaml))
+func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *app.WorkDir, opts *cmd.Options) (yamls []models.Yaml, err error) {
+	(*ctx).StreamWriter(pipe.Printf("\nGenerating YAML '%v'...\n", d.Yaml))
 
 	gpmDir := "repo"
-	group, err := r.Gpm.Install(&opts, gpmDir, &d)
+	group, err := r.Gpm.Install(opts, gpmDir, d)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	var yamls []models.Yaml
 	repo := path.Join(wd.Path, gpmDir)
 
 	if !group {
 		yml := path.Join(repo, "docker-compose.yml")
 		dirs, err := collectDirs(repo)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		err = r.GenYaml.Gen(&opts, dirs, yml, &d)
+		err = r.GenYaml.Gen(opts, dirs, yml, d)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		yamls = append(yamls, models.Yaml{
 			Group: "",
@@ -116,7 +156,7 @@ func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
 		// 限定一層的 group
 		groups, err := ioutil.ReadDir(repo)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		deployGroups := map[string][]string{}
@@ -127,7 +167,7 @@ func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
 			}
 			dirs, err := collectDirs(path.Join(repo, group.Name()))
 			if err != nil {
-				return err
+				return nil, err
 			}
 			deployGroups[group.Name()] = dirs
 		}
@@ -140,9 +180,9 @@ func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
 				}
 			}
 			yml := path.Join(repo, "docker-compose.yml")
-			err := r.GenYaml.Gen(&opts, flat, yml, &d)
+			err := r.GenYaml.Gen(opts, flat, yml, d)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			yamls = append(yamls, models.Yaml{
 				Group: "",
@@ -151,9 +191,9 @@ func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
 		} else {
 			for group, dirs := range deployGroups {
 				yml := path.Join(repo, group, fmt.Sprintf("docker-compose-%v.yml", group))
-				err := r.GenYaml.Gen(&opts, dirs, yml, &d)
+				err := r.GenYaml.Gen(opts, dirs, yml, d)
 				if err != nil {
-					return err
+					return nil, err
 				}
 				yamls = append(yamls, models.Yaml{
 					Group: group,
@@ -163,21 +203,15 @@ func (r *StackRoutes) deploy(ctx *iris.Context, d models.Deploy) error {
 		}
 	}
 
-	err = wd.CopyToDeployedDir(yamls)
+	return yamls, nil
+}
+
+func (r *StackRoutes) deploy(ctx *iris.Context, d *models.Deploy, opts *cmd.Options, yamls []models.Yaml) (err error) {
+	(*ctx).StreamWriter(pipe.Printf("\nDeploying '%v'...\n", d.Yaml))
+	err = r.DockerStack.Deploy(opts, yamls, d)
 	if err != nil {
 		return err
 	}
-
-	err = wd.CompressDeployedDir()
-	if err != nil {
-		return err
-	}
-
-	err = r.DockerStack.Deploy(&opts, yamls, &d)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

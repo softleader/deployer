@@ -171,8 +171,13 @@
                 請注意: 安靜模式下不會有任何的 yaml 檢查, 如 image:tag 是否存在於 registry 中
             </small>
         </div>
-        <button id="deploy" type="submit" class="btn btn-outline-primary">
+        <button id="deploy" url="/" type="submit" class="btn btn-outline-primary"
+                onclick="$(this).parent().attr('action', $(this).attr('url'))">
             <i class="fa fa-bomb" aria-hidden="true"></i> Fire in the hole
+        </button>
+        <button id="generate" url="/yamls" type="submit" class="btn btn-outline-primary"
+                onclick="$(this).parent().attr('action', $(this).attr('url'))">
+            <i class="fa fa-file-text-o" aria-hidden="true"></i> Generate YAML
         </button>
     </form>
     </p>
@@ -201,8 +206,8 @@
         $("form").submit(function (event) {
             event.preventDefault();
 
-            var $deployBtn = $("#deploy");
-            $deployBtn.prop('disabled', true);
+            var $btns = $("button");
+            $btns.prop('disabled', true);
 
             var $output = $("#output");
             $output.empty().parent().removeClass().addClass("alert alert-success")
@@ -229,7 +234,7 @@
 
             $.ajax({
                 type: 'post',
-                url: '/',
+                url: event.target.action,
                 data: JSON.stringify(data),
                 dataType: 'json',
                 processData: false,
@@ -239,13 +244,15 @@
                     }
                 }
             }).always(function () {
-                $deployBtn.prop('disabled', false);
+                $btns.prop('disabled', false);
                 var done = $output.text().match(/.+, done.$/g)
                 if (!done) {
                     $output.parent().removeClass().addClass("alert alert-danger")
-                } else {
-                    var $a = $("<a></a>").addClass("btn btn-outline-info").append("<i class=\"fa fa-download\" aria-hidden=\"true\"></i> Download deployed YAML files");
-                    $a.attr("href", "/deploy/download/" + $("#project").val());
+                }
+                var dl = $output.text().match(/Generating in/g)
+                if (dl) {
+                    var $a = $("<a></a>").addClass("btn btn-outline-info").append("<i class=\"fa fa-download\" aria-hidden=\"true\"></i> Download");
+                    $a.attr("href", "/yamls/" + $("#project").val());
                     $output.append($("<hr/>")).append($a);
                 }
             });
