@@ -13,6 +13,7 @@ import (
 	"path"
 	"io/ioutil"
 	"github.com/softleader/deployer/app"
+	"github.com/dustin/go-humanize"
 )
 
 type StackRoutes struct {
@@ -117,8 +118,7 @@ func (r *StackRoutes) RemoveStack(ctx iris.Context) {
 }
 
 func uptime(t time.Time) string {
-	d := time.Since(t)
-	return fmt.Sprintf("up %.2f hours", d.Hours())
+	return fmt.Sprintf("up %s", humanize.Time(t))
 }
 
 func publishedPort(s string) bool {
