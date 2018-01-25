@@ -118,7 +118,7 @@ func (r *StackRoutes) RemoveStack(ctx iris.Context) {
 }
 
 func uptime(t time.Time) string {
-	return fmt.Sprintf("up %s", humanize.Time(t))
+	return fmt.Sprintf("up %s", humanize.RelTime(t, time.Now(), "", ""))
 }
 
 func publishedPort(s string) bool {
