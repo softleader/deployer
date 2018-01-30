@@ -29,7 +29,7 @@ func NewGpm(cmd string) *Gpm {
 }
 
 func (g *Gpm) Install(opts *Options, dir string, d *models.Deploy) (bool, error) {
-	_, out, err := install(g.cmd, opts, dir, d.Yaml)
+	_, out, err := install(g.cmd, opts, dir, d.Yaml, d.Extend)
 	if err != nil {
 		return false, err
 	}
@@ -37,13 +37,16 @@ func (g *Gpm) Install(opts *Options, dir string, d *models.Deploy) (bool, error)
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
 
-func install(cmd string, opts *Options, dir string, yaml string) (arg string, out string, err error) {
+func install(cmd string, opts *Options, dir string, yaml string, extend string) (arg string, out string, err error) {
 	commands := []string{cmd, "install -F -c Containerfile"}
 	if dir != "" {
 		commands = append(commands, "-d", dir)
 	}
 	if yaml != "" {
 		commands = append(commands, "-y", yaml)
+	}
+	if extend != "" {
+		commands = append(commands, "-e", extend)
 	}
 	return Exec(opts, commands...)
 }

@@ -132,13 +132,13 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *app.Work
 	(*ctx).StreamWriter(pipe.Printf("\nGenerating YAML '%v'...\n", d.Yaml))
 
 	gpmDir := "repo"
-	group, err := r.Gpm.Install(opts, gpmDir, d)
+	grouped, err := r.Gpm.Install(opts, gpmDir, d)
 	if err != nil {
 		return nil, err
 	}
 	repo := path.Join(wd.Path, gpmDir)
 
-	if !group {
+	if !grouped {
 		yml := path.Join(repo, "docker-compose.yml")
 		dirs, err := collectDirs(repo)
 		if err != nil {

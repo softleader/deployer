@@ -10,6 +10,7 @@ type Deploy struct {
 	Volume0   string `json:"volume0"`
 	Net0      string `json:"net0"`
 	Yaml      string `json:"yaml"`
+	Extend    string `json:"extend"`
 	Group     string `json:"group"`
 	FlatGroup bool   `json:"flatGroup"`
 	Silently  bool   `json:"silently"`

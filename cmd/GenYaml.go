@@ -9,6 +9,7 @@ import (
 	"os"
 	"fmt"
 	"log"
+	"github.com/kataras/iris/core/errors"
 )
 
 type GenYaml struct {
@@ -34,6 +35,9 @@ func (gy *GenYaml) Version() (arg string, out string, err error) {
 }
 
 func (gy *GenYaml) Gen(opts *Options, dirs []string, output string, d *models.Deploy) error {
+	if len(dirs) <= 0 {
+		return errors.New("dirs is required");
+	}
 	_, out, err := gen(gy.cmd, opts, output, d, strings.Join(dirs, " "))
 	if err != nil {
 		return err

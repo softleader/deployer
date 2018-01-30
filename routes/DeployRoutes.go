@@ -21,6 +21,7 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 			Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
 		},
 		Yaml:    "github:softleader/softleader-package/",
+		Extend:  "",
 		Volume0: "",
 		Net0:    "",
 		Group:   "",
