@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/softleader/deployer/models"
 	"strings"
-	"github.com/softleader/deployer/pipe"
 	"regexp"
 	"strconv"
 	"os"
@@ -46,7 +45,6 @@ func (gy *GenYaml) Gen(opts *Options, dirs []string, output string, d *models.De
 	if err != nil {
 		return err
 	}
-	(*opts.Ctx).StreamWriter(pipe.Print(out))
 	return nil
 }
 
