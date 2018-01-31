@@ -22,6 +22,7 @@ type StackRoutes struct {
 	cmd.DockerService
 	cmd.Gpm
 	cmd.GenYaml
+	Debug bool
 }
 
 func (r *StackRoutes) ListStack(ctx iris.Context) {
@@ -57,7 +58,7 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
 
 	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
-	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path}
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: r.Debug}
 	d.Dev.PublishPort = d.Dev.Port
 
 	y, err := r.generate(&ctx, d, wd, opts)
@@ -84,7 +85,7 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
 
 	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
-	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path}
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: r.Debug}
 	d.Dev.PublishPort = d.Dev.Port
 
 	yamls, err := r.generate(&ctx, d, wd, opts)

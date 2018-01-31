@@ -9,6 +9,10 @@ import (
 	"github.com/kataras/iris/context"
 )
 
+var (
+	Debug bool
+)
+
 func main() {
 	args := app.NewArgs()
 	ws := app.NewWorkspace(args.Ws)
@@ -50,6 +54,7 @@ func newStackRoutes(args *app.Args, ws *app.Workspace) *routes.StackRoutes {
 		DockerService: *cmd.NewDockerService(),
 		Gpm:           *cmd.NewGpm(args.Gpm),
 		GenYaml:       *cmd.NewGenYaml(args.GenYaml),
+		Debug:         args.Debug,
 	}
 }
 

@@ -11,13 +11,15 @@ import (
 )
 
 type Options struct {
-	Ctx *iris.Context
-	Pwd string
+	Ctx   *iris.Context
+	Pwd   string
+	Debug bool
 }
 
 type output struct {
-	ctx *iris.Context
-	buf bytes.Buffer
+	ctx   *iris.Context
+	buf   bytes.Buffer
+	Debug bool
 }
 
 func Exec(opts *Options, commands ...string) (arg string, out string, err error) {
@@ -31,8 +33,8 @@ func Exec(opts *Options, commands ...string) (arg string, out string, err error)
 		(*opts.Ctx).StreamWriter(pipe.Printf("$ %v\n", arg))
 	}
 
-	stdout := output{ctx: opts.Ctx}
-	stderr := output{ctx: opts.Ctx}
+	stdout := output{ctx: opts.Ctx, Debug: opts.Debug}
+	stderr := output{ctx: opts.Ctx, Debug: opts.Debug}
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
@@ -47,7 +49,11 @@ func Exec(opts *Options, commands ...string) (arg string, out string, err error)
 func (o *output) Write(b []byte) (n int, err error) {
 	o.buf.Write(b)
 	if o.ctx != nil {
-		(*o.ctx).StreamWriter(pipe.Print(string(b)))
+		s := string(b)
+		if o.Debug {
+			fmt.Print(s)
+		}
+		(*o.ctx).StreamWriter(pipe.Print(s))
 	}
 	return len(b), nil
 }

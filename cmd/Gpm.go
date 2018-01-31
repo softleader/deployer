@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/softleader/deployer/pipe"
 	"strings"
 	"github.com/softleader/deployer/models"
 	"os"
@@ -33,7 +32,6 @@ func (g *Gpm) Install(opts *Options, dir string, d *models.Deploy) (bool, error)
 	if err != nil {
 		return false, err
 	}
-	(*opts.Ctx).StreamWriter(pipe.Print(out))
 	return strings.Contains(out, "Detected groups in YAML dependencies!"), nil
 }
 
