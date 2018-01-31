@@ -73,7 +73,9 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 		ctx.WriteString(err.Error())
 	}
 
-	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
+	if err == nil {
+		ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
+	}
 }
 
 func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
@@ -106,7 +108,9 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 		ctx.WriteString(err.Error())
 	}
 
-	ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
+	if err == nil {
+		ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
+	}
 }
 
 func (r *StackRoutes) RemoveStack(ctx iris.Context) {
