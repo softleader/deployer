@@ -29,6 +29,9 @@
                 <a class="nav-link" href="/deploy">Deploy YAML</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="/histories">History</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="http://192.168.1.60:3000/">Grafana</a>
             </li>
             <li class="nav-item">
@@ -46,7 +49,7 @@
     <form>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="cleanUpHelp">
-                <input type="checkbox" id="cleanUp" class="form-check-input" checked>
+                <input type="checkbox" id="cleanUp" class="form-check-input" {{if .dft.CleanUp}}checked{{end}}>
                 Clean up
             </label>
             <small id="cleanUpHelp" class="form-text text-muted">
@@ -59,7 +62,7 @@
         <div class="form-group disabled">
             <label for="project">Project</label>
             <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
-                   placeholder="my-project" required>
+                   placeholder="my-project" value="{{.dft.Project}}" required>
             <small id="projectHelp" class="form-text text-muted">
                 將會作為 workspace 的子目錄及 stack name 的 prefix
             </small>
@@ -72,7 +75,7 @@
         </div>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="devHelp">
-                <input type="checkbox" id="dev" class="form-check-input" checked>
+                <input type="checkbox" id="dev" class="form-check-input" {{if .dft.Dev.IpAddress}}checked{{end}}>
                 Dev Mode
             </label>
             <small id="devHelp" class="form-text text-muted">
@@ -85,7 +88,7 @@
         <div class="form-group">
             <label for="devIpAddress">Dev IpAddress</label>
             <input type="text" class="form-control" id="devIpAddress" aria-describedby="devIpAddressHelp"
-                   value="{{.dft.Dev.IpAddress}}">
+                   value="{{.dft.Dev.IpAddress}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
             <small id="devIpAddressHelp" class="form-text text-muted">
                 若此欄位放空白則不開啟 dev 模式
             </small>
@@ -93,7 +96,7 @@
         <div class="form-group">
             <label for="devPort">Dev Port</label>
             <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
-                   value="{{.dft.Dev.Port}}">
+                   value="{{.dft.Dev.Port}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
             <small id="devPortHelp" class="form-text text-muted">
                 若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
             </small>
@@ -101,7 +104,7 @@
         <div class="form-group">
             <label for="devIgnore">Dev Ignore</label>
             <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
-                   value="{{.dft.Dev.Ignore}}">
+                   value="{{.dft.Dev.Ignore}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
             <small id="devIgnoreHelp" class="form-text text-muted">
                 開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
             </small>
@@ -140,7 +143,7 @@
         </div>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="flatGroupHelp">
-                <input type="checkbox" id="flatGroup" class="form-check-input">
+                <input type="checkbox" id="flatGroup" class="form-check-input" {{if .dft.FlatGroup}}checked{{end}}>
                 Flat Group
             </label>
             <small id="flatGroupHelp" class="form-text text-muted">
@@ -169,7 +172,7 @@
         </div>
         <div class="form-check">
             <label class="form-check-label" aria-describedby="silentlyHelp">
-                <input type="checkbox" id="silently" class="form-check-input">
+                <input type="checkbox" id="silently" class="form-check-input" {{if .dft.Silently}}checked{{end}}>
                 Silently
             </label>
             <small id="silentlyHelp" class="form-text text-muted">
@@ -254,16 +257,24 @@
                 }
             }).always(function () {
                 $btns.prop('disabled', false);
-                var done = $output.text().match(/.+, done.$/g)
-                if (!done) {
-                    $output.parent().removeClass().addClass("alert alert-danger")
-                }
                 var dl = $output.text().match(/Generating in/g)
                 if (dl) {
                     var $a = $("<a></a>").addClass("btn btn-outline-info").append("<i class=\"fa fa-download\" aria-hidden=\"true\"></i> Download");
                     $a.attr("href", "/yamls/" + $("#project").val());
                     $output.append($("<hr/>")).append($a);
+                    return;
                 }
+                var done = $output.text().match(/.+, done.$/g)
+                if (!done) {
+                    $output.parent().removeClass().addClass("alert alert-danger")
+                    return;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: '/histories',
+                    data: JSON.stringify(data),
+                    dataType: 'json'
+                })
             });
         });
 

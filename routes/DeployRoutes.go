@@ -5,6 +5,7 @@ import (
 	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/app"
 	"path"
+	"strconv"
 )
 
 type DeployRoutes struct {
@@ -14,19 +15,28 @@ type DeployRoutes struct {
 
 func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 	ctx.ViewData("workspace", r.Args.Ws)
-	ctx.ViewData("dft", models.Deploy{
-		Dev: models.Dev{
-			IpAddress: "192.168.1.60",
-			Port:      0,
-			Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
-		},
-		Yaml:    "github:softleader/softleader-package/",
-		Extend:  "",
-		Volume0: "",
-		Net0:    "",
-		Group:   "",
-	})
+
+	h := ctx.Params().Get("history")
+	dft, err := prepareDefaultValue(r.Workspace, h)
+	if err != nil {
+		ctx.ViewData("err", err)
+	}
+	ctx.ViewData("dft", dft)
 	ctx.View("deploy.html")
+}
+
+func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error) {
+	d = *models.NewDefaultDeploy()
+	if h != "" {
+		i, err := strconv.Atoi(h)
+		if err == nil && i >= 0 {
+			histories, err := models.GetHistories(ws.Path())
+			if err == nil && i < len(histories) {
+				d = histories[i]
+			}
+		}
+	}
+	return d, err
 }
 
 func (r *DeployRoutes) DownloadYAML(ctx iris.Context) {

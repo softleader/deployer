@@ -21,9 +21,10 @@ func main() {
 	serviceRoutes := newServiceRoutes()
 	stackRoutes := newStackRoutes(args, ws)
 	practiceRoutes := newPracticeRoutes(ws)
+	historyRoutes := newHistoryRoutes(ws)
 
 	// https://github.com/kataras/iris
-	app := newApp(deployRoutes, stackRoutes, serviceRoutes, practiceRoutes)
+	app := newApp(deployRoutes, stackRoutes, serviceRoutes, practiceRoutes, historyRoutes)
 
 	app.Run(
 		iris.Addr(args.Addr+":"+strconv.Itoa(args.Port)),
@@ -58,13 +59,23 @@ func newStackRoutes(args *app.Args, ws *app.Workspace) *routes.StackRoutes {
 	}
 }
 
+func newHistoryRoutes(ws *app.Workspace) *routes.HistoryRoutes {
+	return &routes.HistoryRoutes{
+		Workspace: *ws,
+	}
+}
+
 func newPracticeRoutes(ws *app.Workspace) *routes.PracticeRoutes {
 	return &routes.PracticeRoutes{
 		Workspace: *ws,
 	}
 }
 
-func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, serviceRoutes *routes.ServiceRoutes, practiceRoutes *routes.PracticeRoutes) *iris.Application {
+func newApp(deployRoutes *routes.DeployRoutes,
+	stackRoutes *routes.StackRoutes,
+	serviceRoutes *routes.ServiceRoutes,
+	practiceRoutes *routes.PracticeRoutes,
+	historyRoutes *routes.HistoryRoutes) *iris.Application {
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -82,6 +93,7 @@ func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, 
 	deploy := app.Party("/deploy")
 	{
 		deploy.Get("/", deployRoutes.DeployPage)
+		deploy.Get("/{history:int}", deployRoutes.DeployPage)
 	}
 
 	yamls := app.Party("/yamls")
@@ -116,6 +128,19 @@ func newApp(deployRoutes *routes.DeployRoutes, stackRoutes *routes.StackRoutes, 
 		practices.Get("/", practiceRoutes.BestPractices)
 		practices.Get("/mde", practiceRoutes.MarkdownEditor)
 		practices.Post("/mde", practiceRoutes.SaveMarkdown)
+	}
+
+	histories := app.Party("/histories")
+	{
+		histories.Get("/", historyRoutes.GetHistories)
+		histories.Post("/", func(ctx context.Context) {
+			historyRoutes.SaveHistory(ctx)
+			ctx.Redirect("/histories")
+		})
+		histories.Get("/rm/{idx:int}", func(ctx context.Context) {
+			historyRoutes.RemoveHistory(ctx)
+			ctx.Redirect("/histories")
+		})
 	}
 
 	return app

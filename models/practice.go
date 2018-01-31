@@ -9,12 +9,8 @@ import (
 	"path/filepath"
 )
 
-var (
-	filename = "best-practices.md"
-)
-
 func ReadPractices(ws string) (content string, err error) {
-	f := file(ws)
+	f := practices(ws)
 	_, err = os.OpenFile(f, os.O_RDONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return "", err
@@ -27,9 +23,9 @@ func ReadPractices(ws string) (content string, err error) {
 }
 
 func SavePractices(ws string, content string) (err error) {
-	return ioutil.WriteFile(file(ws), []byte(content), os.ModePerm)
+	return ioutil.WriteFile(practices(ws), []byte(content), os.ModePerm)
 }
 
-func file(ws string) string {
-	return filepath.Join(ws, filename)
+func practices(ws string) string {
+	return filepath.Join(ws, "best-practices.md")
 }

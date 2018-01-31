@@ -22,13 +22,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/">List Stacks</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/deploy">Deploy YAML</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="/histories">History</a>
             </li>
             <li class="nav-item">
@@ -45,50 +45,32 @@
 </nav>
 
 <div class="container">
-
-    {{range $key, $value := .stacks}}
     <p>
-        {{/*<div class="card-deck">*/}}
-            <div class="card">
-                <div class="card-header">
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                       name="{{$key}}">
-                        <i class="fa fa-trash" aria-hidden="true"></i> {{$key}}
-                    </a>
-                </div>
-                <div class="card-body">
-                    <table class="table table-responsive-sm table-hover">
-                        {{/*<thead>*/}}
-                        {{/*<tr>*/}}
-                            {{/*<th scope="col">Name</th>*/}}
-                            {{/*<th scope="col">Services</th>*/}}
-                            {{/*<th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>*/}}
-                        {{/*</tr>*/}}
-                        {{/*</thead>*/}}
-                        <tbody>
-                        {{range $index, $line := $value}}
-                        <tr>
-                            <td>
-                                <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">
-                                    {{index $line 0}} ({{index $line 1}}) {{index $line 2}}
-                                </a>
-                            </td>
-                            {{/*<td>{{index $line 1}}</td>*/}}
-                            <td class="text-right">
-                                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                                   name="{{index $line 0}}">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {{end}}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        {{/*</div>*/}}
+    <table class="table table-responsive-sm table-hover">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Histories</th>
+            <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $index, $line := .out}}
+        <tr>
+            <td><pre>{{index $line.String}}</pre></td>
+            <td>
+                <a class="btn btn-outline-primary btn-sm" href="/deploy/{{$index}}">
+                    <i class="fa fa-share" aria-hidden="true"></i>
+                </a>
+
+                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$line.Project}}/{{$index}}">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+            </td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
     </p>
-    {{end}}
 </div>
 
 <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -131,8 +113,8 @@
     $(".fa-trash").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#removeModal");
-        $modal.find(".text-danger").html(n);
-        $modal.find("#proceed").attr("href", "/rm/" + n);
+        $modal.find(".text-danger").html(n.split("/")[0]);
+        $modal.find("#proceed").attr("href", "/histories/rm/" + n.split("/")[1]);
     });
 </script>
 
