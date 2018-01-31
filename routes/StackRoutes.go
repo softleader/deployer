@@ -64,18 +64,16 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 	y, err := r.generate(&ctx, d, wd, opts)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		return
 	}
 
 	err = r.deploy(&ctx, d, opts, y)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		return
 	}
 
-	if err == nil {
-		ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
-	}
+	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
 }
 
 func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
@@ -93,24 +91,22 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 	yamls, err := r.generate(&ctx, d, wd, opts)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		return
 	}
 
 	err = wd.CopyToYamlDir(yamls)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		return
 	}
 
 	err = wd.CompressYamlDir()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		return
 	}
 
-	if err == nil {
-		ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
-	}
+	ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
 }
 
 func (r *StackRoutes) RemoveStack(ctx iris.Context) {

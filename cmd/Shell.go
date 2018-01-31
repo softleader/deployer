@@ -42,6 +42,9 @@ func Exec(opts *Options, commands ...string) (arg string, out string, err error)
 	if err != nil {
 		return "", "", errors.New(fmt.Sprint(err) + ": " + stderr.buf.String())
 	}
+	if stderr.buf.Len() > 0 {
+		return "", "", errors.New(stderr.buf.String())
+	}
 
 	return arg, stdout.buf.String(), nil
 }
