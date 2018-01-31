@@ -208,7 +208,7 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *app.Work
 }
 
 func (r *StackRoutes) deploy(ctx *iris.Context, d *models.Deploy, opts *cmd.Options, yamls []models.Yaml) (err error) {
-	(*ctx).StreamWriter(pipe.Printf("\nDeploying '%v'...\n", d.Yaml))
+	(*ctx).StreamWriter(pipe.Printf("Deploying '%v'...\n", d.Yaml))
 	err = r.DockerStack.Deploy(opts, yamls, d)
 	if err != nil {
 		return err
