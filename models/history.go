@@ -32,20 +32,23 @@ func SaveHistory(ws string, d *Deploy) (err error) {
 	if err != nil {
 		return err
 	}
+	histories = saveOrUpdate(d, histories)
+	return writeHistories(ws, histories)
+}
 
-	i := 0
+func saveOrUpdate(d *Deploy, histories []Deploy) (h []Deploy) {
+	i := -1
 	for idx, h := range histories {
 		if h.Project == d.Project {
 			i = idx
 			break
 		}
 	}
-	if i > 0 {
-		histories = append(histories[:i], append([]Deploy{*d}, histories[i+1:]...)...)
+	if i >= 0 {
+		return append(histories[:i], append([]Deploy{*d}, histories[i+1:]...)...)
 	} else {
-		histories = append(histories, *d)
+		return append(histories, *d)
 	}
-	return writeHistories(ws, histories)
 }
 
 func RemoveHistory(ws string, i int) (err error) {
