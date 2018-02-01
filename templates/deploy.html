@@ -269,12 +269,6 @@
                     $output.parent().removeClass().addClass("alert alert-danger")
                     return;
                 }
-                $.ajax({
-                    type: 'post',
-                    url: '/histories',
-                    data: JSON.stringify(data),
-                    dataType: 'json'
-                })
             });
         });
 

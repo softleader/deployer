@@ -73,6 +73,11 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 		return
 	}
 
+	err = models.SaveHistory(r.Workspace.Path(), d)
+	if err != nil {
+		ctx.Application().Logger().Info("Failed saving history", err.Error())
+	}
+
 	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
 }
 
