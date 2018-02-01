@@ -10,8 +10,8 @@ type Deploy struct {
 	Yaml      string `json:"yaml"`
 	Extend    string `json:"extend,omitempty"`
 	Dev       Dev    `json:"dev,omitempty"`
-	Volume0   string `json:"volume0,omitempty"`
 	Net0      string `json:"net0,omitempty"`
+	Volume0   string `json:"volume0,omitempty"`
 	Group     string `json:"group,omitempty"`
 	FlatGroup bool   `json:"flatGroup"`
 	Style     string `json:"style"`
