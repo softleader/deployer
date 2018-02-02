@@ -2,13 +2,14 @@ package models
 
 import (
 	"testing"
+	"sort"
 )
 
 func TestSaveOrUpdate(t *testing.T) {
 
-	h := []Deploy{
+	h := Histories{
 		{
-			Project: "a",
+			Project: "c",
 			Yaml:    "hello",
 		},
 		{
@@ -16,7 +17,7 @@ func TestSaveOrUpdate(t *testing.T) {
 			Yaml:    "",
 		},
 		{
-			Project: "c",
+			Project: "a",
 			Yaml:    "world",
 		},
 	}
@@ -26,15 +27,24 @@ func TestSaveOrUpdate(t *testing.T) {
 		Yaml:    "my-yaml",
 	}
 
-	actual := saveOrUpdate(&d, h)
+	h.Push(&d)
 
-	errorIfNotEquals(t, "length", 3, len(actual))
-	errorIfNotEquals(t, "[0].Project", "a", actual[0].Project)
-	errorIfNotEquals(t, "[0].Yaml", "hello", actual[0].Yaml)
-	errorIfNotEquals(t, "[1].Project", "b", actual[1].Project)
-	errorIfNotEquals(t, "[1].Yaml", "my-yaml", actual[1].Yaml)
-	errorIfNotEquals(t, "[2].Project", "c", actual[2].Project)
-	errorIfNotEquals(t, "[2].Yaml", "world", actual[2].Yaml)
+	errorIfNotEquals(t, "length", 3, len(h))
+	errorIfNotEquals(t, "[0].Project", "c", h[0].Project)
+	errorIfNotEquals(t, "[0].Yaml", "hello", h[0].Yaml)
+	errorIfNotEquals(t, "[1].Project", "b", h[1].Project)
+	errorIfNotEquals(t, "[1].Yaml", "my-yaml", h[1].Yaml)
+	errorIfNotEquals(t, "[2].Project", "a", h[2].Project)
+	errorIfNotEquals(t, "[2].Yaml", "world", h[2].Yaml)
+
+	sort.Sort(h)
+
+	errorIfNotEquals(t, "[0].Project", "a", h[0].Project)
+	errorIfNotEquals(t, "[0].Yaml", "world", h[0].Yaml)
+	errorIfNotEquals(t, "[1].Project", "b", h[1].Project)
+	errorIfNotEquals(t, "[1].Yaml", "my-yaml", h[1].Yaml)
+	errorIfNotEquals(t, "[2].Project", "c", h[2].Project)
+	errorIfNotEquals(t, "[2].Yaml", "hello", h[2].Yaml)
 
 }
 

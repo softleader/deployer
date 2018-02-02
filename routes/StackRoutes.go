@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"github.com/softleader/deployer/app"
 	"github.com/dustin/go-humanize"
+	"sort"
 )
 
 type StackRoutes struct {
@@ -73,10 +74,13 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 		return
 	}
 
-	err = models.SaveHistory(r.Workspace.Path(), d)
+	h, err := models.GetHistories(r.Workspace.Path())
 	if err != nil {
 		ctx.Application().Logger().Info("Failed saving history", err.Error())
 	}
+	h.Push(d)
+	sort.Sort(h)
+	h.SaveTo(r.Workspace.Path())
 
 	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
 }

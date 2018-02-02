@@ -133,10 +133,6 @@ func newApp(deployRoutes *routes.DeployRoutes,
 	histories := app.Party("/histories")
 	{
 		histories.Get("/", historyRoutes.GetHistories)
-		histories.Post("/", func(ctx context.Context) {
-			historyRoutes.SaveHistory(ctx)
-			ctx.Redirect("/histories")
-		})
 		histories.Get("/rm/{idx:int}", func(ctx context.Context) {
 			historyRoutes.RemoveHistory(ctx)
 			ctx.Redirect("/histories")

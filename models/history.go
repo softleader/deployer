@@ -7,7 +7,13 @@ import (
 	"encoding/json"
 )
 
-func GetHistories(ws string) (histories []Deploy, err error) {
+type Histories []Deploy
+
+func (h Histories) Len() int           { return len(h) }
+func (h Histories) Less(i, j int) bool { return h[i].Project < h[j].Project }
+func (h Histories) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func GetHistories(ws string) (histories Histories, err error) {
 	f := history(ws)
 	_, err = os.OpenFile(f, os.O_RDONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
@@ -27,45 +33,31 @@ func GetHistories(ws string) (histories []Deploy, err error) {
 	return histories, nil
 }
 
-func SaveHistory(ws string, d *Deploy) (err error) {
-	histories, err := GetHistories(ws)
-	if err != nil {
-		return err
-	}
-	histories = saveOrUpdate(d, histories)
-	return writeHistories(ws, histories)
-}
-
-func saveOrUpdate(d *Deploy, histories []Deploy) (h []Deploy) {
+func (h *Histories) Push(d *Deploy) {
 	i := -1
-	for idx, h := range histories {
-		if h.Project == d.Project {
+	for idx, e := range *h {
+		if e.Project == d.Project {
 			i = idx
 			break
 		}
 	}
 	if i >= 0 {
-		return append(histories[:i], append([]Deploy{*d}, histories[i+1:]...)...)
+		*h = append((*h)[:i], append([]Deploy{*d}, (*h)[i+1:]...)...)
 	} else {
-		return append(histories, *d)
+		*h = append(*h, *d)
 	}
 }
 
-func RemoveHistory(ws string, i int) (err error) {
-	histories, err := GetHistories(ws)
-	if err != nil {
-		return err
-	}
-	histories = append(histories[:i], histories[i+1:]...)
-	return writeHistories(ws, histories)
-}
-
-func writeHistories(ws string, h []Deploy) (err error) {
+func (h *Histories) SaveTo(ws string) (err error) {
 	b, err := json.Marshal(h)
 	if err != nil {
 		return err
 	}
 	return ioutil.WriteFile(history(ws), b, os.ModePerm)
+}
+
+func (h *Histories) Delete(i int) {
+	*h = append((*h)[:i], (*h)[i+1:]...)
 }
 
 func history(ws string) string {

@@ -17,21 +17,19 @@ func (r *HistoryRoutes) GetHistories(ctx iris.Context) {
 	ctx.View("histories.html")
 }
 
-func (r *HistoryRoutes) SaveHistory(ctx iris.Context) {
-	d := &models.Deploy{}
-	ctx.ReadJSON(d)
-	if d.Project != "" {
-		err := models.SaveHistory(r.Workspace.Path(), d)
-		ctx.ViewData("err", err)
-	}
-}
-
 func (r *HistoryRoutes) RemoveHistory(ctx iris.Context) {
 	index, err := ctx.Params().GetInt("index")
 	if err != nil {
 		ctx.ViewData("err", err)
 		return
 	}
-	err = models.RemoveHistory(r.Workspace.Path(), index)
-	ctx.ViewData("err", err)
+	h, err := models.GetHistories(r.Workspace.Path())
+	if err != nil {
+		ctx.ViewData("err", err)
+	}
+	h.Delete(index)
+	h.SaveTo(r.Workspace.Path())
+	if err != nil {
+		ctx.ViewData("err", err)
+	}
 }
