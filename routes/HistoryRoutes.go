@@ -10,11 +10,11 @@ type HistoryRoutes struct {
 	app.Workspace
 }
 
-func (r *HistoryRoutes) GetHistories(ctx iris.Context) {
-	out, err := models.GetHistories(r.Workspace.Path())
+func (r *HistoryRoutes) GetHistory(ctx iris.Context) {
+	out, err := models.GetHistory(r.Workspace.Path())
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
-	ctx.View("histories.html")
+	ctx.View("history.html")
 }
 
 func (r *HistoryRoutes) RemoveHistory(ctx iris.Context) {
@@ -23,7 +23,7 @@ func (r *HistoryRoutes) RemoveHistory(ctx iris.Context) {
 		ctx.ViewData("err", err)
 		return
 	}
-	h, err := models.GetHistories(r.Workspace.Path())
+	h, err := models.GetHistory(r.Workspace.Path())
 	if err != nil {
 		ctx.ViewData("err", err)
 	}

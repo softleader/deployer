@@ -7,7 +7,7 @@ import (
 
 func TestSaveOrUpdate(t *testing.T) {
 
-	h := Histories{
+	h := History{
 		{
 			Project: "c",
 			Yaml:    "hello",

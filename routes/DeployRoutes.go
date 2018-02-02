@@ -30,7 +30,7 @@ func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error
 	if h != "" {
 		i, err := strconv.Atoi(h)
 		if err == nil && i >= 0 {
-			histories, err := models.GetHistories(ws.Path())
+			histories, err := models.GetHistory(ws.Path())
 			if err == nil && i < len(histories) {
 				d = histories[i]
 			}

@@ -130,12 +130,12 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		practices.Post("/mde", practiceRoutes.SaveMarkdown)
 	}
 
-	histories := app.Party("/histories")
+	history := app.Party("/history")
 	{
-		histories.Get("/", historyRoutes.GetHistories)
-		histories.Get("/rm/{idx:int}", func(ctx context.Context) {
+		history.Get("/", historyRoutes.GetHistory)
+		history.Get("/rm/{idx:int}", func(ctx context.Context) {
 			historyRoutes.RemoveHistory(ctx)
-			ctx.Redirect("/histories")
+			ctx.Redirect("/history")
 		})
 	}
 
