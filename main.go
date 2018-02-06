@@ -90,10 +90,22 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		api.Delete("/services/{service:string}", serviceRoutes.RemoveService)
 	}
 
+	root := app.Party("/")
+	{
+		root.Get("/", deployRoutes.DeployPage)
+		root.Get("/{history:string}", deployRoutes.DeployPage)
+	}
+
+	// deprecate, in place of root route
 	deploy := app.Party("/deploy")
 	{
-		deploy.Get("/", deployRoutes.DeployPage)
-		deploy.Get("/{history:int}", deployRoutes.DeployPage)
+		deploy.Get("/", func(ctx context.Context) {
+			ctx.Redirect("/")
+		})
+		deploy.Get("/{history:string}", func(ctx context.Context) {
+			h := ctx.Params().Get("history")
+			ctx.Redirect("/" + h)
+		})
 	}
 
 	yamls := app.Party("/yamls")
@@ -102,13 +114,13 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		yamls.Post("/", stackRoutes.GenerateYAML)
 	}
 
-	stacks := app.Party("/")
+	stacks := app.Party("/stacks")
 	{
 		stacks.Get("/", stackRoutes.ListStack)
 		stacks.Post("/", stackRoutes.DeployStack)
 		stacks.Get("/rm/{stack:string}", func(ctx context.Context) {
 			stackRoutes.RemoveStack(ctx)
-			ctx.Redirect("/")
+			ctx.Redirect("/stacks")
 		})
 	}
 
