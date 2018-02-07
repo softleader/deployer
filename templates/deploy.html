@@ -174,6 +174,17 @@
             </small>
         </div>
         <div class="form-check">
+            <label for="styleHelp">Style</label>
+            <select class="form-control" id="style">
+                <option value="swarm" {{if eq .dft.Style "swarm"}}selected{{end}}>Docker Swarm</option>
+                <option value="k8s" {{if eq .dft.Style "k8s"}}selected{{end}} disabled>Kubernetes</option>
+                <option value="charts" {{if eq .dft.Style "charts"}}selected{{end}} disabled>Helm Charts</option>
+            </select>
+            <small id="styleHelp" class="form-text text-muted">
+                產出的 YAML 格式
+            </small>
+        </div>
+        <div class="form-check">
             <label class="form-check-label" aria-describedby="silentlyHelp">
                 <input type="checkbox" id="silently" class="form-check-input" {{if .dft.Silently}}checked{{end}}>
                 Silently
@@ -225,11 +236,10 @@
 
             var $output = $("#output");
             $output.empty().parent().removeClass().addClass("alert alert-success")
-
             var data = {
                 "cleanUp": $("#cleanUp").is(":checked"),
                 "project": $("#project").val(),
-                "style": "swarm",
+                "style": $("#style option:selected").val(),
                 "dev": {},
                 "net0": $("#net0").val(),
                 "volume0": $("#volume0").val(),

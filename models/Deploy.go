@@ -37,6 +37,7 @@ func (d *Deploy) GroupContains(group string) bool {
 func NewDefaultDeploy() *Deploy {
 	return &Deploy{
 		CleanUp: true,
+		Style:   "swarm",
 		Dev: Dev{
 			IpAddress: "192.168.1.60",
 			Port:      0,
