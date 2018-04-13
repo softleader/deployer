@@ -50,7 +50,7 @@ func (ds *DockerStack) RmLike(stack string) (arg string, out string, err error) 
 }
 
 func deploy(opts *Options, stack string, file string) (arg string, out string, err error) {
-	return Exec(opts, "docker stack deploy -c", file, stack)
+	return Exec(opts, "docker stack deploy -c", file, stack, "--with-registry-auth")
 }
 
 func (ds *DockerStack) Deploy(opts *Options, yamls []models.Yaml, d *models.Deploy) error {
