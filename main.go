@@ -18,7 +18,7 @@ func main() {
 	ws := app.NewWorkspace(args.Ws)
 
 	deployRoutes := newDeployRoutes(args, ws)
-	serviceRoutes := newServiceRoutes()
+	serviceRoutes := newServiceRoutes(args)
 	stackRoutes := newStackRoutes(args, ws)
 	practiceRoutes := newPracticeRoutes(ws)
 	historyRoutes := newHistoryRoutes(ws)
@@ -41,9 +41,9 @@ func newDeployRoutes(args *app.Args, ws *app.Workspace) *routes.DeployRoutes {
 	}
 }
 
-func newServiceRoutes() *routes.ServiceRoutes {
+func newServiceRoutes(args *app.Args) *routes.ServiceRoutes {
 	return &routes.ServiceRoutes{
-		DockerStack:   *cmd.NewDockerStack(),
+		DockerStack:   *cmd.NewDockerStack(args.Registry),
 		DockerService: *cmd.NewDockerService(),
 	}
 }
@@ -51,7 +51,7 @@ func newServiceRoutes() *routes.ServiceRoutes {
 func newStackRoutes(args *app.Args, ws *app.Workspace) *routes.StackRoutes {
 	return &routes.StackRoutes{
 		Workspace:     *ws,
-		DockerStack:   *cmd.NewDockerStack(),
+		DockerStack:   *cmd.NewDockerStack(args.Registry),
 		DockerService: *cmd.NewDockerService(),
 		Gpm:           *cmd.NewGpm(args.Gpm),
 		GenYaml:       *cmd.NewGenYaml(args.GenYaml),

@@ -4,13 +4,15 @@ import (
 	"strconv"
 	"strings"
 	"github.com/softleader/deployer/models"
+	"github.com/softleader/deployer/app"
 )
 
 type DockerStack struct {
+	app.Registry
 }
 
-func NewDockerStack() *DockerStack {
-	return &DockerStack{}
+func NewDockerStack(registry app.Registry) *DockerStack {
+	return &DockerStack{Registry: registry}
 }
 
 func (ds *DockerStack) Ls() ([][]string, error) {
@@ -49,8 +51,8 @@ func (ds *DockerStack) RmLike(stack string) (arg string, out string, err error) 
 	return Exec(&Options{}, "docker stack rm $(docker stack ls --format {{.Name}} | grep", stack, ")")
 }
 
-func deploy(opts *Options, stack string, file string) (arg string, out string, err error) {
-	return Exec(opts, "docker stack deploy -c", file, stack, "--with-registry-auth")
+func deploy(opts *Options, stack string, file string, registry app.Registry) (arg string, out string, err error) {
+	return Exec(opts, registry.Login(), "&&", "docker stack deploy -c", file, stack, "--with-registry-auth")
 }
 
 func (ds *DockerStack) Deploy(opts *Options, yamls []models.Yaml, d *models.Deploy) error {
@@ -62,7 +64,7 @@ func (ds *DockerStack) Deploy(opts *Options, yamls []models.Yaml, d *models.Depl
 		if y.Group != "" {
 			stack = append(stack, y.Group)
 		}
-		deploy(opts, strings.Join(stack, "-"), y.Path)
+		deploy(opts, strings.Join(stack, "-"), y.Path, ds.Registry)
 	}
 	return nil
 }
