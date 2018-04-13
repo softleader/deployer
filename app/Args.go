@@ -39,5 +39,8 @@ func NewArgs() *Args {
 }
 
 func (r *Registry) Login() string {
-	return fmt.Sprintf("docker login %s -u %s -p %s", r.Server, r.Username, r.Password)
+	if r.Server == "" || r.Username == "" || r.Password == "" {
+		return ""
+	}
+	return fmt.Sprintf("docker login %s -u %s -p %s &&", r.Server, r.Username, r.Password)
 }
