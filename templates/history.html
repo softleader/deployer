@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style>
+        :root {
+            --jumbotron-padding-y: 3rem;
+        }
+
+        footer {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        footer p {
+            margin-bottom: .25rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -37,63 +51,78 @@
             <li class="nav-item">
                 <a class="nav-link" href="https://github.com/softleader/deployer#rest-api">REST API</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="http://192.168.1.93:10080/">Captain Kube</a>
+            </li>
         </ul>
     </div>
 </nav>
 
-<div class="container">
-    <p>
-    <table class="table table-responsive-sm table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Deployment History of Each Project</th>
-            <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
-        </tr>
-        </thead>
-        <tbody>
-        {{range $index, $line := .out}}
-        <tr>
-            <td><pre>{{index $line.String}}</pre></td>
-            <td>
-                <a class="btn btn-outline-primary btn-sm" href="/{{$index}}">
-                    <i class="fa fa-share" aria-hidden="true"></i>
-                </a>
+<main role="main">
+    <div class="container">
+        <p>
+        <table class="table table-responsive-sm table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Deployment History of Each Project</th>
+                <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $index, $line := .out}}
+            <tr>
+                <td><pre>{{index $line.String}}</pre></td>
+                <td>
+                    <a class="btn btn-outline-primary btn-sm" href="/{{$index}}">
+                        <i class="fa fa-share" aria-hidden="true"></i>
+                    </a>
 
-                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$line.Project}}/{{$index}}">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </a>
-            </td>
-        </tr>
-        {{end}}
-        </tbody>
-    </table>
-    </p>
-</div>
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$line.Project}}/{{$index}}">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+        </p>
+    </div>
 
-<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Ready to remove?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to remove <span class="text-danger"></span>?
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline-secondary btn-sm" type="button" data-dismiss="modal">
-                    <i class="fa fa-ban" aria-hidden="true"></i> Cancel
-                </button>
-                <a class="btn btn-outline-primary btn-sm" id="proceed" href="login.html">
-                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Proceed
-                </a>
+    <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Ready to remove?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove <span class="text-danger"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" data-dismiss="modal">
+                        <i class="fa fa-ban" aria-hidden="true"></i> Cancel
+                    </button>
+                    <a class="btn btn-outline-primary btn-sm" id="proceed" href="login.html">
+                        <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Proceed
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</main>
+
+<footer class="text-muted">
+    <div class="container">
+        <p class="float-right">
+            <a href="#" class="text-muted"><i class="fas fa-angle-double-up fa-2x"></i></a>
+        </p>
+        <p><a href="https://github.com/softleader" class="text-muted"><i class="fa fa-github"></i></a> <a href="https://www.facebook.com/softleader" class="text-muted"><i class="fa fa-facebook"></i></a></p>
+        <p>Copyright © 2018 <a href="https://www.softleader.com.tw" class="text-muted">SoftLeader Technology Crop</a>. All rights reserved.</p>
+    </div>
+</footer>
 
 <script src="https://use.fontawesome.com/c4e1e41426.js"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

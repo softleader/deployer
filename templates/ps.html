@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style>
+        :root {
+            --jumbotron-padding-y: 3rem;
+        }
+
+        footer {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        footer p {
+            margin-bottom: .25rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -37,40 +51,55 @@
             <li class="nav-item">
                 <a class="nav-link" href="https://github.com/softleader/deployer#rest-api">REST API</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="http://192.168.1.93:10080/">Captain Kube</a>
+            </li>
         </ul>
     </div>
 </nav>
 
-<div class="container">
-    <p>
-    <table class="table table-responsive-sm table-hover">
-        <thead class="thead-light">
-        <tr>
-        {{/*<th scope="col">Service Id</th>*/}}
-            <th scope="col">Name</th>
-            <th scope="col">Image</th>
-            <th scope="col">Node</th>
-            <th scope="col">Desire State</th>
-            <th scope="col">Current State</th>
-            <th scope="col">Error</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{range $index, $line := .out}}
-        <tr>
-        {{/*<td>{{index $line 0}}</td>*/}}
-            <td>{{index $line 1}}</td>
-            <td>{{index $line 2}}</td>
-            <td>{{index $line 3}}</td>
-            <td>{{index $line 4}}</td>
-            <td>{{index $line 5}}</td>
-            <td>{{index $line 6}}</td>
-        </tr>
-        {{end}}
-        </tbody>
-    </table>
-    </p>
-</div>
+<main role="main">
+    <div class="container">
+        <p>
+        <table class="table table-responsive-sm table-hover">
+            <thead class="thead-light">
+            <tr>
+            {{/*<th scope="col">Service Id</th>*/}}
+                <th scope="col">Name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Node</th>
+                <th scope="col">Desire State</th>
+                <th scope="col">Current State</th>
+                <th scope="col">Error</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $index, $line := .out}}
+            <tr>
+            {{/*<td>{{index $line 0}}</td>*/}}
+                <td>{{index $line 1}}</td>
+                <td>{{index $line 2}}</td>
+                <td>{{index $line 3}}</td>
+                <td>{{index $line 4}}</td>
+                <td>{{index $line 5}}</td>
+                <td>{{index $line 6}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+        </p>
+    </div>
+</main>
+
+<footer class="text-muted">
+    <div class="container">
+        <p class="float-right">
+            <a href="#" class="text-muted"><i class="fas fa-angle-double-up fa-2x"></i></a>
+        </p>
+        <p><a href="https://github.com/softleader" class="text-muted"><i class="fa fa-github"></i></a> <a href="https://www.facebook.com/softleader" class="text-muted"><i class="fa fa-facebook"></i></a></p>
+        <p>Copyright © 2018 <a href="https://www.softleader.com.tw" class="text-muted">SoftLeader Technology Crop</a>. All rights reserved.</p>
+    </div>
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
