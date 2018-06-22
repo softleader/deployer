@@ -1,0 +1,9 @@
+deployer:
+  image: "softleader/deployer"
+  ports:
+    - 5678:80
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ~/.gpm:/root/.gpm
+    - ./:/data
+  restart: always

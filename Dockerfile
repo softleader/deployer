@@ -1,26 +1,25 @@
-FROM alpine
+FROM softleader/docker-client
+MAINTAINER softleader.com.tw
 
-ENV GOPATH=$HOME/go
-ENV APP_HOME=$GOPATH/src/github.com/softleader/deployer
+ENV APP_HOME=/deployer
+
+ENV WORKSPACE=/data
+ENV CMD_GPM=$APP_HOME/node_modules/git-package-manager/index.js
+ENV CMD_GEN_YAML=$APP_HOME/node_modules/container-yaml-generator/index.js
+ENV PORT=80
 
 WORKDIR $APP_HOME
-
-#COPY main.go $APP_HOME
-#COPY cmd/ $APP_HOME/cmd/
-#COPY datamodels/ $APP_HOME/datamodels/
-#COPY services/ $APP_HOME/services/
-#COPY web/ $APP_HOME/web/
-
-COPY main $APP_HOME
+COPY build/main $APP_HOME/
+COPY templates/* $APP_HOME/templates/
+COPY node_modules* $APP_HOME/node_modules/
+COPY docker-compose.yml /
 
 RUN apk update \
-    && apk --no-cache add git nodejs-npm go \
+    && apk --no-cache add git nodejs \
     && rm -rf /var/cache/apk/* \
     && git config --global user.name "r&d" \
-    && git config --global user.email rd@softleader.com.tw \
-    && npm install softleader/container-yaml-generator -g \
-    && npm install softleader/git-package-manager -g
+    && git config --global user.email "rd@softleader.com.tw"
 
-EXPOSE 8080
+EXPOSE 5678
 
-CMD ["sh", "-c", "./main"]
+CMD ["sh", "-c", "/deployer/main -workspace=$WORKSPACE -cmd.gpm=$CMD_GPM -cmd.gen-yaml=$CMD_GEN_YAML -port=$PORT"]

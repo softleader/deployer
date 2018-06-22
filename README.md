@@ -32,7 +32,23 @@ eg.
 $ ./build/main-macos-amd64 -workspace=/tmp -port=8080
 ```
 
-### Install as Ubuntu service (on 192.168.1.60)
+### Docker Compose
+
+- Copy docker-compose YAML file
+
+```shell
+docker run --rm -v "$(pwd)":/data \
+    softleader/deployer \
+    cp /docker-compose.yml /data
+```
+
+- Run via docker compose
+
+```shell
+docker-compose up -d
+```
+
+### [Deprecated] Install as Ubuntu service (on 192.168.1.60)
 
 - Copy `deployer.service` to the directory `/etc/systemd/system/`
 
@@ -62,7 +78,7 @@ $ ./build/main-macos-amd64 -workspace=/tmp -port=8080
   $ systemctl disable deployer
   ```
 
-### Update deployer service (on 192.168.1.60)
+### [Deprecated] Update deployer service (on 192.168.1.60)
 
 ```shell
 $ sudo su

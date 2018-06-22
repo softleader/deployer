@@ -1,18 +1,21 @@
 GOARCH=amd64
 BINARY=build
 
-all: clean macos linux windows
+all: build npm docker clean
 
-macos:
-	GOOS=darwin GOARCH=${GOARCH} go build -o ${BINARY}/main-macos-${GOARCH} .
+build:
+	GOOS=linux GOARCH=${GOARCH} go build -o ${BINARY}/main .
 
-linux:
-	GOOS=linux GOARCH=${GOARCH} go build -o ${BINARY}/main-linux-${GOARCH} .
+npm:
+	npm install
 
-windows:
-	GOOS=windows GOARCH=${GOARCH} go build -o ${BINARY}/main-windows-${GOARCH}.exe .
+docker:
+	docker build -t softleader/deployer .
+
+publish:
+	docker push softleader/deployer
 
 clean:
-	rm -rf ${BINARY}
+	rm -rf ${BINARY} node_modules/ package-lock.json
 
-.PHONY: clean
+.PHONY: clean build

@@ -1,0 +1,18 @@
+{
+  "name": "deployer",
+  "version": "1.0.0",
+  "description": "> Deployer is a tool for managing SoftLeader DevOps pipelines.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softleader/deployer.git"
+  },
+  "author": "SoftLeader",
+  "bugs": {
+    "url": "https://github.com/softleader/deployer/issues"
+  },
+  "homepage": "https://github.com/softleader/deployer#readme",
+  "dependencies": {
+    "container-yaml-generator": "github:softleader/container-yaml-generator",
+    "git-package-manager": "github:softleader/git-package-manager"
+  }
+}
