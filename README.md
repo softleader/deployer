@@ -42,6 +42,8 @@ docker run --rm -v "$(pwd)":/data \
     cp /docker-compose.yml /data
 ```
 
+> `docker-compose.yml` stores in `/devops/deployer` on 192.168.1.60
+
 - Run via docker compose
 
 ```shell
