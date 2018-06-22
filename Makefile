@@ -1,7 +1,7 @@
 GOARCH=amd64
 BINARY=build
 
-all: build npm docker clean
+all: build npm docker
 
 build:
 	GOOS=linux GOARCH=${GOARCH} go build -o ${BINARY}/main .
