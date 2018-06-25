@@ -1,4 +1,4 @@
-FROM softleader/docker-client
+FROM softleader/docker
 MAINTAINER softleader.com.tw
 
 RUN apk update \
