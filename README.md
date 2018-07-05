@@ -34,12 +34,18 @@ $ ./build/main-macos-amd64 -workspace=/tmp -port=8080
 
 ### Docker Compose
 
-- Copy docker-compose YAML file
+- Write a docker-compose YAML file
 
-```shell
-docker run --rm -v "$(pwd)":/data \
-    softleader/deployer \
-    cp /docker-compose.yml /data
+```yml
+deployer:
+  image: "softleader/deployer"
+  ports:
+    - 5678:80
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ~/.gpm:/root/.gpm
+    - ./:/workspace
+  restart: always
 ```
 
 > `docker-compose.yml` stores in `/devops/deployer` on 192.168.1.60
