@@ -6,4 +6,4 @@ deployer:
     - /var/run/docker.sock:/var/run/docker.sock
     - ~/.gpm:/root/.gpm
     - ./:/workspace
-  restart: always
+  restart: on-failure
