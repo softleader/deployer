@@ -3,6 +3,10 @@ package models
 import (
 	"strings"
 	"encoding/json"
+	"path/filepath"
+	"os"
+	"io/ioutil"
+	"gopkg.in/yaml.v2"
 )
 
 type Deploy struct {
@@ -34,19 +38,31 @@ func (d *Deploy) GroupContains(group string) bool {
 	return false
 }
 
-func NewDefaultDeploy() *Deploy {
-	return &Deploy{
-		CleanUp: true,
-		Style:   "swarm",
-		Dev: Dev{
-			IpAddress: "192.168.1.60",
-			Port:      0,
-			Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server",
-		},
-		Yaml:    "github:softleader/softleader-package/",
-		Extend:  "",
-		Volume0: "",
-		Net0:    "",
-		Group:   "",
+func NewDefaultDeploy(ws string) *Deploy {
+	config := filepath.Join(ws, "config.yaml")
+	if _, err := os.Stat(config); os.IsNotExist(err) {
+		dft := &Deploy{
+			CleanUp: true,
+			Style:   "swarm",
+			Dev: Dev{
+				IpAddress: "192.168.1.60",
+				Port:      0,
+				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server.ldap-server",
+			},
+			Yaml:    "github:softleader/softleader-package/",
+			Extend:  "",
+			Volume0: "",
+			Net0:    "",
+			Group:   "",
+		}
+		b, _ := yaml.Marshal(dft)
+		ioutil.WriteFile(config, b, os.ModePerm)
+		return dft
+	} else {
+		b, _ := ioutil.ReadFile(config)
+		dft := &Deploy{}
+		yaml.Unmarshal(b, dft)
+		return dft
 	}
+
 }

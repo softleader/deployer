@@ -26,7 +26,7 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 }
 
 func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error) {
-	d = *models.NewDefaultDeploy()
+	d = *models.NewDefaultDeploy(ws.Path())
 	if h != "" {
 		i, err := strconv.Atoi(h)
 		if err == nil && i >= 0 {
