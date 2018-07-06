@@ -18,7 +18,7 @@ func (r *HistoryRoutes) GetHistory(ctx iris.Context) {
 }
 
 func (r *HistoryRoutes) RemoveHistory(ctx iris.Context) {
-	index, err := ctx.Params().GetInt("index")
+	index, err := ctx.Params().GetInt("idx")
 	if err != nil {
 		ctx.ViewData("err", err)
 		return
