@@ -13,6 +13,7 @@ type PracticeRoutes struct {
 
 func (r *PracticeRoutes) BestPractices(ctx iris.Context) {
 	out, err := models.ReadPractices(r.Workspace.Path())
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("best-practices.html")
@@ -20,6 +21,7 @@ func (r *PracticeRoutes) BestPractices(ctx iris.Context) {
 
 func (r *PracticeRoutes) MarkdownEditor(ctx iris.Context) {
 	out, err := models.ReadPractices(r.Workspace.Path())
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("best-practices-mde.html")

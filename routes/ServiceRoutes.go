@@ -3,9 +3,11 @@ package routes
 import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/cmd"
+	"github.com/softleader/deployer/app"
 )
 
 type ServiceRoutes struct {
+	Workspace app.Workspace
 	cmd.DockerStack
 	cmd.DockerService
 }
@@ -16,6 +18,7 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	if err != nil {
 		out = append(out, []string{err.Error()})
 	}
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.ViewData("stack", stack)
 	ctx.View("service.html")
@@ -28,6 +31,7 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("ps.html")
 }
@@ -48,6 +52,7 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("inspect.html")
 }

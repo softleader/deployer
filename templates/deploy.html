@@ -57,15 +57,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="/stacks">Swarm Stacks</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://192.168.1.93:8443">IBM Cloud Private</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://github.com/softleader/deployer#rest-api">REST API</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="https://icp.softleader.com.tw/captain-kube">Captain Kube</a>
-            </li>
+            {{range $key, $value := .navbar}}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{$value}}">{{$key}}</a>
+                </li>
+            {{end}}
         </ul>
     </div>
 </nav>

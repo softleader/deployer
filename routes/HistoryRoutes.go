@@ -12,6 +12,7 @@ type HistoryRoutes struct {
 
 func (r *HistoryRoutes) GetHistory(ctx iris.Context) {
 	out, err := models.GetHistory(r.Workspace.Path())
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("history.html")

@@ -46,6 +46,7 @@ func (r *StackRoutes) ListStack(ctx iris.Context) {
 		line = append(line, uptime(t))
 		stacks[key] = append(stacks[key], line)
 	}
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("stacks", stacks)
 	ctx.View("stack.html")
 }

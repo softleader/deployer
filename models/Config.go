@@ -9,6 +9,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Config struct {
+	Deploy Deploy            `json:"deploy"`
+	Navbar map[string]string `json:"navbar"`
+}
+
 type Deploy struct {
 	Project   string `json:"project"`
 	Yaml      string `json:"yaml"`
@@ -38,10 +43,10 @@ func (d *Deploy) GroupContains(group string) bool {
 	return false
 }
 
-func NewDefaultDeploy(ws string) *Deploy {
+func GetConfig(ws string) Config {
 	config := filepath.Join(ws, "config.yaml")
 	if _, err := os.Stat(config); os.IsNotExist(err) {
-		dft := &Deploy{
+		dft := Deploy{
 			CleanUp: true,
 			Style:   "swarm",
 			Dev: Dev{
@@ -55,14 +60,19 @@ func NewDefaultDeploy(ws string) *Deploy {
 			Net0:    "",
 			Group:   "",
 		}
-		b, _ := yaml.Marshal(dft)
+		cfg := Config{
+			Deploy: dft,
+			Navbar: make(map[string]string),
+		}
+		cfg.Navbar["REST API"] = "https://github.com/softleader/deployer#rest-api"
+		b, _ := yaml.Marshal(cfg)
 		ioutil.WriteFile(config, b, os.ModePerm)
-		return dft
+		return cfg
 	} else {
 		b, _ := ioutil.ReadFile(config)
-		dft := &Deploy{}
-		yaml.Unmarshal(b, dft)
-		return dft
+		cfg := Config{}
+		yaml.Unmarshal(b, &cfg)
+		return cfg
 	}
 
 }

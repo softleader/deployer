@@ -22,11 +22,12 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 		ctx.ViewData("err", err)
 	}
 	ctx.ViewData("dft", dft)
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.View("deploy.html")
 }
 
 func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error) {
-	d = *models.NewDefaultDeploy(ws.Path())
+	d = ws.Config.Deploy
 	if h != "" {
 		i, err := strconv.Atoi(h)
 		if err == nil && i >= 0 {
