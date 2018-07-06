@@ -43,8 +43,8 @@ deployer:
     - 5678:80
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - ~/.gpm:/root/.gpm
-    - ./:/workspace
+    - ./.gpm:/root/.gpm
+    - ./workspace:/workspace
   restart: always
 ```
 
