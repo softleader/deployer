@@ -52,7 +52,7 @@ func GetConfig(ws string) Config {
 			Dev: Dev{
 				IpAddress: "192.168.1.60",
 				Port:      0,
-				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server.ldap-server",
+				Ignore:    "elasticsearch,kibana,logstash,redis,eureka,softleader-config-server,ldap-server",
 			},
 			Yaml:    "github:softleader/softleader-package/",
 			Extend:  "",
