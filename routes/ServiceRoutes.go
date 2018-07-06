@@ -40,3 +40,14 @@ func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
 		ctx.WriteString(err.Error())
 	}
 }
+
+func (r *ServiceRoutes) InspectService(ctx iris.Context) {
+	serviceId := ctx.Params().Get("serviceId")
+	_, out, err := r.DockerService.Inspect(serviceId)
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+	ctx.ViewData("out", out)
+	ctx.View("inspect.html")
+}

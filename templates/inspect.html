@@ -60,43 +60,9 @@
 
 <main role="main">
     <div class="container">
-        <p>
-        <table class="table table-responsive-sm table-hover">
-            <thead class="thead-light">
-            <tr>
-                <th scope="col">Service Id</th>
-                <th scope="col">Service Name</th>
-                <th scope="col">Mode</th>
-                <th scope="col">Replicas</th>
-                <th scope="col">Image</th>
-                <th scope="col">Ports</th>
-                <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
-            </tr>
-            </thead>
-            <tbody>
-            {{$stack := .stack}}
-            {{range $index, $line := .out}}
-            <tr>
-                <td>
-                    <a href="/services/ps/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
-                </td>
-                <td>{{index $line 1}}</td>
-                <td>{{index $line 2}}</td>
-                <td>{{index $line 3}}</td>
-                <td>{{index $line 4}}</td>
-                <td>{{index $line 5}}</td>
-                <td>
-                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line 0}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
-                       name="{{$stack}}/{{index $line 0}}">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </a>
-                </td>
-            </tr>
-            {{end}}
-            </tbody>
-        </table>
-        </p>
+        <pre>
+            {{ .out }}
+        </pre>
     </div>
 </main>
 
