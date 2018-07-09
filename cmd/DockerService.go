@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"strings"
+	"strconv"
 )
 
 type DockerService struct {
@@ -13,6 +14,10 @@ func NewDockerService() *DockerService {
 
 func (ds *DockerService) Inspect(service string) (arg string, out string, err error) {
 	return Exec(&Options{}, "docker service inspect", service)
+}
+
+func (ds *DockerService) Logs(service string, tail int) (arg string, out string, err error) {
+	return Exec(&Options{}, "docker service logs --tail", strconv.Itoa(tail), service)
 }
 
 func (ds *DockerService) Rm(service string) (arg string, out string, err error) {

@@ -130,6 +130,7 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		services.Get("/{stack:string}", serviceRoutes.ListService)
 		services.Get("/ps/{serviceId:string}", serviceRoutes.PsService)
 		services.Get("/inspect/{serviceId:string}", serviceRoutes.InspectService)
+		services.Get("/logs/{serviceId:string}/{tail:int}", serviceRoutes.LogsService)
 		services.Get("/rm/{stack:string}/{service:string}", func(ctx context.Context) {
 			serviceRoutes.RemoveService(ctx)
 			stack := ctx.Params().Get("stack")
