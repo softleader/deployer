@@ -62,7 +62,7 @@
             {{/*<div class="card-deck">*/}}
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                        <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
                            name="{{$key}}">
                             <i class="fa fa-trash" aria-hidden="true"></i> {{$key}}
                         </a>
@@ -86,7 +86,7 @@
                                 </td>
                                 {{/*<td>{{index $line 1}}</td>*/}}
                                 <td class="text-right">
-                                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
                                        name="{{index $line 0}}">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </a>
@@ -155,6 +155,10 @@
         var $modal = $("#removeModal");
         $modal.find(".text-danger").html(n);
         $modal.find("#proceed").attr("href", "/stacks/rm/" + n);
+        $modal.find("a").click(function () {
+            $(this).prop('disabled', true);
+            $modal.find("button").prop('disabled', true);
+        })
     });
 </script>
 

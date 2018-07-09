@@ -20,6 +20,6 @@ COPY templates/ $APP_HOME/templates/
 COPY node_modules/ $APP_HOME/node_modules/
 COPY docker-compose.yml /
 
-EXPOSE 5678
+EXPOSE $PORT
 
 CMD ["sh", "-c", "/deployer/main -workspace=$WORKSPACE -cmd.gpm=$CMD_GPM -cmd.gen-yaml=$CMD_GEN_YAML -port=$PORT"]

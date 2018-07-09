@@ -49,8 +49,7 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	_, out, err := r.DockerService.Inspect(serviceId)
 	if err != nil {
-		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		out += err.Error()
 	}
 	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
@@ -69,8 +68,7 @@ func (r *ServiceRoutes) LogsService(ctx iris.Context) {
 	}
 	_, out, err := r.DockerService.Logs(serviceId, tail)
 	if err != nil {
-		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		out += err.Error()
 	}
 	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
