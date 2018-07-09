@@ -153,12 +153,11 @@
     $(".fa-trash").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#removeModal");
+        $modal.find(".btn").removeClass('disabled').prop('disabled', false);
         $modal.find(".text-danger").html(n);
-        $modal.find("#proceed").attr("href", "/stacks/rm/" + n);
-        $modal.find("a").click(function () {
-            $(this).prop('disabled', true);
-            $modal.find("button").prop('disabled', true);
-        })
+        $modal.find("#proceed").attr("href", "/stacks/rm/" + n).click(function () {
+            $modal.find(".btn").addClass('disabled').prop('disabled', true);
+        });
     });
 </script>
 

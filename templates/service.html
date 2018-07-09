@@ -176,23 +176,21 @@
     $(".fa-trash").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#removeModal");
+        $modal.find(".btn").removeClass('disabled').prop('disabled', false);
         $modal.find(".text-danger").html(n.split("/")[1]);
-        $modal.find("#proceed").attr("href", "/services/rm/" + n);
-        $modal.find("a").click(function () {
-            $(this).prop('disabled', true);
-            $modal.find("button").prop('disabled', true);
-        })
+        $modal.find("#proceed").attr("href", "/services/rm/" + n).click(function () {
+            $modal.find(".btn").addClass('disabled').prop('disabled', true);
+        });
     });
 
     $(".fa-file-text").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#logModal");
+        $modal.find(".btn").removeClass('disabled').prop('disabled', false);
         var lines = $modal.find("#lines").val()
-        $modal.find("#fetch").attr("href", "/services/logs/" + n + "/" + lines);
-        $modal.find("a").click(function () {
-            $(this).prop('disabled', true);
-            $modal.find("button").prop('disabled', true);
-        })
+        $modal.find("#fetch").attr("href", "/services/logs/" + n + "/" + lines).click(function () {
+            $modal.find(".btn").addClass('disabled').prop('disabled', true);
+        });
     });
 </script>
 
