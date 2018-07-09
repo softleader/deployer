@@ -83,11 +83,11 @@
                 <td>{{index $line 5}}</td>
                 <td>
                     <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line 0}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal"
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static" data-keyboard="false"
                        name="{{index $line 0}}">
                         <i class="fa fa-file-text" aria-hidden="true"></i>
                     </a>
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static" data-keyboard="false"
                        name="{{$stack}}/{{index $line 0}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
@@ -178,13 +178,21 @@
         var $modal = $("#removeModal");
         $modal.find(".text-danger").html(n.split("/")[1]);
         $modal.find("#proceed").attr("href", "/services/rm/" + n);
+        $modal.find("a").click(function () {
+            $(this).prop('disabled', true);
+            $modal.find("button").prop('disabled', true);
+        })
     });
 
-    $(".fa-file").parent().click(function () {
+    $(".fa-file-text").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#logModal");
         var lines = $modal.find("#lines").val()
         $modal.find("#fetch").attr("href", "/services/logs/" + n + "/" + lines);
+        $modal.find("a").click(function () {
+            $(this).prop('disabled', true);
+            $modal.find("button").prop('disabled', true);
+        })
     });
 </script>
 
