@@ -55,8 +55,14 @@
 </nav>
 
 <main role="main">
+    <p>
     <div class="container">
-        <input type="text" id="search" class="form-control" placeholder="Quick search.." style="margin-top: 20px">
+        <div class="input-group">
+            <input class="form-control border-right-0" type="search" id="search" placeholder="Quick search...">
+            <span class="input-group-append border-left-0">
+                  <div class="input-group-text bg-transparent">/</div>
+            </span>
+        </div>
         <p>
         <table class="table table-responsive-sm table-hover">
             <thead class="thead-light">
@@ -252,6 +258,15 @@
         }
     })
 
+    $(document).keypress(function(e) {
+        if(e.which == 47) {
+            var $searchBar = $("#search");
+            if (!$searchBar.is(":focus")) {
+                $searchBar.focus();
+                return false;
+            }
+        }
+    });
 </script>
 
 </body>

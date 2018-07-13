@@ -70,92 +70,57 @@
     <div class="container">
         <p>
         <form>
-            <div class="form-check">
-                <label class="form-check-label" aria-describedby="cleanUpHelp">
-                    <input type="checkbox" id="cleanUp" class="form-check-input" {{if .dft.CleanUp}}checked{{end}}>
-                    Clean up
-                </label>
-                <small id="cleanUpHelp" class="form-text text-muted">
-                    執行前是否要先清空 workspace: {{.workspace}}/${project}
-                </small>
-                <small id="cleanUpHelp" class="form-text text-muted">
-                    通常是已經將 package.yaml 放在 workspace 下了才會選擇不清空
-                </small>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label" aria-describedby="cleanUpHelp" >
+                        <input type="checkbox" id="cleanUp" class="form-check-input" {{if .dft.CleanUp}}checked{{end}}>
+                        Clean up
+                    </label>
+                </div>
             </div>
             <div class="form-group disabled">
                 <label for="project">Project</label>
                 <input type="text" class="form-control" id="project" aria-describedby="projectHelp"
                        placeholder="my-project" value="{{.dft.Project}}" required>
-                <small id="projectHelp" class="form-text text-muted">
-                    將會作為 workspace 的子目錄及 stack name 的 prefix
-                </small>
-                <small id="projectHelp" class="form-text text-muted">
-                    workspace 將會是:  {{.workspace}}/${project}
-                </small>
-                <small id="projectHelp" class="form-text text-muted">
-                    stack name 的組成方式為: ${project}-${port}-${group}, 如: my-project-50000-svc
-                </small>
-            </div>
-            <div class="form-check">
-                <label class="form-check-label" aria-describedby="devHelp">
-                    <input type="checkbox" id="dev" class="form-check-input" {{if .dft.Dev.IpAddress}}checked{{end}}>
-                    Dev Mode
-                </label>
-                <small id="devHelp" class="form-text text-muted">
-                    開啟 dev 模式, 會自動將這次部署的所有服務都 publish 出來, 讓工程師可以從 local 連進去 docker 環境中
-                </small>
-                <small id="devHelp" class="form-text text-muted">
-                    請注意, dev 模式只適合公司內部使用, 不建議拿 dev 模式下產生的 yaml 到客戶端部署
-                </small>
             </div>
             <div class="form-group">
-                <label for="devIpAddress">Dev IpAddress</label>
+                <div class="form-check">
+                    <label class="form-check-label" aria-describedby="devHelp">
+                        <input type="checkbox" id="dev" class="form-check-input" {{if .dft.Dev.IpAddress}}checked{{end}}>
+                        Dev mode
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="devIpAddress">Dev - Eureka ip address</label>
                 <input type="text" class="form-control" id="devIpAddress" aria-describedby="devIpAddressHelp"
                        value="{{.dft.Dev.IpAddress}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
-                <small id="devIpAddressHelp" class="form-text text-muted">
-                    若此欄位放空白則不開啟 dev 模式
+                <small id="groupHelp" class="form-text text-muted">
+                    此欄位放空白視同不開啟 dev 模式
                 </small>
             </div>
             <div class="form-group">
-                <label for="devPort">Dev Port</label>
+                <label for="devPort">Dev - Port publish starts form</label>
                 <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
                        value="{{.dft.Dev.Port}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
-                <small id="devPortHelp" class="form-text text-muted">
-                    若開啟 dev 模式且 port <= 0, 則會以 gen-yaml 套件預設的 50000 port 來 publish
-                </small>
             </div>
             <div class="form-group">
-                <label for="devIgnore">Dev Ignore</label>
+                <label for="devIgnore">Dev - Services ignore Dev mode</label>
                 <input type="text" class="form-control" id="devIgnore" aria-describedby="devIgnoreHelp"
                        value="{{.dft.Dev.Ignore}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
-                <small id="devIgnoreHelp" class="form-text text-muted">
-                    開啟 dev 模式時, 要忽略套用的 service name, 可用逗號分隔多個 service
-                </small>
-                <small id="devIgnoreHelp" class="form-text text-muted">
-                    service name 一般會定義在每個專案的 Containerfile 中的第二行
-                </small>
             </div>
             <div class="form-group">
                 <label for="yaml">YAML</label>
                 <input type="text" class="form-control" id="yaml" aria-describedby="yamlHelp"
                        value="{{.dft.Yaml}}" required>
                 <small id="yamlHelp" class="form-text text-muted">
-                    yaml 位置, 如: github:softleader/softleader-package/softleader-base.yaml#master
-                </small>
-                <small id="yamlHelp" class="form-text text-muted">
-                    如果 yaml 已經上傳到 192.168.1.60 那台, 請放在 {{.workspace}}/${project}/ 下, 這邊就用相對路徑
-                </small>
-                <small id="yamlHelp" class="form-text text-muted">
-                    如: 放在  {{.workspace}}/hello/my-project.yaml, 則 project 要設定 hello, yaml 要設定 my-project.yaml
+                    如: github:softleader/softleader-package/softleader-base.yaml#master
                 </small>
             </div>
             <div class="form-group">
                 <label for="extend">Extend</label>
                 <input type="text" class="form-control" id="extend" aria-describedby="extendHelp"
                        value="{{.dft.Extend}}">
-                <small id="extendHelp" class="form-text text-muted">
-                    要覆蓋上方 YAML 的 yaml, 支援 YAML 參數的所有 pattern, 如: github:softleader/softleader-package/package-uat.yaml#master
-                </small>
                 <small id="extendHelp" class="form-text text-muted">
                     如: { "yaml": "main.yaml", "extend": "slave.yaml" }, 則以 main.yaml 為基礎, 將 slave.yaml 的設定覆蓋過 main.yaml 中
                 </small>
@@ -164,59 +129,44 @@
                 <label for="yaml">Group</label>
                 <input type="text" class="form-control" id="group" aria-describedby="groupHelp" value="{{.dft.Group}}">
                 <small id="groupHelp" class="form-text text-muted">
-                    如果 yaml 有分 group, 就可以在這邊指定要部署的 group, 若空白則會自動部署所有的 group, 可用逗號分隔指定多個 group
+                    指定要部署的 group, 若空白則部署所有的 group, 可用逗號分隔指定多個 group
                 </small>
             </div>
-            <div class="form-check">
-                <label class="form-check-label" aria-describedby="flatGroupHelp">
-                    <input type="checkbox" id="flatGroup" class="form-check-input" {{if .dft.FlatGroup}}checked{{end}}>
-                    Flat Group
-                </label>
-                <small id="flatGroupHelp" class="form-text text-muted">
-                    是否要打平 group, 讓所有 group 都部署在同一個 stack 中, 只會作用於有分 group 的 package.yaml
-                </small>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label" aria-describedby="flatGroupHelp">
+                        <input type="checkbox" id="flatGroup" class="form-check-input" {{if .dft.FlatGroup}}checked{{end}}>
+                        Flat Group
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <label for="net0">Net0</label>
                 <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
                        placeholder="" value="{{.dft.Net0}}">
-                <small id="net0Help" class="form-text text-muted">
-                    docker network 名稱, 不給的話會由 docker 自動建立 network, 移除 stack 時也會自動刪除 network
-                </small>
-                <small id="net0Help" class="form-text text-muted">
-                    注意: 如果 package.yaml 有分 group 又沒勾選 flat group, 則一定要先到 192.168.1.60 建立好 network 再填到這邊, 否則 group
-                    就會分別被建立在不同的 network 中
+                <small id="groupHelp" class="form-text text-muted">
+                    若空白則由 docker 自動建立 network
                 </small>
             </div>
             <div class="form-group">
                 <label for="net0">Volume0</label>
                 <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
                        placeholder="" value="{{.dft.Volume0}}">
-                <small id="volume0Help" class="form-text text-muted">
-                    在 192.168.1.60 的 /nfs 下的絕對路徑, 如: /nfs/my-project
-                </small>
             </div>
-            <div class="form-check">
+            <div class="form-group">
                 <label for="styleHelp">Style</label>
                 <select class="form-control" id="style">
                     <option value="swarm" {{if eq .dft.Style "swarm"}}selected{{end}}>Docker Swarm</option>
                     <option value="charts" {{if eq .dft.Style "charts"}}selected{{end}} disabled>K8s Charts</option>
                 </select>
-                <small id="styleHelp" class="form-text text-muted">
-                    產出的部署檔案的格式
-                </small>
             </div>
-            <div class="form-check">
-                <label class="form-check-label" aria-describedby="silentlyHelp">
-                    <input type="checkbox" id="silently" class="form-check-input" {{if .dft.Silently}}checked{{end}}>
-                    Silently
-                </label>
-                <small id="silentlyHelp" class="form-text text-muted">
-                    在 gen-yaml 時是否要啟用安靜模式
-                </small>
-                <small id="cleanUpHelp" class="form-text text-muted">
-                    請注意: 安靜模式下不會有任何的 yaml 檢查, 如 image:tag 是否存在於 registry 中
-                </small>
+            <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label" aria-describedby="silentlyHelp">
+                        <input type="checkbox" id="silently" class="form-check-input" {{if .dft.Silently}}checked{{end}}>
+                        Silently
+                    </label>
+                </div>
             </div>
             <button id="deploy" url="/api/stacks" type="submit" class="btn btn-outline-primary"
                     onclick="$(this).parent().attr('action', $(this).attr('url'))">
