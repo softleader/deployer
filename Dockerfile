@@ -15,11 +15,11 @@ ENV PORT=80
 
 WORKDIR $APP_HOME
 
-COPY build/main $APP_HOME/
 COPY templates/ $APP_HOME/templates/
 COPY static/ $APP_HOME/static/
 COPY node_modules/ $APP_HOME/node_modules/
 COPY docker-compose.yml /
+COPY build/main $APP_HOME/
 
 EXPOSE $PORT
 

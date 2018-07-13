@@ -2,7 +2,6 @@ package models
 
 import (
 	"strings"
-	"encoding/json"
 	"path/filepath"
 	"os"
 	"io/ioutil"
@@ -29,8 +28,8 @@ type Deploy struct {
 }
 
 func (d *Deploy) String() string {
-	b, _ := json.MarshalIndent(&d, "", "  ")
-	return string(b);
+	b, _ := yaml.Marshal(&d)
+	return string(b)
 }
 
 func (d *Deploy) GroupContains(group string) bool {
