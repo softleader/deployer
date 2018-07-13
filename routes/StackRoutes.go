@@ -123,8 +123,10 @@ func (r *StackRoutes) RemoveStack(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
 	_, _, err := r.DockerStack.RmLike(stack)
 	if err != nil {
-		ctx.Application().Logger().Warn(err.Error())
-		ctx.WriteString(err.Error())
+		if !strings.Contains(err.Error(), "Failed to remove network") { // it is ok if network remove failed
+			ctx.Application().Logger().Warn(err.Error())
+			ctx.WriteString(err.Error())
+		}
 	}
 }
 
