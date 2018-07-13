@@ -56,6 +56,18 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 	ctx.View("pre.html")
 }
 
+func (r *ServiceRoutes) UpdateService(ctx iris.Context) {
+	serviceId := ctx.Params().Get("serviceId")
+	image := ctx.FormValue("image")
+	_, out, err := r.DockerService.Update(serviceId, "--image", image)
+	if err != nil {
+		out += err.Error()
+	}
+	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
+	ctx.ViewData("out", out)
+	ctx.View("pre.html")
+}
+
 func (r *ServiceRoutes) LogsService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	tail, err := ctx.Params().GetInt("tail")

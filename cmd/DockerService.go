@@ -12,6 +12,10 @@ func NewDockerService() *DockerService {
 	return &DockerService{}
 }
 
+func (ds *DockerService) Update(service string, args ...string) (arg string, out string, err error) {
+	return Exec(&Options{}, "docker service update", service, "-d", "--force", strings.Join(args, " "))
+}
+
 func (ds *DockerService) Inspect(service string) (arg string, out string, err error) {
 	return Exec(&Options{}, "docker service inspect", service)
 }

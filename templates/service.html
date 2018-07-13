@@ -4,8 +4,8 @@
     <title>SoftLeader Deployer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
-          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="/bootstrap-4.1.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome-4.7.0/css/font-awesome.min.css">
     <style>
         :root {
             --jumbotron-padding-y: 3rem;
@@ -83,9 +83,14 @@
                 <td>{{index $line 5}}</td>
                 <td>
                     <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line 0}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"
-                       name="{{index $line 0}}">
-                        <i class="fa fa-file-text" aria-hidden="true"></i>
+                    {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
+                       {{/*name="{{index $line 0}}">*/}}
+                        {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
+                    {{/*</a>*/}}
+
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal" data-backdrop="static"
+                       name="{{index $line 0}}" image="{{index $line 4}}">
+                        <i class="fa fa-wrench" aria-hidden="true"></i>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
                        name="{{$stack}}/{{index $line 0}}">
@@ -136,6 +141,32 @@
     </div>
 </div>
 
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Update Service</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="form-group modal-body">
+                <label>--image</label>
+                <input type="text" class="form-control" id="image">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-dismiss="modal">
+                    <i class="fa fa-ban" aria-hidden="true"></i> Cancel
+                </button>
+                <a class="btn btn-outline-primary btn-sm" id="fetch">
+                    <i class="fa fa-folder-open" aria-hidden="true"></i> Update
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -161,16 +192,8 @@
     </div>
 </div>
 
-<script src="https://use.fontawesome.com/c4e1e41426.js"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
-        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
-        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
+<script src="/jquery/jquery-3.3.1.min.js"></script>
+<script src="/bootstrap-4.1.0-dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     $(".fa-trash").parent().click(function () {
@@ -183,15 +206,27 @@
         });
     });
 
-    $(".fa-file-text").parent().click(function () {
+    $(".fa-wrench").parent().click(function () {
         var n = $(this).attr("name");
-        var $modal = $("#logModal");
+        var $modal = $("#updateModal");
         $modal.find(".btn").removeClass('disabled').prop('disabled', false);
-        var lines = $modal.find("#lines").val()
-        $modal.find("#fetch").attr("href", "/services/logs/" + n + "/" + lines).click(function () {
+        $modal.find("#image").val($(this).attr("image"));
+        $modal.find("#fetch").click(function () {
+            $(this).attr("href", "/services/update/" + n + "?image=" + $modal.find("#image").val())
             $modal.find(".btn").addClass('disabled').prop('disabled', true);
         });
     });
+
+    // $(".fa-file-text").parent().click(function () {
+    //     var n = $(this).attr("name");
+    //     var $modal = $("#logModal");
+    //     $modal.find(".btn").removeClass('disabled').prop('disabled', false);
+    //     $modal.find("#fetch").click(function () {
+    //         var lines = $modal.find("#lines").val();
+    //         $(this).attr("href", "/services/logs/" + n + "/" + lines)
+    //         $modal.find(".btn").addClass('disabled').prop('disabled', true);
+    //     });
+    // });
 </script>
 
 </body>

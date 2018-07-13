@@ -84,6 +84,8 @@ func newApp(deployRoutes *routes.DeployRoutes,
 
 	app.RegisterView(tmpl)
 
+	app.StaticWeb("/", "./static")
+
 	api := app.Party("/api")
 	{
 		api.Post("/stacks", stackRoutes.DeployStack)
@@ -130,6 +132,7 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		services.Get("/{stack:string}", serviceRoutes.ListService)
 		services.Get("/ps/{serviceId:string}", serviceRoutes.PsService)
 		services.Get("/inspect/{serviceId:string}", serviceRoutes.InspectService)
+		services.Get("/update/{serviceId:string}", serviceRoutes.UpdateService)
 		services.Get("/logs/{serviceId:string}/{tail:int}", serviceRoutes.LogsService)
 		services.Get("/rm/{stack:string}/{service:string}", func(ctx context.Context) {
 			serviceRoutes.RemoveService(ctx)
