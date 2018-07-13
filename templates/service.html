@@ -56,17 +56,18 @@
 
 <main role="main">
     <div class="container">
+        <input type="text" id="search" class="form-control" placeholder="Quick search.." style="margin-top: 20px">
         <p>
         <table class="table table-responsive-sm table-hover">
             <thead class="thead-light">
             <tr>
+                <th scope="col" style="width: 12%"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
                 <th scope="col">Service Id</th>
                 <th scope="col">Service Name</th>
-                <th scope="col">Mode</th>
+                {{/*<th scope="col">Mode</th>*/}}
                 <th scope="col">Replicas</th>
                 <th scope="col">Image</th>
                 <th scope="col">Ports</th>
-                <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
             </tr>
             </thead>
             <tbody>
@@ -74,19 +75,11 @@
             {{range $index, $line := .out}}
             <tr>
                 <td>
-                    <a href="/services/ps/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
-                </td>
-                <td>{{index $line 1}}</td>
-                <td>{{index $line 2}}</td>
-                <td>{{index $line 3}}</td>
-                <td>{{index $line 4}}</td>
-                <td>{{index $line 5}}</td>
-                <td>
                     <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line 0}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-                    {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
-                       {{/*name="{{index $line 0}}">*/}}
-                        {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
-                    {{/*</a>*/}}
+                {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
+                {{/*name="{{index $line 0}}">*/}}
+                {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
+                {{/*</a>*/}}
 
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal" data-backdrop="static"
                        name="{{index $line 0}}" image="{{index $line 4}}">
@@ -97,6 +90,14 @@
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
+                <td>
+                    <a href="/services/ps/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
+                </td>
+                <td>{{index $line 1}}</td>
+                {{/*<td>{{index $line 2}}</td>*/}}
+                <td>{{index $line 3}}</td>
+                <td>{{index $line 4}}</td>
+                <td>{{index $line 5}}</td>
             </tr>
             {{end}}
             </tbody>
@@ -227,6 +228,30 @@
     //         $modal.find(".btn").addClass('disabled').prop('disabled', true);
     //     });
     // });
+
+    $("#search").keyup(function () {
+        var filter = $(this).val().toUpperCase();
+        var table = $(".table")[0]
+        var trs = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (var i = 0; i < trs.length; i++) {
+            var tr = trs[i];
+            var tds = tr.getElementsByTagName("td");
+            for (var d = 2; d < tds.length; d++) {
+                var content = tds[d];
+                if (content) {
+                    if (content.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr.style.display = "";
+                        break;
+                    } else if (d == tds.length - 1){
+                        tr.style.display = "none";
+                    }
+                }
+            }
+        }
+    })
+
 </script>
 
 </body>

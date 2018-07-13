@@ -60,23 +60,22 @@
         <table class="table table-responsive-sm table-hover">
             <thead class="thead-light">
             <tr>
+                <th scope="col" style="width: 5%"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
                 <th scope="col">Deployment History of Each Project</th>
-                <th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
             </tr>
             </thead>
             <tbody>
             {{range $index, $line := .out}}
             <tr>
-                <td><pre>{{index $line.String}}</pre></td>
                 <td>
                     <a class="btn btn-outline-primary btn-sm" href="/{{$index}}">
                         <i class="fa fa-share" aria-hidden="true"></i>
                     </a>
-
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$line.Project}}/{{$index}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
+                <td><pre>{{index $line.String}}</pre></td>
             </tr>
             {{end}}
             </tbody>

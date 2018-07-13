@@ -79,18 +79,18 @@
                             <tbody>
                             {{range $index, $line := $value}}
                             <tr>
+                                <td style="width: 5%">
+                                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
+                                       name="{{index $line 0}}">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                </td>
                                 <td>
                                     <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">
                                         {{index $line 0}} ({{index $line 1}}) {{index $line 2}}
                                     </a>
                                 </td>
                                 {{/*<td>{{index $line 1}}</td>*/}}
-                                <td class="text-right">
-                                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                                       name="{{index $line 0}}">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </a>
-                                </td>
                             </tr>
                             {{end}}
                             </tbody>
