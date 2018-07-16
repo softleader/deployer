@@ -22,9 +22,10 @@ func main() {
 	stackRoutes := newStackRoutes(args, ws)
 	practiceRoutes := newPracticeRoutes(ws)
 	historyRoutes := newHistoryRoutes(ws)
+	dashboardRoutes := newDashboardRoutes(args, ws)
 
 	// https://github.com/kataras/iris
-	app := newApp(deployRoutes, stackRoutes, serviceRoutes, practiceRoutes, historyRoutes)
+	app := newApp(deployRoutes, stackRoutes, serviceRoutes, practiceRoutes, historyRoutes, dashboardRoutes)
 
 	app.Run(
 		iris.Addr(args.Addr+":"+strconv.Itoa(args.Port)),
@@ -60,6 +61,15 @@ func newStackRoutes(args *app.Args, ws *app.Workspace) *routes.StackRoutes {
 	}
 }
 
+func newDashboardRoutes(args *app.Args, ws *app.Workspace) *routes.DashboardRoutes {
+	return &routes.DashboardRoutes{
+		Workspace:     *ws,
+		DockerNode:    *cmd.NewDockerNode(),
+		DockerService: *cmd.NewDockerService(),
+		DockerStack:   *cmd.NewDockerStack(args.Registry),
+	}
+}
+
 func newHistoryRoutes(ws *app.Workspace) *routes.HistoryRoutes {
 	return &routes.HistoryRoutes{
 		Workspace: *ws,
@@ -76,7 +86,8 @@ func newApp(deployRoutes *routes.DeployRoutes,
 	stackRoutes *routes.StackRoutes,
 	serviceRoutes *routes.ServiceRoutes,
 	practiceRoutes *routes.PracticeRoutes,
-	historyRoutes *routes.HistoryRoutes) *iris.Application {
+	historyRoutes *routes.HistoryRoutes,
+	dashboardRoutes *routes.DashboardRoutes) *iris.Application {
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -95,20 +106,23 @@ func newApp(deployRoutes *routes.DeployRoutes,
 
 	root := app.Party("/")
 	{
-		root.Get("/", deployRoutes.DeployPage)
-		root.Get("/{history:string}", deployRoutes.DeployPage)
+		root.Get("/", func(ctx context.Context) {
+			ctx.Redirect(deployRoutes.Config.Index)
+		})
 	}
 
-	// deprecate, in place of root route
+	dashboard := app.Party("/dashboard")
+	{
+		dashboard.Get("/", dashboardRoutes.DashboardPage)
+		dashboard.Get("/nodes", dashboardRoutes.Nodes)
+		dashboard.Get("/stacks", dashboardRoutes.Stacks)
+		dashboard.Get("/services", dashboardRoutes.Services)
+	}
+
 	deploy := app.Party("/deploy")
 	{
-		deploy.Get("/", func(ctx context.Context) {
-			ctx.Redirect("/")
-		})
-		deploy.Get("/{history:string}", func(ctx context.Context) {
-			h := ctx.Params().Get("history")
-			ctx.Redirect("/" + h)
-		})
+		deploy.Get("/", deployRoutes.DeployPage)
+		deploy.Get("/{history:string}", deployRoutes.DeployPage)
 	}
 
 	yamls := app.Party("/yamls")

@@ -53,6 +53,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/golang/freetype"
+  packages = [
+    "raster",
+    "truetype"
+  ]
+  revision = "e2365dfdc4a05e4b8299a783240d4a7d5a65d4e4"
+
+[[projects]]
+  branch = "master"
   name = "github.com/hashicorp/go-version"
   packages = ["."]
   revision = "23480c0665776210b5fbbac6eaaee40e3e6a96b7"
@@ -224,6 +233,19 @@
   revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
 
 [[projects]]
+  name = "github.com/wcharczuk/go-chart"
+  packages = [
+    ".",
+    "drawing",
+    "matrix",
+    "roboto",
+    "seq",
+    "util"
+  ]
+  revision = "7c3982fe3d8ab0c9eea9ab5d2aced51e45d447bc"
+  version = "v2.0.1"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
@@ -231,6 +253,17 @@
     "acme/autocert"
   ]
   revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/image"
+  packages = [
+    "draw",
+    "font",
+    "math/f64",
+    "math/fixed"
+  ]
+  revision = "c73c2afc3b812cdd6385de5a50616511c4a3d458"
 
 [[projects]]
   branch = "master"
@@ -262,6 +295,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d4f7b39aa4ca3dc7a4740312a9a2d5868b54fffc0517ecfb16a8b7b0084576e4"
+  inputs-digest = "7a64f1c53e3168360ba2787d90d16155fc0a45b7a33ab91d1441d885bba7d472"
   solver-name = "gps-cdcl"
   solver-version = 1

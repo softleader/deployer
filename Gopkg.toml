@@ -40,3 +40,7 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  name = "github.com/wcharczuk/go-chart"
+  version = "2.0.1"

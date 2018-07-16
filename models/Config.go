@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Deploy Deploy            `json:"deploy"`
 	Navbar map[string]string `json:"navbar"`
+	Index  string            `json:"index"`
 }
 
 type Deploy struct {
@@ -62,6 +63,7 @@ func GetConfig(ws string) Config {
 		cfg := Config{
 			Deploy: dft,
 			Navbar: make(map[string]string),
+			Index:  "/dashboard",
 		}
 		cfg.Navbar["REST API"] = "https://github.com/softleader/deployer#rest-api"
 		b, _ := yaml.Marshal(cfg)

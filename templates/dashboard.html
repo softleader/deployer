@@ -20,16 +20,40 @@
             margin-bottom: .25rem;
         }
 
-        .console-output {
-            line-height: 1.25;
-            padding: 15px 20px 0px 20px;
-            max-height: 90vh;
-            overflow-y: auto;
+        .card {
+            position: relative;
+            -webkit-transform: rotateY(0deg);
+            -ms-transform: rotateY(0deg);
+            z-index: 2;
+            margin-bottom: 30px;
         }
 
-        .console-output-font {
-            font-size: 1.1rem;
-            font-family: monospace;
+        .card {
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            -ms-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transition: 1s;
+            -webkit-transform-style: preserve-3d;
+            -moz-transition: 1s;
+            -moz-transform-style: preserve-3d;
+            -o-transition: 1s;
+            -o-transform-style: preserve-3d;
+            -ms-transition: 1s;
+            -ms-transform-style: preserve-3d;
+            transition: 1s;
+            transform-style: preserve-3d;
+            min-height: 312px;
+        }
+
+        /*.card .card-title {*/
+            /*color: #007b5e !important;*/
+        /*}*/
+
+        .card .card-body img {
+            width: 75%;
+            height: 75%;
+            /*border-radius: 50%;*/
         }
     </style>
 </head>
@@ -48,7 +72,7 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="/dashboard">Dashboard</a>
             </li>
             <li class="nav-item">
@@ -57,34 +81,54 @@
             <li class="nav-item">
                 <a class="nav-link" href="/histories">History</a>
             </li>
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" href="/stacks">Swarm Stacks</a>
             </li>
-            {{range $key, $value := .navbar}}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{$value}}">{{$key}}</a>
-                </li>
-            {{end}}
+        {{range $key, $value := .navbar}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{$value}}">{{$key}}</a>
+            </li>
+        {{end}}
         </ul>
     </div>
 </nav>
 
 <main role="main">
     <div class="container">
-        <div class="bg-dark console-output">
-            <div class="row flex-nowrap justify-content-between align-items-center">
-                <div class="col-4 pt-1">
-                    <i class="fa fa-terminal text-muted" aria-hidden="true"></i>
-                </div>
-                <div class="col-4 text-center"></div>
-                <div class="col-4 d-flex justify-content-end align-items-center">
-                    <button class="btn btn-link" data-clipboard-target="#output">
-                        <i class="fa fa-copy text-muted" aria-hidden="true"></i>
-                    </button>
+        <p></p>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p><img class=" img-fluid" src="/dashboard/nodes" alt="card image"></p>
+                    {{/*<h4 class="card-title">Nodes</h4>*/}}
+                        <p class="card-text">Nodes</p>
+                    </div>
                 </div>
             </div>
-            <p><pre id="output" class="text-light console-output-font">{{ .out }}</pre></p>
+            <div class="col-xs-12 col-sm-12 col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p><img class=" img-fluid" src="/dashboard/services" alt="card image"></p>
+                    {{/*<h4 class="card-title">Deployments</h4>*/}}
+                        <p class="card-text">Services</p>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <p><img class=" img-fluid" src="/dashboard/stacks" alt="card image"></p>
+                    {{/*<h4 class="card-title">Nodes</h4>*/}}
+                        <p class="card-text">Stacks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -103,7 +147,6 @@
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
 <script>
-    new ClipboardJS('.btn');
 </script>
 
 </body>
