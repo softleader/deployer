@@ -112,7 +112,7 @@ func (r *DashboardRoutes) Projects(ctx iris.Context) {
 			}
 		}
 
-		label, values := toStackValues(services)
+		label, values := toStackedBarValues(services)
 		bars = append(bars, chart.StackedBar{
 			Name:   fmt.Sprintf("%s %s", pj, label),
 			Values: values,
@@ -185,7 +185,7 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 	flush(ctx, pie)
 }
 
-func toStackValues(svcs [][]string) (label string, values chart.Values) {
+func toStackedBarValues(svcs [][]string) (label string, values chart.Values) {
 	var healthy, unhealthy int
 	m := make(map[string]chart.Value)
 	for _, svc := range svcs {
