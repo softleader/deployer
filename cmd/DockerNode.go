@@ -8,5 +8,5 @@ func NewDockerNode() *DockerNode {
 }
 
 func (dn *DockerNode) Ls() (arg string, out string, err error) {
-	return Exec(&Options{}, "docker node ls", "--format '{{.Availability}}'")
+	return Exec(&Options{}, "docker node ls", "--format '{{.Hostname}};{{.Status}};{{.Availability}}'")
 }

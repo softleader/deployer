@@ -115,8 +115,8 @@ func newApp(deployRoutes *routes.DeployRoutes,
 	{
 		dashboard.Get("/", dashboardRoutes.DashboardPage)
 		dashboard.Get("/nodes", dashboardRoutes.Nodes)
-		dashboard.Get("/stacks", dashboardRoutes.Stacks)
 		dashboard.Get("/services", dashboardRoutes.Services)
+		dashboard.Get("/projects", dashboardRoutes.Projects)
 	}
 
 	deploy := app.Party("/deploy")

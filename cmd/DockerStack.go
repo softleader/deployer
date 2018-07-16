@@ -15,32 +15,30 @@ func NewDockerStack(registry app.Registry) *DockerStack {
 	return &DockerStack{Registry: registry}
 }
 
-func (ds *DockerStack) Ls() ([][]string, error) {
+func (ds *DockerStack) Ls() (s [][]string, err error) {
 	_, out, err := ls()
 	lines := strings.Split(out, "\n")
-	var s [][]string
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
 			s = append(s, strings.Split(line, ";"))
 		}
 	}
-	return s, err
+	return
 }
 
 func ls() (arg string, out string, err error) {
 	return Exec(&Options{}, "docker stack ls --format '{{.Name}};{{.Services}}'")
 }
 
-func (ds *DockerStack) Services(name string) ([][]string, error) {
+func (ds *DockerStack) Services(name string) (s [][]string, err error) {
 	_, out, err := services(name)
 	lines := strings.Split(out, "\n")
-	var s [][]string
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
 			s = append(s, strings.Split(line, ";"))
 		}
 	}
-	return s, err
+	return
 }
 
 func services(stack string) (arg string, out string, err error) {

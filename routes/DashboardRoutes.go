@@ -12,13 +12,17 @@ import (
 )
 
 var (
-	WARNING_STYLE = chart.Style{
+	WarningStyle = chart.Style{
+		Show:      true,
 		FillColor: chart.ColorAlternateYellow,
 	}
-	ERROR_STYLE = chart.Style{
+	ErrorStyle = chart.Style{
+		Show:      true,
 		FillColor: chart.ColorRed,
+		FontColor: chart.ColorWhite,
 	}
-	SUCCESS_STYLE = chart.Style{
+	SuccessStyle = chart.Style{
+		Show:      true,
 		FillColor: chart.ColorAlternateGreen,
 	}
 )
@@ -42,16 +46,37 @@ func (r *DashboardRoutes) Nodes(ctx iris.Context) {
 		ctx.WriteString(err.Error())
 	}
 	lines := strings.Split(out, "\n")
-	m := make(map[string]float64)
+	m := make(map[string]chart.Value)
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
 			node := strings.Split(line, ";")
-			m[node[0]]++
+			host := node[0]
+			status := node[1]
+			if status == "Down" {
+				v := m[status].Value + 1
+				l := m[status].Label + host + ", "
+				m[status] = chart.Value{
+					Value: v,
+					Style: ErrorStyle,
+					Label: l,
+				}
+			} else {
+				v := m[status].Value + 1
+				m[status] = chart.Value{Value: v, Label: fmt.Sprintf("%s (%v)", status, v)}
+			}
+		}
+	}
+	down := m["Down"]
+	if down.Value > 0 {
+		m["Down"] = chart.Value{
+			Value: down.Value,
+			Style: ErrorStyle,
+			Label: fmt.Sprintf("Down (%s)", strings.TrimSuffix(down.Label, ", ")),
 		}
 	}
 	var values []chart.Value
-	for k, v := range m {
-		values = append(values, chart.Value{Value: v, Label: fmt.Sprintf("%s (%.0f)", k, v)})
+	for _, v := range m {
+		values = append(values, v)
 	}
 	pie := chart.PieChart{
 		Width:  512,
@@ -61,22 +86,44 @@ func (r *DashboardRoutes) Nodes(ctx iris.Context) {
 	flush(ctx, pie)
 }
 
-func (r *DashboardRoutes) Stacks(ctx iris.Context) {
+func (r *DashboardRoutes) Projects(ctx iris.Context) {
 	out, err := r.DockerStack.Ls()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
 
+	projects := make(map[string][]string)
+	for _, stack := range out {
+		p := strings.Split(stack[0], "-")[0]
+		for _, name := range stack {
+			projects[p] = append(projects[p], name)
+		}
+	}
+
 	var bars []chart.StackedBar
 
-	for _, stack := range out {
-		svcs, _ := r.DockerStack.Services(stack[0])
-		label, values := toStackValues(svcs)
-		name := fmt.Sprintf("%s %s", stack[0], label)
+	for pj, stacks := range projects {
+		var services [][]string
+		for _, stack := range stacks {
+			svcs, _ := r.DockerStack.Services(stack)
+			for _, svc := range svcs {
+				services = append(services, svc)
+			}
+		}
+
+		label, values := toStackValues(services)
 		bars = append(bars, chart.StackedBar{
-			Name:   escape(name),
+			Name:   fmt.Sprintf("%s %s", pj, label),
 			Values: values,
+		})
+	}
+
+	if len(bars) == 0 {
+		bars = append(bars, chart.StackedBar{
+			Name: "No project found",
+			Values: []chart.Value{{Value: 1, Style: WarningStyle},
+			},
 		})
 	}
 
@@ -86,13 +133,6 @@ func (r *DashboardRoutes) Stacks(ctx iris.Context) {
 		Bars:   bars,
 	}
 	flush(ctx, sbc)
-}
-
-// 有些字元會造成 chart 無法 render..
-func escape(name string) (escaped string) {
-	escaped = strings.Replace(name, "-", " ", -1)
-	escaped = strings.Replace(escaped, "_", " ", -1)
-	return
 }
 
 func (r *DashboardRoutes) Services(ctx iris.Context) {
@@ -113,14 +153,14 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 				v := m["Healthy"].Value + 1
 				m["Healthy"] = chart.Value{
 					Value: v,
-					Style: SUCCESS_STYLE,
+					Style: SuccessStyle,
 					Label: fmt.Sprintf("Healthy (%.0f)", v),
 				}
 			} else {
 				v := m["Unhealthy"].Value + 1
 				m["Unhealthy"] = chart.Value{
 					Value: m["Unhealthy"].Value + 1,
-					Style: ERROR_STYLE,
+					Style: ErrorStyle,
 					Label: fmt.Sprintf("Unhealthy (%.0f)", v),
 				}
 			}
@@ -134,7 +174,7 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 		values = append(values, chart.Value{
 			Value: 1,
 			Label: "No service found",
-			Style: WARNING_STYLE,
+			Style: WarningStyle,
 		})
 	}
 	pie := chart.PieChart{
@@ -156,7 +196,7 @@ func toStackValues(svcs [][]string) (label string, values chart.Values) {
 			v := m["Healthy"].Value + 1
 			m["Healthy"] = chart.Value{
 				Value: v,
-				Style: SUCCESS_STYLE,
+				Style: SuccessStyle,
 				Label: fmt.Sprintf("Healthy (%.0f)", v),
 			}
 			healthy++
@@ -164,7 +204,7 @@ func toStackValues(svcs [][]string) (label string, values chart.Values) {
 			v := m["Unhealthy"].Value + 1
 			m["Unhealthy"] = chart.Value{
 				Value: m["Unhealthy"].Value + 1,
-				Style: ERROR_STYLE,
+				Style: ErrorStyle,
 				Label: fmt.Sprintf("Unhealthy (%.0f)", v),
 			}
 			unhealthy++
