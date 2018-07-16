@@ -73,8 +73,9 @@ func (r *DashboardRoutes) Stacks(ctx iris.Context) {
 	for _, stack := range out {
 		svcs, _ := r.DockerStack.Services(stack[0])
 		label, values := toStackValues(svcs)
+		name := fmt.Sprintf("%s %s", stack[0], label)
 		bars = append(bars, chart.StackedBar{
-			Name:   fmt.Sprintf("%s %s", stack[0], label),
+			Name:   escape(name),
 			Values: values,
 		})
 	}
@@ -85,6 +86,13 @@ func (r *DashboardRoutes) Stacks(ctx iris.Context) {
 		Bars:   bars,
 	}
 	flush(ctx, sbc)
+}
+
+// 有些字元會造成 chart 無法 render..
+func escape(name string) (escaped string) {
+	escaped = strings.Replace(name, "-", " ", -1)
+	escaped = strings.Replace(escaped, "_", " ", -1)
+	return
 }
 
 func (r *DashboardRoutes) Services(ctx iris.Context) {
@@ -165,15 +173,7 @@ func toStackValues(svcs [][]string) (label string, values chart.Values) {
 	for _, v := range m {
 		values = append(values, v)
 	}
-	if len(values) == 0 {
-		values = append(values, chart.Value{
-			Value: 1,
-			Label: "No service found",
-			Style: WARNING_STYLE,
-		})
-	} else {
-		label = fmt.Sprintf("(%d/%d)", healthy, healthy+unhealthy)
-	}
+	label = fmt.Sprintf("(%d/%d)", healthy, healthy+unhealthy)
 	return
 }
 
