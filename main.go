@@ -7,6 +7,8 @@ import (
 	"github.com/softleader/deployer/routes"
 	"github.com/softleader/deployer/app"
 	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/cache"
+	"time"
 )
 
 var (
@@ -116,7 +118,7 @@ func newApp(deployRoutes *routes.DeployRoutes,
 		dashboard.Get("/", dashboardRoutes.DashboardPage)
 		dashboard.Get("/nodes", dashboardRoutes.Nodes)
 		dashboard.Get("/services", dashboardRoutes.Services)
-		dashboard.Get("/projects", dashboardRoutes.Projects)
+		dashboard.Get("/projects", cache.Handler(3*time.Second), dashboardRoutes.Projects)
 	}
 
 	deploy := app.Party("/deploy")
