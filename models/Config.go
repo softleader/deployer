@@ -6,12 +6,14 @@ import (
 	"os"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"time"
 )
 
 type Config struct {
-	Deploy Deploy            `json:"deploy"`
-	Navbar map[string]string `json:"navbar"`
-	Index  string            `json:"index"`
+	Deploy         Deploy            `json:"deploy"`
+	Navbar         map[string]string `json:"navbar"`
+	Index          string            `json:"index"`
+	DashboardCache time.Duration     `json:"dashboard_cache" yaml:"dashboard_cache"`
 }
 
 type Deploy struct {
@@ -61,9 +63,10 @@ func GetConfig(ws string) Config {
 			Group:   "",
 		}
 		cfg := Config{
-			Deploy: dft,
-			Navbar: make(map[string]string),
-			Index:  "/dashboard",
+			Deploy:         dft,
+			Navbar:         make(map[string]string),
+			Index:          "/dashboard",
+			DashboardCache: 3 * time.Minute,
 		}
 		cfg.Navbar["REST API"] = "https://github.com/softleader/deployer#rest-api"
 		b, _ := yaml.Marshal(cfg)

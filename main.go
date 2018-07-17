@@ -8,7 +8,6 @@ import (
 	"github.com/softleader/deployer/app"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/cache"
-	"time"
 )
 
 var (
@@ -90,6 +89,7 @@ func newApp(deployRoutes *routes.DeployRoutes,
 	practiceRoutes *routes.PracticeRoutes,
 	historyRoutes *routes.HistoryRoutes,
 	dashboardRoutes *routes.DashboardRoutes) *iris.Application {
+	config := deployRoutes.Config
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -109,16 +109,17 @@ func newApp(deployRoutes *routes.DeployRoutes,
 	root := app.Party("/")
 	{
 		root.Get("/", func(ctx context.Context) {
-			ctx.Redirect(deployRoutes.Config.Index)
+			ctx.Redirect(config.Index)
 		})
 	}
 
 	dashboard := app.Party("/dashboard")
 	{
+		dashboardCache := cache.Handler(config.DashboardCache)
 		dashboard.Get("/", dashboardRoutes.DashboardPage)
-		dashboard.Get("/nodes", dashboardRoutes.Nodes)
-		dashboard.Get("/services", dashboardRoutes.Services)
-		dashboard.Get("/projects", cache.Handler(3*time.Second), dashboardRoutes.Projects)
+		dashboard.Get("/nodes", dashboardCache, dashboardRoutes.Nodes)
+		dashboard.Get("/services", dashboardCache, dashboardRoutes.Services)
+		dashboard.Get("/projects", dashboardCache, dashboardRoutes.Projects)
 	}
 
 	deploy := app.Party("/deploy")
