@@ -131,11 +131,20 @@ func NewDockerStackLs(in string) (m DockerStackLs) {
 	return
 }
 
+func removeAfterLast(in string, sep string) (out string) {
+	s := strings.Split(in, sep)
+	if len(s) > 1 {
+		out = strings.Join(s[:len(s)-1 ], sep)
+	} else {
+		out = in
+	}
+	return
+}
+
 func NewDockerStatsNoSteam(in string) (m DockerStatsNoStream) {
 	s := strings.Split(in, ";")
 	m.Name = s[0]
-	name := strings.Split(m.Name, ".")
-	m.TruncName = strings.Join(name[:len(name)-1 ], ".")
+	m.TruncName = removeAfterLast(m.Name, ".")
 	m.CPUPerc = s[1]
 	m.MemUsage = s[2]
 	m.MemPerc = s[3]
