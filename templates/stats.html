@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="/bootstrap-4.1.0-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.css" rel="stylesheet">
     <style>
         :root {
             --jumbotron-padding-y: 3rem;
@@ -65,7 +66,7 @@
     <div class="container">
         <div class="input-group">
             <select class="custom-select" id="project">
-                <option selected>Choose project...</option>
+                <option value="">Choose project...</option>
             {{range $index, $line := .projects}}
                 <option value="{{$line}}">{{$line}}</option>
             {{end}}
@@ -116,18 +117,20 @@
 </footer>
 
 <script src="/jquery/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.js"></script>
 <script src="/bootstrap-4.1.0-dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $("#project").change(function () {
-        var grep = $(this).prop('disabled', true).val()
+
+    $('#project').on('change', function() {
+        var grep = $(this).val()
         if (grep) {
-            $(".table tbody").empty();
-            window.location.href = "/stats?g=" + $(this).val();
-        } else {
-            $(this).prop('disabled', false)
+            console.log('click ', grep)
+            $('.table').busyLoad("show");
+            window.location.href = "/stats?g=" + grep;
         }
     });
+
 
     $("#search").keyup(function () {
         var filter = $(this).val().toUpperCase();
