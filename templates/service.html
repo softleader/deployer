@@ -263,9 +263,8 @@
 
     $(document).keypress(function(e) {
         if(e.which == 47) {
-            var $searchBar = $("#search");
-            if (!$searchBar.is(":focus")) {
-                $searchBar.focus();
+            if (!$("input:focus").length) {
+                $("#search").focus();
                 return false;
             }
         }
