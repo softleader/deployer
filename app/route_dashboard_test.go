@@ -1,4 +1,4 @@
-package routes
+package app
 
 import (
 	"testing"
@@ -7,17 +7,16 @@ import (
 	"fmt"
 	"os"
 	"image/png"
-	"github.com/softleader/deployer/app"
 )
 
 func TestDrawNodesChart(t *testing.T) {
 	cmd := cmd.NewDockerNode()
-	cr, err := drawNodesChart(*cmd)
+	g, err := drawNodesChart(*cmd)
 	if err != nil {
 		t.Error(err)
 	}
 	collector := &chart.ImageWriter{}
-	cr.Render(chart.PNG, collector)
+	g.Render(chart.PNG, collector)
 
 	image, err := collector.Image()
 	if err != nil {
@@ -37,12 +36,12 @@ func TestDrawNodesChart(t *testing.T) {
 
 func TestDrawServicesChart(t *testing.T) {
 	cmd := cmd.NewDockerService()
-	cr, err := drawServicesChart(*cmd)
+	g, err := drawServicesChart(*cmd)
 	if err != nil {
 		t.Error(err)
 	}
 	collector := &chart.ImageWriter{}
-	cr.Render(chart.PNG, collector)
+	g.Render(chart.PNG, collector)
 
 	image, err := collector.Image()
 	if err != nil {
@@ -61,13 +60,13 @@ func TestDrawServicesChart(t *testing.T) {
 }
 
 func TestDrawProjectsChart(t *testing.T) {
-	cmd := cmd.NewDockerStack(app.Registry{})
-	cr, err := drawProjectsChart(*cmd)
+	cmd := cmd.NewDockerStack(Registry{}.Login())
+	g, err := drawProjectsChart(*cmd)
 	if err != nil {
 		t.Error(err)
 	}
 	collector := &chart.ImageWriter{}
-	cr.Render(chart.PNG, collector)
+	g.Render(chart.PNG, collector)
 
 	image, err := collector.Image()
 	if err != nil {
@@ -77,31 +76,6 @@ func TestDrawProjectsChart(t *testing.T) {
 	fmt.Printf("Final Image: %dx%d\n", image.Bounds().Size().X, image.Bounds().Size().Y)
 
 	out, err := os.Create("/Users/Matt/tmp/projects.png")
-	if err != nil {
-		t.Error(err)
-	}
-
-	png.Encode(out, image)
-	out.Close()
-}
-
-func TestDrawStatsChart(t *testing.T) {
-	cmd := cmd.NewDockerStats()
-	cr, err := drawStatsChart(*cmd, "test")
-	if err != nil {
-		t.Error(err)
-	}
-	collector := &chart.ImageWriter{}
-	cr.Render(chart.PNG, collector)
-
-	image, err := collector.Image()
-	if err != nil {
-		t.Error(err)
-	}
-
-	fmt.Printf("Final Image: %dx%d\n", image.Bounds().Size().X, image.Bounds().Size().Y)
-
-	out, err := os.Create("/Users/Matt/tmp/stats.png")
 	if err != nil {
 		t.Error(err)
 	}

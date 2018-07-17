@@ -75,13 +75,13 @@
             <tbody>
             {{range $index, $line := .out}}
             <tr>
-                <td>{{index $line.Id}}</td>
-                <td>{{index $line.Name}}</td>
-                <td>{{index $line.Image}}</td>
-                <td>{{index $line.Node}}</td>
-                <td>{{index $line.DesiredState}}</td>
-                <td>{{index $line.CurrentState}}</td>
-                <td>{{index $line.Error}}</td>
+                <td>{{$line.Id}}</td>
+                <td>{{$line.Name}}</td>
+                <td>{{$line.Image}}</td>
+                <td>{{$line.Node}}</td>
+                <td>{{$line.DesiredState}}</td>
+                <td>{{$line.CurrentState}}</td>
+                <td>{{$line.Error}}</td>
             </tr>
             {{end}}
             </tbody>

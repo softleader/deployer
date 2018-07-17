@@ -1,16 +1,12 @@
-package routes
+package app
 
 import (
 	"github.com/kataras/iris"
-	"github.com/softleader/deployer/cmd"
-	"github.com/softleader/deployer/app"
 	"github.com/softleader/deployer/models"
 )
 
 type ServiceRoutes struct {
-	Workspace app.Workspace
-	cmd.DockerStack
-	cmd.DockerService
+	Routes
 }
 
 func (r *ServiceRoutes) ListService(ctx iris.Context) {

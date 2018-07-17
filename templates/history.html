@@ -48,6 +48,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="/stacks">Swarm Stacks</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/stats">Docker Stats</a>
+            </li>
             {{range $key, $value := .navbar}}
                 <li class="nav-item">
                     <a class="nav-link" href="{{$value}}">{{$key}}</a>
@@ -71,14 +74,14 @@
             {{range $index, $line := .out}}
             <tr>
                 <td>
-                    <a class="btn btn-outline-primary btn-sm" href="/{{$index}}">
+                    <a class="btn btn-outline-primary btn-sm" href="/deploy/{{$index}}">
                         <i class="fa fa-share" aria-hidden="true"></i>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" name="{{$line.Project}}/{{$index}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
-                <td><pre>{{index $line.String}}</pre></td>
+                <td><pre>{{$line.String}}</pre></td>
             </tr>
             {{end}}
             </tbody>

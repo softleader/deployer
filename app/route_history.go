@@ -1,13 +1,12 @@
-package routes
+package app
 
 import (
-	"github.com/softleader/deployer/app"
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
 )
 
 type HistoryRoutes struct {
-	app.Workspace
+	Routes
 }
 
 func (r *HistoryRoutes) GetHistory(ctx iris.Context) {

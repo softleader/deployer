@@ -1,16 +1,14 @@
-package routes
+package app
 
 import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
-	"github.com/softleader/deployer/app"
 	"path"
 	"strconv"
 )
 
 type DeployRoutes struct {
-	app.Args
-	app.Workspace
+	Routes
 }
 
 func (r *DeployRoutes) DeployPage(ctx iris.Context) {
@@ -26,7 +24,7 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 	ctx.View("deploy.html")
 }
 
-func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error) {
+func prepareDefaultValue(ws *Workspace, h string) (d models.Deploy, err error) {
 	d = ws.Config.Deploy
 	if h != "" {
 		i, err := strconv.Atoi(h)
@@ -42,6 +40,6 @@ func prepareDefaultValue(ws app.Workspace, h string) (d models.Deploy, err error
 
 func (r *DeployRoutes) DownloadYAML(ctx iris.Context) {
 	pj := ctx.Params().Get("project")
-	zip := app.GetCompressPath(path.Join(r.Workspace.Path(), pj))
+	zip := GetCompressPath(path.Join(r.Workspace.Path(), pj))
 	ctx.SendFile(zip, pj+"-"+path.Base(zip))
 }

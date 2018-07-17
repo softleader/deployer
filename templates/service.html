@@ -48,17 +48,20 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/stacks">Swarm Stacks</a>
             </li>
-            {{range $key, $value := .navbar}}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{$value}}">{{$key}}</a>
-                </li>
-            {{end}}
+            <li class="nav-item">
+                <a class="nav-link" href="/stats">Docker Stats</a>
+            </li>
+        {{range $key, $value := .navbar}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{$value}}">{{$key}}</a>
+            </li>
+        {{end}}
         </ul>
     </div>
 </nav>
 
 <main role="main">
-    <p>
+    <p></p>
     <div class="container">
         <div class="input-group">
             <input class="form-control border-right-0" type="search" id="search" placeholder="Quick search...">
@@ -66,14 +69,14 @@
                   <div class="input-group-text bg-transparent">/</div>
             </span>
         </div>
-        <p>
+        <p></p>
         <table class="table table-responsive-sm table-hover">
             <thead class="thead-light">
             <tr>
                 <th scope="col" style="width: 12%"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
                 <th scope="col">Service Id</th>
                 <th scope="col">Service Name</th>
-                {{/*<th scope="col">Mode</th>*/}}
+            {{/*<th scope="col">Mode</th>*/}}
                 <th scope="col">Replicas</th>
                 <th scope="col">Image</th>
                 <th scope="col">Ports</th>
@@ -84,34 +87,36 @@
             {{range $index, $line := .out}}
             <tr>
                 <td>
-                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{$line.Id}}"><i
+                            class="fa fa-eye" aria-hidden="true"></i></a>
                 {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
-                {{/*name="{{index $line.Id}}">*/}}
+                {{/*name="{{$line.Id}}">*/}}
                 {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
                 {{/*</a>*/}}
 
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal" data-backdrop="static"
-                       name="{{index $line.Id}}" image="{{index $line.Image}}">
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal"
+                       data-backdrop="static"
+                       name="{{$line.Id}}" image="{{$line.Image}}">
                         <i class="fa fa-wrench" aria-hidden="true"></i>
                     </a>
-                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                       name="{{$stack}}/{{index $line.Id}}">
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
+                       data-backdrop="static"
+                       name="{{$stack}}/{{$line.Id}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
                 <td>
-                    <a href="/services/ps/{{index $line.Id}}" class="btn btn-link btn-sm">{{index $line.Id}}</a>
+                    <a href="/services/ps/{{$line.Id}}" class="btn btn-link btn-sm">{{$line.Id}}</a>
                 </td>
-                <td>{{index $line.Name}}</td>
-                {{/*<td>{{index $line.Mode}}</td>*/}}
-                <td>{{index $line.Replicas}}</td>
-                <td>{{index $line.Image}}</td>
-                <td>{{index $line.Ports}}</td>
+                <td>{{$line.Name}}</td>
+            {{/*<td>{{$line.Mode}}</td>*/}}
+                <td>{{$line.Replicas}}</td>
+                <td>{{$line.Image}}</td>
+                <td>{{$line.Ports}}</td>
             </tr>
             {{end}}
             </tbody>
         </table>
-        </p>
     </div>
 </main>
 
@@ -120,8 +125,10 @@
         <p class="float-right">
             <a href="#" class="text-muted"><i class="fa fa-angle-double-up fa-2x"></i></a>
         </p>
-        <p><a href="https://github.com/softleader" class="text-muted"><i class="fa fa-github"></i></a> <a href="https://www.facebook.com/softleader" class="text-muted"><i class="fa fa-facebook"></i></a></p>
-        <p>Copyright © 2018 <a href="https://www.softleader.com.tw" class="text-muted">SoftLeader Technology Crop</a>. All rights reserved.</p>
+        <p><a href="https://github.com/softleader" class="text-muted"><i class="fa fa-github"></i></a> <a
+                href="https://www.facebook.com/softleader" class="text-muted"><i class="fa fa-facebook"></i></a></p>
+        <p>Copyright © 2018 <a href="https://www.softleader.com.tw" class="text-muted">SoftLeader Technology Crop</a>.
+            All rights reserved.</p>
     </div>
 </footer>
 
@@ -253,7 +260,7 @@
                     if (content.innerHTML.toUpperCase().indexOf(filter) > -1) {
                         tr.style.display = "";
                         break;
-                    } else if (d == tds.length - 1){
+                    } else if (d == tds.length - 1) {
                         tr.style.display = "none";
                     }
                 }
@@ -261,8 +268,8 @@
         }
     })
 
-    $(document).keypress(function(e) {
-        if(e.which == 47) {
+    $(document).keypress(function (e) {
+        if (e.which == 47) {
             if (!$("input:focus").length) {
                 $("#search").focus();
                 return false;

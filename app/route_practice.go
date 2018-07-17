@@ -1,14 +1,13 @@
-package routes
+package app
 
 import (
 	"github.com/softleader/deployer/models"
 	"github.com/kataras/iris"
 	"strings"
-	"github.com/softleader/deployer/app"
 )
 
 type PracticeRoutes struct {
-	app.Workspace
+	Routes
 }
 
 func (r *PracticeRoutes) BestPractices(ctx iris.Context) {

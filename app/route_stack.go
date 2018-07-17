@@ -1,4 +1,4 @@
-package routes
+package app
 
 import (
 	"github.com/kataras/iris"
@@ -12,18 +12,12 @@ import (
 	"github.com/softleader/deployer/cmd"
 	"path"
 	"io/ioutil"
-	"github.com/softleader/deployer/app"
 	"github.com/dustin/go-humanize"
 	"sort"
 )
 
 type StackRoutes struct {
-	app.Workspace
-	cmd.DockerStack
-	cmd.DockerService
-	cmd.Gpm
-	cmd.GenYaml
-	Debug bool
+	Routes
 }
 
 func (r *StackRoutes) ListStack(ctx iris.Context) {
@@ -141,7 +135,7 @@ func publishedPort(s string) bool {
 	return false
 }
 
-func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *app.WorkDir, opts *cmd.Options) (yamls []models.Yaml, err error) {
+func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir, opts *cmd.Options) (yamls []models.Yaml, err error) {
 	(*ctx).StreamWriter(pipe.Printf("\nGenerating YAML '%v'...\n", d.Yaml))
 
 	gpmDir := "repo"

@@ -13,7 +13,18 @@ func NewDockerService() *DockerService {
 	return &DockerService{}
 }
 
-func (ds *DockerService) Ls() (arg string, out string, err error) {
+func (ds *DockerService) Ls() (s []models.DockerServiceLs, err error) {
+	_, out, err := serviceLs()
+	lines := strings.Split(out, "\n")
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			s = append(s, models.NewDockerServiceLs(line))
+		}
+	}
+	return
+}
+
+func serviceLs() (arg string, out string, err error) {
 	return Exec(&Options{}, "docker service ls", "--format '{{.Replicas}}'")
 }
 
