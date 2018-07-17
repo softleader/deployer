@@ -50,16 +50,23 @@ type DockerServiceLs struct {
 }
 
 type StackName struct {
-	Project string
-	Port    int
-	Group   string
+	Project         string
+	Port            int
+	Group           string
+	IsDevEnabled    bool
+	IsPublishedPort bool
 }
 
 func NewStackName(in string) (n StackName) {
 	s := strings.Split(in, "-")
 	n.Project = s[0]
 	if len(s) > 1 {
-		n.Port, _ = strconv.Atoi(s[1])
+		n.IsDevEnabled = true
+		p, err := strconv.Atoi(s[1])
+		if err == nil {
+			n.Port = p
+			n.IsPublishedPort = true
+		}
 	}
 	if len(s) > 2 {
 		n.Group = s[2]
