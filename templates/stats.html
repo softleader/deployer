@@ -67,8 +67,8 @@
         <div class="input-group">
             <select class="custom-select" id="project">
                 <option value="">Choose project...</option>
-            {{range $index, $line := .projects}}
-                <option value="{{$line}}">{{$line}}</option>
+            {{range $key, $value := .projects}}
+                <option value="{{$key}}">{{$key}}</option>
             {{end}}
             </select>
             <input class="form-control border-right-0" type="search" id="search" placeholder="Quick search...">
@@ -91,7 +91,7 @@
             <tbody>
             {{range $index, $line := .out}}
             <tr>
-                <td>{{$line.Name}}</td>
+                <td>{{$line.TruncName}}</td>
                 <td>{{$line.CPUPerc}}</td>
                 <td>{{$line.MemUsage}}</td>
                 <td>{{$line.MemPerc}}</td>

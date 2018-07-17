@@ -17,9 +17,9 @@ func (r *StatsRoutes) GetStats(ctx iris.Context) {
 		return
 	}
 
-	var projects []string
+	projects := make(map[string]struct{})
 	for _, stack := range out {
-		projects = append(projects, models.NewStackName(stack.Name).Project)
+		projects[models.NewStackName(stack.Name).Project] = struct{}{}
 	}
 	ctx.ViewData("projects", projects)
 

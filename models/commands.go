@@ -6,12 +6,13 @@ import (
 )
 
 type DockerStatsNoStream struct {
-	Name     string
-	CPUPerc  string
-	MemUsage string
-	MemPerc  string
-	NetIO    string
-	BlockIO  string
+	Name      string
+	TruncName string
+	CPUPerc   string
+	MemUsage  string
+	MemPerc   string
+	NetIO     string
+	BlockIO   string
 }
 
 type DockerNodeLs struct {
@@ -133,6 +134,8 @@ func NewDockerStackLs(in string) (m DockerStackLs) {
 func NewDockerStatsNoSteam(in string) (m DockerStatsNoStream) {
 	s := strings.Split(in, ";")
 	m.Name = s[0]
+	name := strings.Split(m.Name, ".")
+	m.TruncName = strings.Join(name[:len(name)-1 ], ".")
 	m.CPUPerc = s[1]
 	m.MemUsage = s[2]
 	m.MemPerc = s[3]
