@@ -29,22 +29,22 @@ type StackRoutes struct {
 func (r *StackRoutes) ListStack(ctx iris.Context) {
 	out, err := r.DockerStack.Ls()
 	if err != nil {
-		out = append(out, []string{err.Error()})
+		out = append(out, models.DockerStackLs{Name: err.Error()})
 	}
-	stacks := make(map[string][][]string)
-	for _, line := range out {
-		splited := strings.Split(line[0], "-")
+	stacks := make(map[string][]models.DockerStackLs)
+	for _, stack := range out {
+		splited := strings.Split(stack.Name, "-")
 		key := splited[0]
 		if len(splited) > 1 {
 			if publishedPort(splited[1]) { // 有 publish port 可視為有開啟 dev 模式
 				key = strings.Join(splited[:2], "-")
 			}
 		}
-		_, out, _ := r.DockerService.GetCreatedTimeOfFirstServiceInStack(line[0])
+		_, out, _ := r.DockerService.GetCreatedTimeOfFirstServiceInStack(stack.Name)
 		out = strings.TrimSuffix(out, "\n")
 		t, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", out)
-		line = append(line, uptime(t))
-		stacks[key] = append(stacks[key], line)
+		stack.Uptime = uptime(t)
+		stacks[key] = append(stacks[key], stack)
 	}
 	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("stacks", stacks)

@@ -84,13 +84,13 @@
                             <tr>
                                 <td style="width: 5%">
                                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                                       name="{{index $line 0}}">
+                                       name="{{index $line.Name}}">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="/services/{{index $line 0}}" class="btn btn-link btn-sm">
-                                        {{index $line 0}} ({{index $line 1}}) {{index $line 2}}
+                                    <a href="/services/{{index $line.Name}}" class="btn btn-link btn-sm">
+                                        {{index $line.Name}} ({{index $line.Services}}) {{index $line.Uptime}}
                                     </a>
                                 </td>
                                 {{/*<td>{{index $line 1}}</td>*/}}

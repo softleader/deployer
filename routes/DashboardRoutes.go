@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"fmt"
 	"io"
+	"github.com/softleader/deployer/models"
 )
 
 var (
@@ -40,30 +41,32 @@ func (r *DashboardRoutes) DashboardPage(ctx iris.Context) {
 }
 
 func (r *DashboardRoutes) Nodes(ctx iris.Context) {
-	_, out, err := r.DockerNode.Ls()
+	cr, err := drawNodesChart(r.DockerNode)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
-	lines := strings.Split(out, "\n")
+	flush(ctx, cr)
+}
+
+func drawNodesChart(node cmd.DockerNode) (cr ChartRenderer, err error) {
+	out, err := node.Ls()
+	if err != nil {
+		return
+	}
 	m := make(map[string]chart.Value)
-	for _, line := range lines {
-		if strings.TrimSpace(line) != "" {
-			node := strings.Split(line, ";")
-			host := node[0]
-			status := node[1]
-			if status == "Down" {
-				v := m[status].Value + 1
-				l := m[status].Label + host + ", "
-				m[status] = chart.Value{
-					Value: v,
-					Style: ErrorStyle,
-					Label: l,
-				}
-			} else {
-				v := m[status].Value + 1
-				m[status] = chart.Value{Value: v, Label: fmt.Sprintf("%s (%v)", status, v)}
+	for _, node := range out {
+		if node.Status == "Down" {
+			v := m[node.Status].Value + 1
+			l := m[node.Status].Label + node.Hostname + ", "
+			m[node.Status] = chart.Value{
+				Value: v,
+				Style: ErrorStyle,
+				Label: l,
 			}
+		} else {
+			v := m[node.Status].Value + 1
+			m[node.Status] = chart.Value{Value: v, Label: fmt.Sprintf("%s (%v)", node.Status, v)}
 		}
 	}
 	down := m["Down"]
@@ -78,35 +81,41 @@ func (r *DashboardRoutes) Nodes(ctx iris.Context) {
 	for _, v := range m {
 		values = append(values, v)
 	}
-	pie := chart.PieChart{
+	cr = chart.PieChart{
 		Width:  512,
 		Height: 512,
 		Values: values,
 	}
-	flush(ctx, pie)
+	return
 }
 
 func (r *DashboardRoutes) Projects(ctx iris.Context) {
-	out, err := r.DockerStack.Ls()
+	cr, err := drawProjectsChart(r.DockerStack)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
+	flush(ctx, cr)
+}
+
+func drawProjectsChart(stack cmd.DockerStack) (r ChartRenderer, err error) {
+	out, err := stack.Ls()
+	if err != nil {
+		return
+	}
 
 	projects := make(map[string][]string)
 	for _, stack := range out {
-		p := strings.Split(stack[0], "-")[0]
-		for _, name := range stack {
-			projects[p] = append(projects[p], name)
-		}
+		p := strings.Split(stack.Name, "-")[0]
+		projects[p] = append(projects[p], stack.Name)
 	}
 
 	var bars []chart.StackedBar
 
 	for pj, stacks := range projects {
-		var services [][]string
-		for _, stack := range stacks {
-			svcs, _ := r.DockerStack.Services(stack)
+		var services []models.DockerStackServices
+		for _, s := range stacks {
+			svcs, _ := stack.Services(s)
 			for _, svc := range svcs {
 				services = append(services, svc)
 			}
@@ -127,19 +136,27 @@ func (r *DashboardRoutes) Projects(ctx iris.Context) {
 		})
 	}
 
-	sbc := chart.StackedBarChart{
+	r = chart.StackedBarChart{
 		Height: 512,
 		XAxis:  chart.StyleShow(),
 		Bars:   bars,
 	}
-	flush(ctx, sbc)
+	return
 }
 
 func (r *DashboardRoutes) Services(ctx iris.Context) {
-	_, out, err := r.DockerService.Ls()
+	cr, err := drawServicesChart(r.DockerService)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
+	}
+	flush(ctx, cr)
+}
+
+func drawServicesChart(service cmd.DockerService) (cr ChartRenderer, err error) {
+	_, out, err := service.Ls()
+	if err != nil {
+		return
 	}
 	lines := strings.Split(out, "\n")
 	m := make(map[string]chart.Value)
@@ -177,19 +194,19 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 			Style: WarningStyle,
 		})
 	}
-	pie := chart.PieChart{
+	cr = chart.PieChart{
 		Width:  512,
 		Height: 512,
 		Values: values,
 	}
-	flush(ctx, pie)
+	return
 }
 
-func toStackedBarValues(svcs [][]string) (label string, values chart.Values) {
+func toStackedBarValues(svcs []models.DockerStackServices) (label string, values chart.Values) {
 	var healthy, unhealthy int
 	m := make(map[string]chart.Value)
 	for _, svc := range svcs {
-		replicas := strings.Split(svc[3], "/")
+		replicas := strings.Split(svc.Replicas, "/")
 		up, _ := strconv.Atoi(replicas[0])
 		total, _ := strconv.Atoi(replicas[1])
 		if up == total {
@@ -217,15 +234,64 @@ func toStackedBarValues(svcs [][]string) (label string, values chart.Values) {
 	return
 }
 
-func flush(ctx iris.Context, r Render) {
+func drawStatsChart(stats cmd.DockerStats, project string) (cr ChartRenderer, err error) {
+	_, out, err := stats.NoStream(project)
+	if err != nil {
+		return
+	}
+	lines := strings.Split(out, "\n")
+	m := make(map[string]chart.Value)
+	for _, line := range lines {
+		if strings.TrimSpace(line) != "" {
+			svc := strings.Split(line, ";")
+			replicas := strings.Split(svc[0], "/")
+			up, _ := strconv.Atoi(replicas[0])
+			total, _ := strconv.Atoi(replicas[1])
+			if up == total {
+				v := m["Healthy"].Value + 1
+				m["Healthy"] = chart.Value{
+					Value: v,
+					Style: SuccessStyle,
+					Label: fmt.Sprintf("Healthy (%.0f)", v),
+				}
+			} else {
+				v := m["Unhealthy"].Value + 1
+				m["Unhealthy"] = chart.Value{
+					Value: m["Unhealthy"].Value + 1,
+					Style: ErrorStyle,
+					Label: fmt.Sprintf("Unhealthy (%.0f)", v),
+				}
+			}
+		}
+	}
+	var values []chart.Value
+	for _, v := range m {
+		values = append(values, v)
+	}
+	if len(values) == 0 {
+		values = append(values, chart.Value{
+			Value: 1,
+			Label: "No service found",
+			Style: WarningStyle,
+		})
+	}
+	cr = chart.PieChart{
+		Width:  512,
+		Height: 512,
+		Values: values,
+	}
+	return
+}
+
+func flush(ctx iris.Context, cr ChartRenderer) {
 	ctx.Header("Content-Type", "image/png")
-	err := r.Render(chart.PNG, ctx.ResponseWriter())
+	err := cr.Render(chart.PNG, ctx.ResponseWriter())
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
 }
 
-type Render interface {
+type ChartRenderer interface {
 	Render(rp chart.RendererProvider, w io.Writer) error
 }

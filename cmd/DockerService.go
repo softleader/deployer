@@ -3,6 +3,7 @@ package cmd
 import (
 	"strings"
 	"strconv"
+	"github.com/softleader/deployer/models"
 )
 
 type DockerService struct {
@@ -32,18 +33,15 @@ func (ds *DockerService) Rm(service string) (arg string, out string, err error) 
 	return Exec(&Options{}, "docker service rm", service)
 }
 
-func (ds *DockerService) Ps(id string) ([][]string, error) {
+func (ds *DockerService) Ps(id string) (s []models.DockerServicePs, err error) {
 	_, out, err := ps(id)
 	lines := strings.Split(out, "\n")
-	var s [][]string
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
-			fields := strings.Split(line, ";")
-			fields[2] = strings.Split(fields[2], "@sha256")[0]
-			s = append(s, fields)
+			s = append(s, models.NewDockerServicePs(line))
 		}
 	}
-	return s, err
+	return
 }
 
 func ps(id string) (arg string, out string, err error) {

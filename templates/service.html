@@ -84,29 +84,29 @@
             {{range $index, $line := .out}}
             <tr>
                 <td>
-                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line 0}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{index $line.Id}}"><i class="fa fa-eye" aria-hidden="true"></i></a>
                 {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
-                {{/*name="{{index $line 0}}">*/}}
+                {{/*name="{{index $line.Id}}">*/}}
                 {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
                 {{/*</a>*/}}
 
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal" data-backdrop="static"
-                       name="{{index $line 0}}" image="{{index $line 4}}">
+                       name="{{index $line.Id}}" image="{{index $line.Image}}">
                         <i class="fa fa-wrench" aria-hidden="true"></i>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                       name="{{$stack}}/{{index $line 0}}">
+                       name="{{$stack}}/{{index $line.Id}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
                 <td>
-                    <a href="/services/ps/{{index $line 0}}" class="btn btn-link btn-sm">{{index $line 0}}</a>
+                    <a href="/services/ps/{{index $line.Id}}" class="btn btn-link btn-sm">{{index $line.Id}}</a>
                 </td>
-                <td>{{index $line 1}}</td>
-                {{/*<td>{{index $line 2}}</td>*/}}
-                <td>{{index $line 3}}</td>
-                <td>{{index $line 4}}</td>
-                <td>{{index $line 5}}</td>
+                <td>{{index $line.Name}}</td>
+                {{/*<td>{{index $line.Mode}}</td>*/}}
+                <td>{{index $line.Replicas}}</td>
+                <td>{{index $line.Image}}</td>
+                <td>{{index $line.Ports}}</td>
             </tr>
             {{end}}
             </tbody>

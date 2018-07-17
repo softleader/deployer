@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/cmd"
 	"github.com/softleader/deployer/app"
+	"github.com/softleader/deployer/models"
 )
 
 type ServiceRoutes struct {
@@ -16,7 +17,7 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
 	out, err := r.DockerStack.Services(stack)
 	if err != nil {
-		out = append(out, []string{err.Error()})
+		out = append(out, models.DockerStackServices{Id: err.Error()})
 	}
 	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
