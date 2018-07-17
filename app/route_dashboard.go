@@ -27,11 +27,10 @@ var (
 )
 
 type DashboardRoutes struct {
-	Routes
+	*Route
 }
 
 func (r *DashboardRoutes) DashboardPage(ctx iris.Context) {
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.View("dashboard.html")
 }
 

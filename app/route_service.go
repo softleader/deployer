@@ -6,7 +6,7 @@ import (
 )
 
 type ServiceRoutes struct {
-	Routes
+	*Route
 }
 
 func (r *ServiceRoutes) ListService(ctx iris.Context) {
@@ -15,7 +15,6 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	if err != nil {
 		out = append(out, models.DockerStackServices{Id: err.Error()})
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.ViewData("stack", stack)
 	ctx.View("service.html")
@@ -28,7 +27,6 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("ps.html")
 }
@@ -48,7 +46,6 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 	if err != nil {
 		out += err.Error()
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("pre.html")
 }
@@ -60,7 +57,6 @@ func (r *ServiceRoutes) UpdateService(ctx iris.Context) {
 	if err != nil {
 		out += err.Error()
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("pre.html")
 }
@@ -79,7 +75,6 @@ func (r *ServiceRoutes) LogsService(ctx iris.Context) {
 	if err != nil {
 		out += err.Error()
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("out", out)
 	ctx.View("pre.html")
 }

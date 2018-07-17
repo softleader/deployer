@@ -1,7 +1,15 @@
 package app
 
-type Routes struct {
+import "github.com/softleader/deployer/cmd"
+
+// it's just a collection of all commands for each route use
+type Route struct {
 	*Args
 	*Workspace
-	*Commands
+	cmd.DockerNode
+	cmd.DockerStack
+	cmd.DockerService
+	cmd.DockerStats
+	cmd.GenYaml
+	cmd.Gpm
 }

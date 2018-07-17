@@ -9,18 +9,17 @@ import (
 
 func NewApplication(args *Args) *iris.Application {
 	ws := NewWorkspace(args.Ws)
-	commands := newCommands(args)
+	r := newRoute(args, ws)
 
 	// prepare routes
-	stackRoutes := StackRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	serviceRoutes := ServiceRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	dashboardRoutes := DashboardRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	deployRoutes := DeployRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	practiceRoutes := PracticeRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	historyRoutes := HistoryRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
-	statsRoutes := StatsRoutes{Routes: Routes{Args: args, Workspace: ws, Commands: commands}}
+	stackRoutes := StackRoutes{Route: r}
+	serviceRoutes := ServiceRoutes{Route: r}
+	dashboardRoutes := DashboardRoutes{Route: r}
+	deployRoutes := DeployRoutes{Route: r}
+	practiceRoutes := PracticeRoutes{Route: r}
+	historyRoutes := HistoryRoutes{Route: r}
+	statsRoutes := StatsRoutes{Route: r}
 
-	config := ws.Config
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
@@ -28,6 +27,11 @@ func NewApplication(args *Args) *iris.Application {
 
 	app.RegisterView(tmpl)
 	app.StaticWeb("/", "./static")
+
+	app.UseGlobal(func(ctx iris.Context) {
+		ctx.ViewData("navbar", ws.Config.Navbar)
+		ctx.Next() // execute the next handler, in this case the main one.
+	})
 
 	api := app.Party("/api")
 	{
@@ -39,13 +43,13 @@ func NewApplication(args *Args) *iris.Application {
 	root := app.Party("/")
 	{
 		root.Get("/", func(ctx context.Context) {
-			ctx.Redirect(config.Index)
+			ctx.Redirect(ws.Config.Index)
 		})
 	}
 
 	dashboard := app.Party("/dashboard")
 	{
-		dashboardCache := cache.Handler(config.DashboardCache)
+		dashboardCache := cache.Handler(ws.Config.DashboardCache)
 		dashboard.Get("/", dashboardRoutes.DashboardPage)
 		dashboard.Get("/nodes", dashboardCache, dashboardRoutes.Nodes)
 		dashboard.Get("/services", dashboardCache, dashboardRoutes.Services)
@@ -112,8 +116,10 @@ func NewApplication(args *Args) *iris.Application {
 	return app
 }
 
-func newCommands(args *Args) *Commands {
-	return &Commands{
+func newRoute(args *Args, ws *Workspace) *Route {
+	return &Route{
+		Args:          args,
+		Workspace:     ws,
 		DockerStack:   *cmd.NewDockerStack(args.Registry.Login()),
 		DockerService: *cmd.NewDockerService(),
 		DockerNode:    *cmd.NewDockerNode(),

@@ -8,7 +8,7 @@ import (
 )
 
 type DeployRoutes struct {
-	Routes
+	*Route
 }
 
 func (r *DeployRoutes) DeployPage(ctx iris.Context) {
@@ -20,7 +20,6 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 		ctx.ViewData("err", err)
 	}
 	ctx.ViewData("dft", dft)
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.View("deploy.html")
 }
 

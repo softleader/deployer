@@ -7,7 +7,7 @@ import (
 )
 
 type StatsRoutes struct {
-	Routes
+	*Route
 }
 
 func (r *StatsRoutes) GetStats(ctx iris.Context) {
@@ -30,6 +30,5 @@ func (r *StatsRoutes) GetStats(ctx iris.Context) {
 		ctx.ViewData("out", out)
 	}
 
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.View("stats.html")
 }

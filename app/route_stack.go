@@ -17,7 +17,7 @@ import (
 )
 
 type StackRoutes struct {
-	Routes
+	*Route
 }
 
 func (r *StackRoutes) ListStack(ctx iris.Context) {
@@ -40,7 +40,6 @@ func (r *StackRoutes) ListStack(ctx iris.Context) {
 		stack.Uptime = uptime(t)
 		stacks[key] = append(stacks[key], stack)
 	}
-	ctx.ViewData("navbar", r.Workspace.Config.Navbar)
 	ctx.ViewData("stacks", stacks)
 	ctx.View("stack.html")
 }
