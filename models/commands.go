@@ -6,13 +6,12 @@ import (
 )
 
 type DockerStatsNoStream struct {
-	Name      string
-	TruncName string
-	CPUPerc   string
-	MemUsage  string
-	MemPerc   string
-	NetIO     string
-	BlockIO   string
+	Name     string
+	CPUPerc  string
+	MemUsage string
+	MemPerc  string
+	NetIO    string
+	BlockIO  string
 }
 
 type DockerNodeLs struct {
@@ -144,12 +143,16 @@ func removeAfterLast(in string, sep string) (out string) {
 func NewDockerStatsNoSteam(in string) (m DockerStatsNoStream) {
 	s := strings.Split(in, ";")
 	m.Name = s[0]
-	m.TruncName = removeAfterLast(m.Name, ".")
 	m.CPUPerc = s[1]
 	m.MemUsage = s[2]
 	m.MemPerc = s[3]
 	m.NetIO = s[4]
 	m.BlockIO = s[5]
+	return
+}
+
+func (d DockerStatsNoStream) TruncName() (t string) {
+	t = removeAfterLast(d.Name, ".")
 	return
 }
 
