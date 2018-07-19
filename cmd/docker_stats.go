@@ -39,11 +39,10 @@ func parallelOverNodes(grep string, nodes []string, consumer func(grep string, h
 	var wg sync.WaitGroup
 	for _, node := range nodes {
 		wg.Add(1)
-		go func(node string, c chan string) {
+		go func(node string) {
 			defer wg.Done()
-			apply := consumer(grep, node)
-			c <- apply
-		}(node, c)
+			c <- consumer(grep, node)
+		}(node)
 	}
 	wg.Wait()
 	close(c)
