@@ -121,6 +121,7 @@ func newRoute(args *Args, ws *Workspace) *Route {
 		Args:          args,
 		Workspace:     ws,
 		DockerStack:   *cmd.NewDockerStack(args.Registry.Login()),
+		DockerStats:   *cmd.NewDockerStats(),
 		DockerService: *cmd.NewDockerService(),
 		DockerNode:    *cmd.NewDockerNode(),
 		Gpm:           *cmd.NewGpm(args.CmdGpm),

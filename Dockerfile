@@ -1,8 +1,9 @@
 FROM softleader/docker
 MAINTAINER softleader.com.tw
 
-RUN apk update \
-    && apk --no-cache add git nodejs \
+RUN echo "http://dl-3.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
+    && apk update \
+    && apk --no-cache add git nodejs openssh \
     && rm -rf /var/cache/apk/* \
     && git config --global user.name "SoftLeader" \
     && git config --global user.email "support@softleader.com.tw"
