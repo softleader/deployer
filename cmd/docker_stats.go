@@ -34,14 +34,14 @@ func (ds *DockerStats) NoStream(grep string) (s []models.DockerStatsNoStream, er
 }
 
 // this function make test possible
-func parallelOverNodes(grep string, nodes []string, consumer func(grep string, host string) string) (out string, err error) {
+func parallelOverNodes(grep string, nodes []string, consume func(grep string, host string) string) (out string, err error) {
 	c := make(chan string, len(nodes))
 	var wg sync.WaitGroup
 	for _, node := range nodes {
 		wg.Add(1)
 		go func(node string) {
 			defer wg.Done()
-			c <- consumer(grep, node)
+			c <- consume(grep, node)
 		}(node)
 	}
 	wg.Wait()
