@@ -28,7 +28,7 @@
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
-  revision = "02af3965c54e8cacf948b97fef38925c4120652c"
+  revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
 
 [[projects]]
   branch = "master"
@@ -64,7 +64,7 @@
   branch = "master"
   name = "github.com/hashicorp/go-version"
   packages = ["."]
-  revision = "23480c0665776210b5fbbac6eaaee40e3e6a96b7"
+  revision = "270f2f71b1ee587f3b609f00f422b76a6b28f348"
 
 [[projects]]
   branch = "master"
@@ -133,7 +133,6 @@
   revision = "a9733b5b6b83d32b479aacd51d26ef6018261963"
 
 [[projects]]
-  branch = "master"
   name = "github.com/kataras/survey"
   packages = [
     ".",
@@ -141,6 +140,7 @@
     "terminal"
   ]
   revision = "00934ae069eda15df26fa427ac393e67e239380c"
+  version = "v2.0.0"
 
 [[projects]]
   name = "github.com/klauspost/compress"
@@ -148,8 +148,8 @@
     "flate",
     "gzip"
   ]
-  revision = "5fb1f31b0a61e9858f12f39266e059848a5f1cea"
-  version = "v1.3.0"
+  revision = "b939724e787a27c0005cabe3f78e7ed7987ac74f"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/klauspost/cpuid"
@@ -185,10 +185,10 @@
   revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
-  branch = "master"
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
-  revision = "f0761eb8ed07c1cc892ef631b00c33463b9b6868"
+  revision = "dafebb5b6ff2861a0d69af64991e10866c19be85"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/modern-go/concurrent"
@@ -252,7 +252,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
+  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
 
 [[projects]]
   branch = "master"
@@ -272,13 +272,13 @@
     "html",
     "html/atom"
   ]
-  revision = "ed29d75add3d7c4bf7ca65aac0c6df3d1420216f"
+  revision = "81d44fd177a98d09fe3bc40a5a78d495d3f042ea"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "7138fd3d9dc8335c567ca206f4333fb75eb05d56"
+  revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [[projects]]
   branch = "v2"
@@ -295,6 +295,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7a64f1c53e3168360ba2787d90d16155fc0a45b7a33ab91d1441d885bba7d472"
+  inputs-digest = "338cdf74bf21e3aa0e828a0e2d09cfd8f0f073a154bf08328a6257554138d902"
   solver-name = "gps-cdcl"
   solver-version = 1
