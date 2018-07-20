@@ -5,17 +5,11 @@ import (
 	"strings"
 	"fmt"
 	"sync"
+	"github.com/softleader/deployer/cmd"
 )
 
-type DockerStats struct {
-}
-
-func NewDockerStats() *DockerStats {
-	return &DockerStats{}
-}
-
-func (ds *DockerStats) NoStream(grep string) (s []models.DockerStatsNoStream, err error) {
-	nodes, err := listNodes()
+func StatsNoStream(grep string) (s []models.DockerStatsNoStream, err error) {
+	nodes, err := readyNodes()
 	if err != nil {
 		return
 	}
@@ -53,12 +47,10 @@ func parallelOverNodes(grep string, nodes []string, consume func(grep string, ho
 }
 
 func readyNodes() (nodes []string, err error) {
-	Ls
-
-
-	for _, node := range strings.Split(nodesOut, "\n") {
-		if n := strings.TrimSpace(node); n != "" {
-			nodes = append(nodes, n)
+	n, err := NodeLs()
+	for _, node := range n {
+		if node.Status == "Ready" {
+			nodes = append(nodes, node.Hostname)
 		}
 	}
 	return
@@ -71,7 +63,7 @@ func sshNoStream(grep string, host string) (out string) {
 		commands = append(commands, "| grep", grep)
 	}
 	commands = append(commands, `"`)
-	_, out, e := Exec(&Options{}, commands...)
+	_, out, e := cmd.Exec(&cmd.Options{}, commands...)
 	if e != nil {
 		fmt.Println(e)
 	}

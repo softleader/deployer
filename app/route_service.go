@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
+	"github.com/softleader/deployer/cmd/docker"
 )
 
 type ServiceRoutes struct {
@@ -11,7 +12,7 @@ type ServiceRoutes struct {
 
 func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
-	out, err := r.DockerStack.Services(stack)
+	out, err := docker.StackServices(stack)
 	if err != nil {
 		out = append(out, models.DockerStackServices{Id: err.Error()})
 	}
@@ -22,7 +23,7 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 
 func (r *ServiceRoutes) PsService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
-	out, err := r.DockerService.Ps(serviceId)
+	out, err := docker.ServicePs(serviceId)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -33,7 +34,7 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 
 func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
 	service := ctx.Params().Get("service")
-	_, _, err := r.DockerService.Rm(service)
+	_, _, err := docker.ServiceRm(service)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -42,7 +43,7 @@ func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
 
 func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
-	_, out, err := r.DockerService.Inspect(serviceId)
+	_, out, err := docker.ServiceInspect(serviceId)
 	if err != nil {
 		out += err.Error()
 	}
@@ -53,7 +54,7 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 func (r *ServiceRoutes) UpdateService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	image := ctx.FormValue("image")
-	_, out, err := r.DockerService.Update(serviceId, "--image", image)
+	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
 	if err != nil {
 		out += err.Error()
 	}
@@ -71,7 +72,7 @@ func (r *ServiceRoutes) LogsService(ctx iris.Context) {
 	if tail <= 0 {
 		tail = 300
 	}
-	_, out, err := r.DockerService.Logs(serviceId, tail)
+	_, out, err := docker.ServiceLogs(serviceId, tail)
 	if err != nil {
 		out += err.Error()
 	}

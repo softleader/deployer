@@ -45,7 +45,7 @@ func stackDeploy(opts *cmd.Options, stack string, file string, login string) (ar
 	return cmd.Exec(opts, login, "docker stack deploy -c", file, stack, "--with-registry-auth")
 }
 
-func StackDeploy(opts *cmd.Options, yamls []models.Yaml, d *models.Deploy) error {
+func StackDeploy(opts *cmd.Options, yamls []models.Yaml, d *models.Deploy, login string) error {
 	for _, y := range yamls {
 		stack := []string{d.Project}
 		if d.Dev.IpAddress != "" {
@@ -54,7 +54,7 @@ func StackDeploy(opts *cmd.Options, yamls []models.Yaml, d *models.Deploy) error
 		if y.Group != "" {
 			stack = append(stack, y.Group)
 		}
-		stackDeploy(opts, strings.Join(stack, "-"), y.Path, ds.login)
+		stackDeploy(opts, strings.Join(stack, "-"), y.Path, login)
 	}
 	return nil
 }

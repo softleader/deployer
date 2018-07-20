@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
 	"strings"
+	"github.com/softleader/deployer/cmd/docker"
 )
 
 type StatsRoutes struct {
@@ -11,7 +12,7 @@ type StatsRoutes struct {
 }
 
 func (r *StatsRoutes) GetStats(ctx iris.Context) {
-	out, err := r.DockerStack.Ls()
+	out, err := docker.StackLs()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		return
@@ -25,7 +26,7 @@ func (r *StatsRoutes) GetStats(ctx iris.Context) {
 
 	grep := ctx.FormValue("g")
 	if g := strings.TrimSpace(grep); g != "" {
-		out, err := r.DockerStats.NoStream(g)
+		out, err := docker.StatsNoStream(g)
 		ctx.ViewData("err", err)
 		ctx.ViewData("out", out)
 	}

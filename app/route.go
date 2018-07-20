@@ -6,10 +6,6 @@ import "github.com/softleader/deployer/cmd"
 type Route struct {
 	*Args
 	*Workspace
-	cmd.DockerNode
-	cmd.DockerStack
-	cmd.DockerService
-	cmd.DockerStats
 	cmd.GenYaml
 	cmd.Gpm
 }

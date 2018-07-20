@@ -118,13 +118,9 @@ func NewApplication(args *Args) *iris.Application {
 
 func newRoute(args *Args, ws *Workspace) *Route {
 	return &Route{
-		Args:          args,
-		Workspace:     ws,
-		DockerStack:   *cmd.NewDockerStack(args.Registry.Login()),
-		DockerStats:   *cmd.NewDockerStats(),
-		DockerService: *cmd.NewDockerService(),
-		DockerNode:    *cmd.NewDockerNode(),
-		Gpm:           *cmd.NewGpm(args.CmdGpm),
-		GenYaml:       *cmd.NewGenYaml(args.CmdGenYaml),
+		Args:      args,
+		Workspace: ws,
+		Gpm:       *cmd.NewGpm(args.CmdGpm),
+		GenYaml:   *cmd.NewGenYaml(args.CmdGenYaml),
 	}
 }

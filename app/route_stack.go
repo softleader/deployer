@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"github.com/dustin/go-humanize"
 	"sort"
+	"github.com/softleader/deployer/cmd/docker"
 )
 
 type StackRoutes struct {
@@ -21,7 +22,7 @@ type StackRoutes struct {
 }
 
 func (r *StackRoutes) ListStack(ctx iris.Context) {
-	out, err := r.DockerStack.Ls()
+	out, err := docker.StackLs()
 	if err != nil {
 		out = append(out, models.DockerStackLs{Name: err.Error()})
 	}
@@ -34,7 +35,7 @@ func (r *StackRoutes) ListStack(ctx iris.Context) {
 				key = strings.Join(splited[:2], "-")
 			}
 		}
-		_, out, _ := r.DockerService.GetCreatedTimeOfFirstServiceInStack(stack.Name)
+		_, out, _ := docker.ServiceGetCreatedTimeOfFirstServiceInStack(stack.Name)
 		out = strings.TrimSuffix(out, "\n")
 		t, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", out)
 		stack.Uptime = uptime(t)
@@ -114,7 +115,7 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 
 func (r *StackRoutes) RemoveStack(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
-	_, _, err := r.DockerStack.RmLike(stack)
+	_, _, err := docker.StackRmLike(stack)
 	if err != nil {
 		if !strings.Contains(err.Error(), "Failed to remove network") { // it is ok if network remove failed
 			ctx.Application().Logger().Warn(err.Error())
@@ -214,7 +215,7 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir,
 
 func (r *StackRoutes) deploy(ctx *iris.Context, d *models.Deploy, opts *cmd.Options, yamls []models.Yaml) (err error) {
 	(*ctx).StreamWriter(pipe.Printf("Deploying '%v'...\n", d.Yaml))
-	err = r.DockerStack.Deploy(opts, yamls, d)
+	err = docker.StackDeploy(opts, yamls, d, r.Registry.Login())
 	if err != nil {
 		return err
 	}

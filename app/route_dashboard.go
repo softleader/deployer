@@ -2,12 +2,12 @@ package app
 
 import (
 	"github.com/kataras/iris"
-	"github.com/softleader/deployer/cmd"
 	"github.com/wcharczuk/go-chart"
 	"strings"
 	"fmt"
 	"io"
 	"github.com/softleader/deployer/models"
+	"github.com/softleader/deployer/cmd/docker"
 )
 
 var (
@@ -35,7 +35,7 @@ func (r *DashboardRoutes) DashboardPage(ctx iris.Context) {
 }
 
 func (r *DashboardRoutes) Nodes(ctx iris.Context) {
-	g, err := drawNodesChart(r.DockerNode)
+	g, err := drawNodesChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -43,8 +43,8 @@ func (r *DashboardRoutes) Nodes(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawNodesChart(node cmd.DockerNode) (g Graph, err error) {
-	out, err := node.Ls()
+func drawNodesChart() (g Graph, err error) {
+	out, err := docker.NodeLs()
 	if err != nil {
 		return
 	}
@@ -84,7 +84,7 @@ func drawNodesChart(node cmd.DockerNode) (g Graph, err error) {
 }
 
 func (r *DashboardRoutes) Projects(ctx iris.Context) {
-	g, err := drawProjectsChart(r.DockerStack)
+	g, err := drawProjectsChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -92,8 +92,8 @@ func (r *DashboardRoutes) Projects(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawProjectsChart(stack cmd.DockerStack) (r Graph, err error) {
-	out, err := stack.Ls()
+func drawProjectsChart() (r Graph, err error) {
+	out, err := docker.StackLs()
 	if err != nil {
 		return
 	}
@@ -109,7 +109,7 @@ func drawProjectsChart(stack cmd.DockerStack) (r Graph, err error) {
 	for pj, stacks := range projects {
 		var services []models.DockerStackServices
 		for _, s := range stacks {
-			svcs, _ := stack.Services(s)
+			svcs, _ := docker.StackServices(s)
 			for _, svc := range svcs {
 				services = append(services, svc)
 			}
@@ -139,7 +139,7 @@ func drawProjectsChart(stack cmd.DockerStack) (r Graph, err error) {
 }
 
 func (r *DashboardRoutes) Services(ctx iris.Context) {
-	g, err := drawServicesChart(r.DockerService)
+	g, err := drawServicesChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -147,8 +147,8 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawServicesChart(service cmd.DockerService) (g Graph, err error) {
-	out, err := service.Ls()
+func drawServicesChart() (g Graph, err error) {
+	out, err := docker.ServiceLs()
 	if err != nil {
 		return
 	}
