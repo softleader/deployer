@@ -14,7 +14,7 @@ func main() {
 	args := app.NewArgs()
 
 	// https://github.com/kataras/iris
-	app.NewApplication(args).Run(
+	app.NewApplication(args, Debug).Run(
 		iris.Addr(args.Addr+":"+strconv.Itoa(args.Port)),
 		iris.WithoutVersionChecker,
 		iris.WithoutServerError(iris.ErrServerClosed),

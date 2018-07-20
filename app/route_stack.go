@@ -15,13 +15,11 @@ import (
 	"github.com/dustin/go-humanize"
 	"sort"
 	"github.com/softleader/deployer/cmd/docker"
+	"github.com/softleader/deployer/cmd/gpm"
+	"github.com/softleader/deployer/cmd/genYaml"
 )
 
-type StackRoutes struct {
-	*Route
-}
-
-func (r *StackRoutes) ListStack(ctx iris.Context) {
+func ListStack(ctx iris.Context) {
 	out, err := docker.StackLs()
 	if err != nil {
 		out = append(out, models.DockerStackLs{Name: err.Error()})
@@ -45,7 +43,7 @@ func (r *StackRoutes) ListStack(ctx iris.Context) {
 	ctx.View("stack.html")
 }
 
-func (r *StackRoutes) DeployStack(ctx iris.Context) {
+func DeployStack(ctx iris.Context) {
 	d := &models.Deploy{}
 	ctx.ReadJSON(d)
 	start := time.Now()
@@ -53,34 +51,34 @@ func (r *StackRoutes) DeployStack(ctx iris.Context) {
 
 	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
 
-	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
-	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: r.Debug}
+	wd := Ws.GetWd(d.CleanUp, d.Project)
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: Debug}
 	d.Dev.PublishPort = d.Dev.Port
 
-	y, err := r.generate(&ctx, d, wd, opts)
+	y, err := generate(&ctx, d, wd, opts)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		return
 	}
 
-	err = r.deploy(&ctx, d, opts, y)
+	err = deploy(&ctx, d, opts, y)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		return
 	}
 
-	h, err := models.GetHistory(r.Workspace.Path())
+	h, err := models.GetHistory(Ws.Path())
 	if err != nil {
 		ctx.Application().Logger().Info("Failed saving history", err.Error())
 	}
 	h.Push(d)
 	sort.Sort(h)
-	h.SaveTo(r.Workspace.Path())
+	h.SaveTo(Ws.Path())
 
 	ctx.StreamWriter(pipe.Printf("Resolving in %v, done.", time.Since(start)))
 }
 
-func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
+func GenerateYAML(ctx iris.Context) {
 	d := &models.Deploy{}
 	ctx.ReadJSON(d)
 	start := time.Now()
@@ -88,11 +86,11 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 
 	ctx.StreamWriter(pipe.Printf("Received deploy request: %v", string(indent)))
 
-	wd := r.Workspace.GetWd(d.CleanUp, d.Project)
-	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: r.Debug}
+	wd := Ws.GetWd(d.CleanUp, d.Project)
+	opts := &cmd.Options{Ctx: &ctx, Pwd: wd.Path, Debug: Debug}
 	d.Dev.PublishPort = d.Dev.Port
 
-	yamls, err := r.generate(&ctx, d, wd, opts)
+	yamls, err := generate(&ctx, d, wd, opts)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		return
@@ -113,7 +111,7 @@ func (r *StackRoutes) GenerateYAML(ctx iris.Context) {
 	ctx.StreamWriter(pipe.Printf("Generating in %v, done.", time.Since(start)))
 }
 
-func (r *StackRoutes) RemoveStack(ctx iris.Context) {
+func RemoveStack(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
 	_, _, err := docker.StackRmLike(stack)
 	if err != nil {
@@ -135,11 +133,11 @@ func publishedPort(s string) bool {
 	return false
 }
 
-func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir, opts *cmd.Options) (yamls []models.Yaml, err error) {
+func generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir, opts *cmd.Options) (yamls []models.Yaml, err error) {
 	(*ctx).StreamWriter(pipe.Printf("\nGenerating YAML '%v'...\n", d.Yaml))
 
 	gpmDir := "repo"
-	grouped, err := r.Gpm.Install(opts, gpmDir, d)
+	grouped, err := gpm.Install(opts, gpmDir, d)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +149,7 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir,
 		if err != nil {
 			return nil, err
 		}
-		err = r.GenYaml.Gen(opts, dirs, yml, d)
+		err = genYaml.Gen(opts, dirs, yml, d)
 		if err != nil {
 			return nil, err
 		}
@@ -187,7 +185,7 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir,
 				}
 			}
 			yml := path.Join(repo, "docker-compose.yml")
-			err := r.GenYaml.Gen(opts, flat, yml, d)
+			err := genYaml.Gen(opts, flat, yml, d)
 			if err != nil {
 				return nil, err
 			}
@@ -198,7 +196,7 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir,
 		} else {
 			for group, dirs := range deployGroups {
 				yml := path.Join(repo, group, fmt.Sprintf("docker-compose-%v.yml", group))
-				err := r.GenYaml.Gen(opts, dirs, yml, d)
+				err := genYaml.Gen(opts, dirs, yml, d)
 				if err != nil {
 					return nil, err
 				}
@@ -213,9 +211,9 @@ func (r *StackRoutes) generate(ctx *iris.Context, d *models.Deploy, wd *WorkDir,
 	return yamls, nil
 }
 
-func (r *StackRoutes) deploy(ctx *iris.Context, d *models.Deploy, opts *cmd.Options, yamls []models.Yaml) (err error) {
+func deploy(ctx *iris.Context, d *models.Deploy, opts *cmd.Options, yamls []models.Yaml) (err error) {
 	(*ctx).StreamWriter(pipe.Printf("Deploying '%v'...\n", d.Yaml))
-	err = docker.StackDeploy(opts, yamls, d, r.Registry.Login())
+	err = docker.StackDeploy(opts, yamls, d, Args.Registry.Login())
 	if err != nil {
 		return err
 	}

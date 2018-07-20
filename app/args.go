@@ -5,14 +5,14 @@ import (
 	"fmt"
 )
 
-type Args struct {
-	Ws         string
-	Addr       string
-	Port       int
-	CmdGpm     string
-	CmdGenYaml string
-	Debug      bool
-	Registry   Registry
+type Arguments struct {
+	Ws       string
+	Addr     string
+	Port     int
+	Gpm      string
+	GenYaml  string
+	Debug    bool
+	Registry Registry
 }
 
 type Registry struct {
@@ -21,8 +21,8 @@ type Registry struct {
 	Password string
 }
 
-func NewArgs() *Args {
-	a := Args{
+func NewArgs() *Arguments {
+	a := Arguments{
 		Registry: Registry{},
 	}
 	flag.StringVar(&a.Ws, "workspace", "", "Determine a workspace (default $(pwd)/workspace)")
@@ -31,8 +31,8 @@ func NewArgs() *Args {
 	flag.StringVar(&a.Registry.Server, "registry.server", "hub.softleader.com.tw", "SoftLeader Docker Registry")
 	flag.StringVar(&a.Registry.Username, "registry.username", "client", "Username to SoftLeader Docker Registry")
 	flag.StringVar(&a.Registry.Password, "registry.password", "poweredbysoftleader", "Password to SoftLeader Docker Registry")
-	flag.StringVar(&a.CmdGpm, "cmd.gpm", "gpm", "Command to execute softleader/git-package-manager")
-	flag.StringVar(&a.CmdGenYaml, "cmd.gen-yaml", "gen-yaml", "Command to execute softleader/container-yaml-generator")
+	flag.StringVar(&a.Gpm, "cmd.gpm", "gpm", "Command to execute softleader/git-package-manager")
+	flag.StringVar(&a.GenYaml, "cmd.gen-yaml", "gen-yaml", "Command to execute softleader/container-yaml-generator")
 	flag.BoolVar(&a.Debug, "debug", false, "Print logs to standard output.")
 	flag.Parse()
 	return &a

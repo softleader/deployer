@@ -6,29 +6,25 @@ import (
 	"strings"
 )
 
-type PracticeRoutes struct {
-	*Route
-}
-
-func (r *PracticeRoutes) BestPractices(ctx iris.Context) {
-	out, err := models.ReadPractices(r.Workspace.Path())
+func BestPractices(ctx iris.Context) {
+	out, err := models.ReadPractices(Ws.Path())
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("best-practices.html")
 }
 
-func (r *PracticeRoutes) MarkdownEditor(ctx iris.Context) {
-	out, err := models.ReadPractices(r.Workspace.Path())
+func MarkdownEditor(ctx iris.Context) {
+	out, err := models.ReadPractices(Ws.Path())
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("best-practices-mde.html")
 }
 
-func (r *PracticeRoutes) SaveMarkdown(ctx iris.Context) {
+func SaveMarkdown(ctx iris.Context) {
 	c := ctx.PostValue("content")
 	c = strings.TrimSpace(c)
 	if len(c) > 0 {
-		err := models.SavePractices(r.Workspace.Path(), c)
+		err := models.SavePractices(Ws.Path(), c)
 		if err != nil {
 			ctx.Application().Logger().Warn(err.Error())
 			ctx.WriteString(err.Error())

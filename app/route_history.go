@@ -5,29 +5,25 @@ import (
 	"github.com/softleader/deployer/models"
 )
 
-type HistoryRoutes struct {
-	*Route
-}
-
-func (r *HistoryRoutes) GetHistory(ctx iris.Context) {
-	out, err := models.GetHistory(r.Workspace.Path())
+func GetHistory(ctx iris.Context) {
+	out, err := models.GetHistory(Ws.Path())
 	ctx.ViewData("err", err)
 	ctx.ViewData("out", out)
 	ctx.View("history.html")
 }
 
-func (r *HistoryRoutes) RemoveHistory(ctx iris.Context) {
+func RemoveHistory(ctx iris.Context) {
 	index, err := ctx.Params().GetInt("idx")
 	if err != nil {
 		ctx.ViewData("err", err)
 		return
 	}
-	h, err := models.GetHistory(r.Workspace.Path())
+	h, err := models.GetHistory(Ws.Path())
 	if err != nil {
 		ctx.ViewData("err", err)
 	}
 	h.Delete(index)
-	h.SaveTo(r.Workspace.Path())
+	h.SaveTo(Ws.Path())
 	if err != nil {
 		ctx.ViewData("err", err)
 	}

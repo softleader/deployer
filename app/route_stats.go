@@ -7,11 +7,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 )
 
-type StatsRoutes struct {
-	*Route
-}
-
-func (r *StatsRoutes) GetStats(ctx iris.Context) {
+func GetStats(ctx iris.Context) {
 	out, err := docker.StackLs()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())

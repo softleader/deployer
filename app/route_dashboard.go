@@ -26,16 +26,12 @@ var (
 	}
 )
 
-type DashboardRoutes struct {
-	*Route
-}
-
-func (r *DashboardRoutes) DashboardPage(ctx iris.Context) {
+func DashboardPage(ctx iris.Context) {
 	ctx.View("dashboard.html")
 }
 
-func (r *DashboardRoutes) Nodes(ctx iris.Context) {
-	g, err := drawNodesChart()
+func DashboardNodes(ctx iris.Context) {
+	g, err := dashboardDrawNodesChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -43,7 +39,7 @@ func (r *DashboardRoutes) Nodes(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawNodesChart() (g Graph, err error) {
+func dashboardDrawNodesChart() (g Graph, err error) {
 	out, err := docker.NodeLs()
 	if err != nil {
 		return
@@ -83,8 +79,8 @@ func drawNodesChart() (g Graph, err error) {
 	return
 }
 
-func (r *DashboardRoutes) Projects(ctx iris.Context) {
-	g, err := drawProjectsChart()
+func DashboardProjects(ctx iris.Context) {
+	g, err := dashboardDrawProjectsChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -92,7 +88,7 @@ func (r *DashboardRoutes) Projects(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawProjectsChart() (r Graph, err error) {
+func dashboardDrawProjectsChart() (r Graph, err error) {
 	out, err := docker.StackLs()
 	if err != nil {
 		return
@@ -138,8 +134,8 @@ func drawProjectsChart() (r Graph, err error) {
 	return
 }
 
-func (r *DashboardRoutes) Services(ctx iris.Context) {
-	g, err := drawServicesChart()
+func DashboardServices(ctx iris.Context) {
+	g, err := dashboardDrawServicesChart()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -147,7 +143,7 @@ func (r *DashboardRoutes) Services(ctx iris.Context) {
 	flush(ctx, g)
 }
 
-func drawServicesChart() (g Graph, err error) {
+func dashboardDrawServicesChart() (g Graph, err error) {
 	out, err := docker.ServiceLs()
 	if err != nil {
 		return

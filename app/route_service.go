@@ -6,11 +6,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 )
 
-type ServiceRoutes struct {
-	*Route
-}
-
-func (r *ServiceRoutes) ListService(ctx iris.Context) {
+func ListService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")
 	out, err := docker.StackServices(stack)
 	if err != nil {
@@ -21,7 +17,7 @@ func (r *ServiceRoutes) ListService(ctx iris.Context) {
 	ctx.View("service.html")
 }
 
-func (r *ServiceRoutes) PsService(ctx iris.Context) {
+func PsService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	out, err := docker.ServicePs(serviceId)
 	if err != nil {
@@ -32,7 +28,7 @@ func (r *ServiceRoutes) PsService(ctx iris.Context) {
 	ctx.View("ps.html")
 }
 
-func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
+func RemoveService(ctx iris.Context) {
 	service := ctx.Params().Get("service")
 	_, _, err := docker.ServiceRm(service)
 	if err != nil {
@@ -41,7 +37,7 @@ func (r *ServiceRoutes) RemoveService(ctx iris.Context) {
 	}
 }
 
-func (r *ServiceRoutes) InspectService(ctx iris.Context) {
+func InspectService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	_, out, err := docker.ServiceInspect(serviceId)
 	if err != nil {
@@ -51,7 +47,7 @@ func (r *ServiceRoutes) InspectService(ctx iris.Context) {
 	ctx.View("pre.html")
 }
 
-func (r *ServiceRoutes) UpdateService(ctx iris.Context) {
+func UpdateService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	image := ctx.FormValue("image")
 	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
@@ -62,7 +58,7 @@ func (r *ServiceRoutes) UpdateService(ctx iris.Context) {
 	ctx.View("pre.html")
 }
 
-func (r *ServiceRoutes) LogsService(ctx iris.Context) {
+func LogsService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	tail, err := ctx.Params().GetInt("tail")
 	if err != nil {

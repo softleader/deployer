@@ -1,43 +1,25 @@
-package cmd
+package genYaml
 
 import (
 	"github.com/softleader/deployer/models"
 	"strings"
 	"regexp"
 	"strconv"
-	"os"
-	"fmt"
-	"log"
 	"github.com/kataras/iris/core/errors"
+	"github.com/softleader/deployer/cmd"
 )
 
-type GenYaml struct {
-	cmd string
+var Cmd string
+
+func Version() (arg string, out string, err error) {
+	return cmd.Exec(&cmd.Options{}, Cmd, "--version")
 }
 
-func NewGenYaml(cmd string) *GenYaml {
-	if cmd == "" {
-		cmd = "gen-yaml"
-	}
-	genYaml := GenYaml{cmd: cmd}
-	cmd, out, err := genYaml.Version()
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
-	fmt.Printf("  $ %v: %v", cmd, out)
-	return &genYaml
-}
-
-func (gy *GenYaml) Version() (arg string, out string, err error) {
-	return Exec(&Options{}, gy.cmd, "--version")
-}
-
-func (gy *GenYaml) Gen(opts *Options, dirs []string, output string, d *models.Deploy) error {
+func Gen(opts *cmd.Options, dirs []string, output string, d *models.Deploy) error {
 	if len(dirs) <= 0 {
-		return errors.New("dirs is required");
+		return errors.New("dirs is required")
 	}
-	_, out, err := gen(gy.cmd, opts, output, d, strings.Join(dirs, " "))
+	_, out, err := gen(opts, output, d, strings.Join(dirs, " "))
 	if err != nil {
 		return err
 	}
@@ -48,8 +30,8 @@ func (gy *GenYaml) Gen(opts *Options, dirs []string, output string, d *models.De
 	return nil
 }
 
-func gen(cmd string, opts *Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
-	commands := []string{cmd, "-s", d.Style, "-o", output}
+func gen(opts *cmd.Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
+	commands := []string{Cmd, "-s", d.Style, "-o", output}
 	if d.Silently {
 		commands = append(commands, "-S")
 	}
@@ -64,7 +46,7 @@ func gen(cmd string, opts *Options, output string, d *models.Deploy, dirs ...str
 	}
 	commands = append(commands, strings.Join(dirs, " "))
 
-	return Exec(opts, commands...)
+	return cmd.Exec(opts, commands...)
 }
 
 func updateDevPort(out string, d *models.Deploy) error {

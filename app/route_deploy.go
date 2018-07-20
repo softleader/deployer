@@ -3,19 +3,15 @@ package app
 import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/models"
-	"path"
 	"strconv"
+	"path"
 )
 
-type DeployRoutes struct {
-	*Route
-}
-
-func (r *DeployRoutes) DeployPage(ctx iris.Context) {
-	ctx.ViewData("workspace", r.Args.Ws)
+func DeployPage(ctx iris.Context) {
+	ctx.ViewData("workspace", Args.Ws)
 
 	h := ctx.Params().Get("history")
-	dft, err := prepareDefaultValue(r.Workspace, h)
+	dft, err := prepareDefaultValue(h)
 	if err != nil {
 		ctx.ViewData("err", err)
 	}
@@ -23,12 +19,12 @@ func (r *DeployRoutes) DeployPage(ctx iris.Context) {
 	ctx.View("deploy.html")
 }
 
-func prepareDefaultValue(ws *Workspace, h string) (d models.Deploy, err error) {
-	d = ws.Config.Deploy
+func prepareDefaultValue(h string) (d models.Deploy, err error) {
+	d = Ws.Config.Deploy
 	if h != "" {
 		i, err := strconv.Atoi(h)
 		if err == nil && i >= 0 {
-			histories, err := models.GetHistory(ws.Path())
+			histories, err := models.GetHistory(Ws.Path())
 			if err == nil && i < len(histories) {
 				d = histories[i]
 			}
@@ -37,8 +33,8 @@ func prepareDefaultValue(ws *Workspace, h string) (d models.Deploy, err error) {
 	return d, err
 }
 
-func (r *DeployRoutes) DownloadYAML(ctx iris.Context) {
+func DownloadYAML(ctx iris.Context) {
 	pj := ctx.Params().Get("project")
-	zip := GetCompressPath(path.Join(r.Workspace.Path(), pj))
+	zip := GetCompressPath(path.Join(Ws.Path(), pj))
 	ctx.SendFile(zip, pj+"-"+path.Base(zip))
 }

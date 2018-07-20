@@ -2,16 +2,14 @@ package app
 
 import (
 	"testing"
-	"github.com/softleader/deployer/cmd"
 	"github.com/wcharczuk/go-chart"
 	"fmt"
 	"os"
 	"image/png"
 )
 
-func TestDrawNodesChart(t *testing.T) {
-	cmd := cmd.NewDockerNode()
-	g, err := drawNodesChart(*cmd)
+func TestDashboardDrawNodesChart(t *testing.T) {
+	g, err := dashboardDrawNodesChart()
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,8 +33,7 @@ func TestDrawNodesChart(t *testing.T) {
 }
 
 func TestDrawServicesChart(t *testing.T) {
-	cmd := cmd.NewDockerService()
-	g, err := drawServicesChart(*cmd)
+	g, err := dashboardDrawServicesChart()
 	if err != nil {
 		t.Error(err)
 	}
@@ -60,8 +57,7 @@ func TestDrawServicesChart(t *testing.T) {
 }
 
 func TestDrawProjectsChart(t *testing.T) {
-	cmd := cmd.NewDockerStack(Registry{}.Login())
-	g, err := drawProjectsChart(*cmd)
+	g, err := dashboardDrawProjectsChart()
 	if err != nil {
 		t.Error(err)
 	}
