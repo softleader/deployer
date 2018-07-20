@@ -21,15 +21,6 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 	injectGpmCommand()
 	injectGenYamlCommand()
 
-	// prepare routes
-	//stackRoutes := StackRoutes{Route: r}
-	//serviceRoutes := ServiceRoutes{Route: r}
-	//dashboardRoutes := DashboardRoutes{Route: r}
-	//deployRoutes := DeployRoutes{Route: r}
-	//practiceRoutes := PracticeRoutes{Route: r}
-	//historyRoutes := HistoryRoutes{Route: r}
-	//statsRoutes := StatsRoutes{Route: r}
-
 	app := iris.New()
 
 	tmpl := iris.HTML("templates", ".html")
