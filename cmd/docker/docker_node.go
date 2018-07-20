@@ -1,18 +1,12 @@
-package cmd
+package docker
 
 import (
 	"github.com/softleader/deployer/models"
 	"strings"
+	"github.com/softleader/deployer/cmd"
 )
 
-type DockerNode struct {
-}
-
-func NewDockerNode() *DockerNode {
-	return &DockerNode{}
-}
-
-func (ds *DockerNode) Ls() (s []models.DockerNodeLs, err error) {
+func NodeLs() (s []models.DockerNodeLs, err error) {
 	_, out, err := nodeLs()
 	lines := strings.Split(out, "\n")
 	for _, line := range lines {
@@ -24,5 +18,5 @@ func (ds *DockerNode) Ls() (s []models.DockerNodeLs, err error) {
 }
 
 func nodeLs() (arg string, out string, err error) {
-	return Exec(&Options{}, "docker node ls", "--format '{{.Hostname}};{{.Status}};{{.Availability}}'")
+	return cmd.Exec(&cmd.Options{}, "docker node ls", "--format '{{.Hostname}};{{.Status}};{{.Availability}}'")
 }

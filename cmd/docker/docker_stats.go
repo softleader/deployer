@@ -1,4 +1,4 @@
-package cmd
+package docker
 
 import (
 	"github.com/softleader/deployer/models"
@@ -52,11 +52,10 @@ func parallelOverNodes(grep string, nodes []string, consume func(grep string, ho
 	return
 }
 
-func listNodes() (nodes []string, err error) {
-	_, nodesOut, err := Exec(&Options{}, `docker node ls | cut -c 31-49 | grep -v HOSTNAME`)
-	if err != nil {
-		return
-	}
+func readyNodes() (nodes []string, err error) {
+	Ls
+
+
 	for _, node := range strings.Split(nodesOut, "\n") {
 		if n := strings.TrimSpace(node); n != "" {
 			nodes = append(nodes, n)
