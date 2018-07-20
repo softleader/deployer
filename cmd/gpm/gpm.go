@@ -8,6 +8,13 @@ import (
 
 var Cmd string
 
+func command() string {
+	if Cmd == "" {
+		return "gpm"
+	}
+	return Cmd
+}
+
 func Install(opts *cmd.Options, dir string, d *models.Deploy) (bool, error) {
 	_, out, err := install(opts, dir, d.Yaml, d.Extend)
 	if err != nil {
@@ -17,7 +24,7 @@ func Install(opts *cmd.Options, dir string, d *models.Deploy) (bool, error) {
 }
 
 func install(opts *cmd.Options, dir string, yaml string, extend string) (arg string, out string, err error) {
-	commands := []string{Cmd, "install -F -c Containerfile"}
+	commands := []string{command(), "install -F -c Containerfile"}
 	if dir != "" {
 		commands = append(commands, "-d", dir)
 	}
@@ -31,5 +38,5 @@ func install(opts *cmd.Options, dir string, yaml string, extend string) (arg str
 }
 
 func Version() (arg string, out string, err error) {
-	return cmd.Exec(&cmd.Options{}, Cmd, "--version")
+	return cmd.Exec(&cmd.Options{}, command(), "--version")
 }

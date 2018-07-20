@@ -11,8 +11,15 @@ import (
 
 var Cmd string
 
+func command() string {
+	if Cmd == "" {
+		return "gen-yaml"
+	}
+	return Cmd
+}
+
 func Version() (arg string, out string, err error) {
-	return cmd.Exec(&cmd.Options{}, Cmd, "--version")
+	return cmd.Exec(&cmd.Options{}, command(), "--version")
 }
 
 func Gen(opts *cmd.Options, dirs []string, output string, d *models.Deploy) error {
@@ -31,7 +38,7 @@ func Gen(opts *cmd.Options, dirs []string, output string, d *models.Deploy) erro
 }
 
 func gen(opts *cmd.Options, output string, d *models.Deploy, dirs ...string) (arg string, out string, err error) {
-	commands := []string{Cmd, "-s", d.Style, "-o", output}
+	commands := []string{command(), "-s", d.Style, "-o", output}
 	if d.Silently {
 		commands = append(commands, "-S")
 	}
