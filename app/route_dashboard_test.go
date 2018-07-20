@@ -32,7 +32,7 @@ func TestDashboardDrawNodesChart(t *testing.T) {
 	out.Close()
 }
 
-func TestDrawServicesChart(t *testing.T) {
+func TestDashboardDrawServicesChart(t *testing.T) {
 	g, err := dashboardDrawServicesChart()
 	if err != nil {
 		t.Error(err)
@@ -56,7 +56,7 @@ func TestDrawServicesChart(t *testing.T) {
 	out.Close()
 }
 
-func TestDrawProjectsChart(t *testing.T) {
+func TestDashboardDrawProjectsChart(t *testing.T) {
 	g, err := dashboardDrawProjectsChart()
 	if err != nil {
 		t.Error(err)
