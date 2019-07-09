@@ -1,30 +1,33 @@
 package app
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/kataras/iris"
+	"github.com/softleader/deployer/cmd"
+	"github.com/softleader/deployer/cmd/docker"
+	"github.com/softleader/deployer/cmd/genYaml"
+	"github.com/softleader/deployer/cmd/gpm"
+	"github.com/softleader/deployer/models"
+	"github.com/softleader/deployer/pipe"
+	"io/ioutil"
+	"path"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
-	"github.com/softleader/deployer/models"
-	"fmt"
-	"strconv"
-	"github.com/softleader/deployer/pipe"
-	"encoding/json"
-	"github.com/softleader/deployer/cmd"
-	"path"
-	"io/ioutil"
-	"github.com/dustin/go-humanize"
-	"sort"
-	"github.com/softleader/deployer/cmd/docker"
-	"github.com/softleader/deployer/cmd/gpm"
-	"github.com/softleader/deployer/cmd/genYaml"
 )
+
+func StackPage(ctx iris.Context) {
+	ctx.View("stack.html")
+}
 
 func ListStack(ctx iris.Context) {
 	out, err := docker.StackLs()
 	if err != nil {
 		out = append(out, models.DockerStackLs{Name: err.Error()})
 	}
-	stacks := make(map[string][]models.DockerStackLs)
 	for _, stack := range out {
 		splited := strings.Split(stack.Name, "-")
 		key := splited[0]
@@ -37,10 +40,9 @@ func ListStack(ctx iris.Context) {
 		out = strings.TrimSuffix(out, "\n")
 		t, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", out)
 		stack.Uptime = uptime(t)
-		stacks[key] = append(stacks[key], stack)
+		b, _ := json.Marshal(stack)
+		ctx.StreamWriter(pipe.Printf(`{"key":"%v","stack":%v}`, key, string(b)))
 	}
-	ctx.ViewData("stacks", stacks)
-	ctx.View("stack.html")
 }
 
 func DeployStack(ctx iris.Context) {

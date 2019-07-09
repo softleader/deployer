@@ -71,7 +71,8 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 
 	stacks := app.Party("/stacks")
 	{
-		stacks.Get("/", ListStack)
+		stacks.Get("/", StackPage)
+		stacks.Get("/ls", ListStack)
 		stacks.Post("/", DeployStack)
 		stacks.Get("/rm/{stack:string}", func(ctx context.Context) {
 			RemoveStack(ctx)

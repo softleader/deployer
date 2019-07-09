@@ -62,50 +62,6 @@
 
 <main role="main">
     <div class="container">
-
-        {{range $key, $value := .stacks}}
-        <p>
-            {{/*<div class="card-deck">*/}}
-                <div class="card">
-                    <div class="card-header">
-                        <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                           name="{{$key}}">
-                            <i class="fa fa-trash" aria-hidden="true"></i> {{$key}}
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-responsive-sm table-hover">
-                            {{/*<thead>*/}}
-                            {{/*<tr>*/}}
-                                {{/*<th scope="col">Name</th>*/}}
-                                {{/*<th scope="col">Services</th>*/}}
-                                {{/*<th scope="col"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>*/}}
-                            {{/*</tr>*/}}
-                            {{/*</thead>*/}}
-                            <tbody>
-                            {{range $index, $line := $value}}
-                            <tr>
-                                <td style="width: 5%">
-                                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
-                                       name="{{$line.Name}}">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="/services/{{$line.Name}}" class="btn btn-link btn-sm">
-                                        {{$line.Name}} ({{$line.Services}}) {{$line.Uptime}}
-                                    </a>
-                                </td>
-                                {{/*<td>{{$line 1}}</td>*/}}
-                            </tr>
-                            {{end}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {{/*</div>*/}}
-        </p>
-        {{end}}
     </div>
 
     <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
@@ -148,13 +104,74 @@
 <script src="/bootstrap-4.1.0-dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $(".fa-trash").parent().click(function () {
-        var n = $(this).attr("name");
-        var $modal = $("#removeModal");
-        $modal.find(".btn").removeClass('disabled').prop('disabled', false);
-        $modal.find(".text-danger").html(n);
-        $modal.find("#proceed").attr("href", "/stacks/rm/" + n).click(function () {
-            $modal.find(".btn").addClass('disabled').prop('disabled', true);
+    $(function () {
+        var rm = function () {
+            var n = $(this).attr("name");
+            var $modal = $("#removeModal");
+            $modal.find(".btn").removeClass('disabled').prop('disabled', false);
+            $modal.find(".text-danger").html(n);
+            $modal.find("#proceed").attr("href", "/stacks/rm/" + n).click(function () {
+                $modal.find(".btn").addClass('disabled').prop('disabled', true);
+            });
+        };
+
+        var p = `
+        <div id="$key">
+            <p></p>
+            <div class="card">
+                <div class="card-header">
+                    <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
+                       name="$key">
+                        <i class="fa fa-trash" aria-hidden="true"></i> $key
+                    </a>
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive-sm table-hover">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        `;
+
+        var tr = `
+        <tr>
+            <td style="width: 5%">
+                <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal" data-backdrop="static"
+                   name="$name">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+            </td>
+            <td>
+                <a href="/services/$name" class="btn btn-link btn-sm">
+                    $name ($services) $uptime
+                </a>
+            </td>
+        </tr>
+        `;
+
+        $.ajax({
+            type: 'get',
+            url: '/stacks/ls',
+            dataType: 'json',
+            processData: false,
+            xhrFields: {
+                onprogress: function (e) {
+                    var json = JSON.parse(e.currentTarget.response);
+                    if($("#" + json.key).length == 0) {
+                        var $card = $(p.replace(/\$key/g, json.key));
+                        $card.find(".fa-trash").parent().click(rm);
+                        $("main .container").append($card);
+                    }
+
+                    var $tbody = $(tr.replace(/\$name/g, json.stack.Name)
+                                  .replace(/\$services/g, json.stack.Services)
+                                  .replace(/\$uptime/g, json.stack.Uptime));
+                    $tbody.find(".fa-trash").parent().click(rm);
+                    $("#" + json.key).find("tbody").append($tbody);
+                }
+            }
         });
     });
 </script>
