@@ -1,10 +1,22 @@
 package app
 
 import (
+	"fmt"
 	"github.com/kataras/iris"
-	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/cmd/docker"
+	"github.com/softleader/deployer/models"
+	"strings"
 )
+
+func FilterImageService(ctx iris.Context) {
+	image := ctx.Params().Get("image")
+	_, out, err := docker.ServiceLabel("com.docker.stack.image=" + image)
+	if err != nil {
+		ctx.Application().Logger().Warn(err.Error())
+		ctx.WriteString(err.Error())
+	}
+	ctx.WriteString(fmt.Sprintf("[%s]", strings.Join(strings.Split(out, fmt.Sprintln()), ",")))
+}
 
 func ListService(ctx iris.Context) {
 	stack := ctx.Params().Get("stack")

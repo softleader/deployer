@@ -83,6 +83,7 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 	services := app.Party("/services")
 	{
 		services.Get("/{stack:string}", ListService)
+		services.Get("/images/{image:string}", FilterImageService)
 		services.Get("/ps/{serviceId:string}", PsService)
 		services.Get("/inspect/{serviceId:string}", InspectService)
 		services.Get("/update/{serviceId:string}", UpdateService)

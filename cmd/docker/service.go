@@ -1,10 +1,10 @@
 package docker
 
 import (
-	"strings"
-	"strconv"
-	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/cmd"
+	"github.com/softleader/deployer/models"
+	"strconv"
+	"strings"
 )
 
 func ServiceLs() (s []models.DockerServiceLs, err error) {
@@ -36,6 +36,10 @@ func ServiceLogs(service string, tail int) (arg string, out string, err error) {
 
 func ServiceRm(service string) (arg string, out string, err error) {
 	return cmd.Exec(&cmd.Options{}, "docker service rm", service)
+}
+
+func ServiceLabel(label string) (arg string, out string, err error) {
+	return cmd.Exec(&cmd.Options{}, `docker service ls --format '{{json .}}' -f`, "label="+label)
 }
 
 func ServicePs(id string) (s []models.DockerServicePs, err error) {
