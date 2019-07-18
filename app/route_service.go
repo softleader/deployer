@@ -8,14 +8,24 @@ import (
 	"strings"
 )
 
-func FilterImageService(ctx iris.Context) {
-	image := ctx.Params().Get("image")
-	_, out, err := docker.ServiceLabel("com.docker.stack.image=" + image)
+func FilterService(ctx iris.Context) {
+	params := ctx.URLParams()
+	_, out, err := docker.ServiceFilter(params)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
 	}
-	ctx.WriteString(fmt.Sprintf("[%s]", strings.Join(strings.Split(out, fmt.Sprintln()), ",")))
+	ctx.WriteString(fmt.Sprintf("[%s]", strings.Join(deleteEmpty(strings.Split(out, fmt.Sprintln())), ",")))
+}
+
+func deleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
 }
 
 func ListService(ctx iris.Context) {

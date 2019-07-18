@@ -151,6 +151,8 @@
         </tr>
         `;
 
+        var handled = [];
+
         $.ajax({
             type: 'get',
             url: '/stacks/ls',
@@ -158,21 +160,37 @@
             processData: false,
             xhrFields: {
                 onprogress: function (e) {
-                    var json = JSON.parse(e.currentTarget.response);
-                    if($("#" + json.key).length == 0) {
-                        var $card = $(p.replace(/\$key/g, json.key));
-                        $card.find(".fa-trash").parent().click(rm);
-                        $("main .container").append($card);
-                    }
-
-                    var $tbody = $(tr.replace(/\$name/g, json.stack.Name)
-                                  .replace(/\$services/g, json.stack.Services)
-                                  .replace(/\$uptime/g, json.stack.Uptime));
-                    $tbody.find(".fa-trash").parent().click(rm);
-                    $("#" + json.key).find("tbody").append($tbody);
+                    var resp = e.currentTarget.response;
+                    resp.split("|").map(r => {
+                        try {
+                            return JSON.parse(r)
+                        } catch (e) {
+                            return undefined;
+                        }
+                    }).filter(json => {
+                        if (!json) return false;
+                        var key = json.key+"-"+json.stack.Name;
+                        if (handled.includes(key)) return false;
+                        handled.push(key);
+                        return true;
+                    }).forEach(json => append(json));
                 }
             }
         });
+
+        var append = function(json) {
+            if($("#" + json.key).length == 0) {
+                var $card = $(p.replace(/\$key/g, json.key));
+                $card.find(".fa-trash").parent().click(rm);
+                $("main .container").append($card);
+            }
+
+            var $tbody = $(tr.replace(/\$name/g, json.stack.Name)
+                .replace(/\$services/g, json.stack.Services)
+                .replace(/\$uptime/g, json.stack.Uptime));
+            $tbody.find(".fa-trash").parent().click(rm);
+            $("#" + json.key).find("tbody").append($tbody);
+        }
     });
 </script>
 

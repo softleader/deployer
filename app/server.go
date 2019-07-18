@@ -1,12 +1,12 @@
 package app
 
 import (
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/context"
-	"fmt"
-	"github.com/softleader/deployer/cmd/gpm"
 	"github.com/softleader/deployer/cmd/genYaml"
+	"github.com/softleader/deployer/cmd/gpm"
 )
 
 var Ws *Workspace
@@ -83,7 +83,7 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 	services := app.Party("/services")
 	{
 		services.Get("/{stack:string}", ListService)
-		services.Get("/images/{image:string}", FilterImageService)
+		services.Get("/filter", FilterService)
 		services.Get("/ps/{serviceId:string}", PsService)
 		services.Get("/inspect/{serviceId:string}", InspectService)
 		services.Get("/update/{serviceId:string}", UpdateService)

@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"fmt"
 	"github.com/softleader/deployer/cmd"
 	"github.com/softleader/deployer/models"
 	"strconv"
@@ -38,8 +39,12 @@ func ServiceRm(service string) (arg string, out string, err error) {
 	return cmd.Exec(&cmd.Options{}, "docker service rm", service)
 }
 
-func ServiceLabel(label string) (arg string, out string, err error) {
-	return cmd.Exec(&cmd.Options{}, `docker service ls --format '{{json .}}' -f`, "label="+label)
+func ServiceFilter(params map[string]string) (arg string, out string, err error) {
+	args := []string{"docker service ls --format '{{json .}}'"}
+	for key, val := range params {
+		args = append(args, "-f", fmt.Sprintf("%s=%s", key, val))
+	}
+	return cmd.Exec(&cmd.Options{}, args...)
 }
 
 func ServicePs(id string) (s []models.DockerServicePs, err error) {
