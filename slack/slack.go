@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/nlopes/slack"
 	"github.com/softleader/deployer/models"
-	"strconv"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ var (
 	ErrMissingSlackWebhookURL = errors.New(`missing slack webhook URL`)
 )
 
-func Post(api models.SlackAPI, image, title, titleLink, authorLink, authorName, authorIcon string, ts int64) error {
+func Post(api models.SlackAPI, image, title, titleLink, authorLink, authorName, authorIcon, ts string) error {
 	if api.WebHookURL == "" {
 		return ErrMissingSlackWebhookURL
 	}
@@ -29,7 +28,7 @@ func Post(api models.SlackAPI, image, title, titleLink, authorLink, authorName, 
 		AuthorLink: authorLink,
 		AuthorIcon: authorIcon,
 		Footer:     api.Footer,
-		Ts:         json.Number(strconv.FormatInt(ts, 10)),
+		Ts:         json.Number(ts),
 	}
 	payload.Attachments = append(payload.Attachments, attachment)
 	return slack.PostWebhook(api.WebHookURL, payload)

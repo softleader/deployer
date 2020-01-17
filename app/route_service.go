@@ -6,6 +6,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/slack"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -80,9 +81,9 @@ func UpdateService(ctx iris.Context) {
 		authorLink := ctx.Params().Get("author_name")
 		authorName := ctx.Params().Get("author_link")
 		authorIcon := ctx.Params().Get("author_icon")
-		ts, err := ctx.Params().GetInt64("ts")
-		if err != nil {
-			ts = time.Now().Unix()
+		ts := ctx.Params().Get("ts")
+		if ts == "" {
+			ts = strconv.FormatInt(time.Now().Unix(), 10)
 		}
 		slack.Post(Ws.Config.SlackAPI, image, title, titleLink, authorLink, authorName, authorIcon, ts)
 	}
