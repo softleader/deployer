@@ -1,11 +1,11 @@
 package models
 
 import (
-	"strings"
-	"path/filepath"
-	"os"
-	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -14,6 +14,13 @@ type Config struct {
 	Navbar         map[string]string `json:"navbar"`
 	Index          string            `json:"index"`
 	DashboardCache time.Duration     `json:"dashboard_cache" yaml:"dashboard_cache"`
+	SlackAPI       SlackAPI          `json:"slack-api"`
+}
+
+type SlackAPI struct {
+	WebHookURL string `json:"webhook-url"`
+	Footer     string `json:"footer"`
+	Message    string `json:"message"`
 }
 
 type Deploy struct {
@@ -69,6 +76,11 @@ func GetConfig(ws string) Config {
 			DashboardCache: 3 * time.Minute,
 		}
 		cfg.Navbar["REST API"] = "https://github.com/softleader/deployer#rest-api"
+		cfg.SlackAPI = SlackAPI{
+			WebHookURL: "",
+			Message:    "SIT %s 過版",
+			Footer:     "http://softleader.com.tw:5678/",
+		}
 		b, _ := yaml.Marshal(cfg)
 		ioutil.WriteFile(config, b, os.ModePerm)
 		return cfg

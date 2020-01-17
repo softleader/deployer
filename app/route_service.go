@@ -5,7 +5,9 @@ import (
 	"github.com/kataras/iris"
 	"github.com/softleader/deployer/cmd/docker"
 	"github.com/softleader/deployer/models"
+	"github.com/softleader/deployer/slack"
 	"strings"
+	"time"
 )
 
 func FilterService(ctx iris.Context) {
@@ -72,6 +74,18 @@ func InspectService(ctx iris.Context) {
 func UpdateService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	image := ctx.FormValue("image")
+	if hookSlack, _ := ctx.Params().GetBool("slack"); hookSlack {
+		title := ctx.Params().Get("title")
+		titleLink := ctx.Params().Get("title_link")
+		authorLink := ctx.Params().Get("author_name")
+		authorName := ctx.Params().Get("author_link")
+		authorIcon := ctx.Params().Get("author_icon")
+		ts, err := ctx.Params().GetInt64("ts")
+		if err != nil {
+			ts = time.Now().Unix()
+		}
+		slack.Post(Ws.Config.SlackAPI, image, title, titleLink, authorLink, authorName, authorIcon, ts)
+	}
 	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
 	if err != nil {
 		out += err.Error()
