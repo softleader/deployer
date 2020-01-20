@@ -14,12 +14,12 @@ type Config struct {
 	Navbar         map[string]string `json:"navbar"`
 	Index          string            `json:"index"`
 	DashboardCache time.Duration     `json:"dashboard_cache" yaml:"dashboard_cache"`
-	SlackAPI       SlackAPI          `json:"slack-api"`
+	SlackAPI       SlackAPI          `json:"slackapi"`
+	GitHubToken    string            `json:"githubtoken"` // for 更新 service 時, 查版本資訊使用
 }
 
 type SlackAPI struct {
-	WebHookURL string `json:"webhook-url"`
-	Footer     string `json:"footer"`
+	WebHookURL string `json:"webhookurl"`
 	Message    string `json:"message"`
 }
 
@@ -79,7 +79,6 @@ func GetConfig(ws string) Config {
 		cfg.SlackAPI = SlackAPI{
 			WebHookURL: "",
 			Message:    "SIT %s 過版",
-			Footer:     "http://softleader.com.tw:5678/",
 		}
 		b, _ := yaml.Marshal(cfg)
 		ioutil.WriteFile(config, b, os.ModePerm)

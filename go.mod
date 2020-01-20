@@ -13,7 +13,7 @@ require (
 	github.com/flosch/pongo2 v0.0.0-20180611110828-67f4ff8560df // indirect
 	github.com/gavv/monotime v0.0.0-20171021193802-6f8212e8d10d // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/go-github/v28 v28.1.1
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/hashicorp/go-version v0.0.0-20180716215031-270f2f71b1ee // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -56,8 +56,8 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20180718160520-a2144134853f // indirect
 	golang.org/x/image v0.0.0-20180708004352-c73c2afc3b81 // indirect
+	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
 	gopkg.in/russross/blackfriday.v2 v2.0.0-20180526075726-670777b536d3 // indirect
 	gopkg.in/yaml.v2 v2.2.1

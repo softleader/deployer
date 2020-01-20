@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/softleader/deployer/cmd"
 	"github.com/softleader/deployer/models"
@@ -37,6 +38,27 @@ func ServiceLogs(service string, tail int) (arg string, out string, err error) {
 
 func ServiceRm(service string) (arg string, out string, err error) {
 	return cmd.Exec(&cmd.Options{}, "docker service rm", service)
+}
+
+type Service struct {
+	Spec Spec
+}
+
+type Spec struct {
+	Name   string
+	Labels map[string]string `json:"Labels"`
+}
+
+func ServiceSpec(service string) (string, *Spec, error) {
+	arg, out, err := cmd.Exec(&cmd.Options{}, "docker service inspect", service, "-f", "'{{json .}}'")
+	if err != nil {
+		return arg, nil, err
+	}
+	svc := &Service{}
+	if err := json.Unmarshal([]byte(out), svc); err != nil {
+		return arg, nil, err
+	}
+	return arg, &svc.Spec, err
 }
 
 func ServiceFilter(params map[string]string) (arg string, out string, err error) {

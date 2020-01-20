@@ -6,9 +6,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/slack"
-	"strconv"
 	"strings"
-	"time"
 )
 
 func FilterService(ctx iris.Context) {
@@ -75,17 +73,11 @@ func InspectService(ctx iris.Context) {
 func UpdateService(ctx iris.Context) {
 	serviceId := ctx.Params().Get("serviceId")
 	image := ctx.FormValue("image")
-	if hookSlack, _ := ctx.Params().GetBool("slack"); hookSlack {
-		title := ctx.Params().Get("title")
-		titleLink := ctx.Params().Get("title_link")
-		authorLink := ctx.Params().Get("author_name")
-		authorName := ctx.Params().Get("author_link")
-		authorIcon := ctx.Params().Get("author_icon")
-		ts := ctx.Params().Get("ts")
-		if ts == "" {
-			ts = strconv.FormatInt(time.Now().Unix(), 10)
+	if skipSlack, _ := ctx.Params().GetBool("skip-slack"); !skipSlack {
+		err := slack.Post(Ws.Config, serviceId, image)
+		if err != nil {
+			fmt.Println(err)
 		}
-		slack.Post(Ws.Config.SlackAPI, image, title, titleLink, authorLink, authorName, authorIcon, ts)
 	}
 	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
 	if err != nil {
