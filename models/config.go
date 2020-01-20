@@ -14,12 +14,12 @@ type Config struct {
 	Navbar         map[string]string `json:"navbar"`
 	Index          string            `json:"index"`
 	DashboardCache time.Duration     `json:"dashboard_cache" yaml:"dashboard_cache"`
-	SlackAPI       SlackAPI          `json:"slackapi"`
-	GitHubToken    string            `json:"githubtoken"` // for 更新 service 時, 查版本資訊使用
+	SlackAPI       SlackAPI          `json:"slack_api" yaml:"slack_api"`
+	GitHubToken    map[string]string `json:"github_token"` // for 更新 service 時, 查版本資訊使用
 }
 
 type SlackAPI struct {
-	WebHookURL string `json:"webhookurl"`
+	WebHookURL string `json:"webhook_url" yaml:"webhook_url"`
 	Message    string `json:"message"`
 }
 

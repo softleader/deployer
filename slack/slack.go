@@ -37,35 +37,40 @@ func Post(config models.Config, serviceId, image string) error {
 
 func newAttachments(config models.Config, serviceId, image, tag string) (attachments []slack.Attachment) {
 	release := slack.Attachment{
-		Title:  image,
+		Title:  tag,
 		Footer: "github.com",
 		Ts:     json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 	}
-	_, spec, err := docker.ServiceSpec(serviceId)
+	arg, spec, err := docker.ServiceSpec(serviceId)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("failed inspecting docker service by command [%v]: %v\n", arg, err)
 	} else {
-		if val, ok := spec.Labels["com.docker.stack.namespace"]; ok {
-			project := beforeLast(val, "-")
+		if val, found := spec.Labels["com.docker.stack.namespace"]; found {
 			attachments = append(attachments, slack.Attachment{
-				Title:     fmt.Sprintf("%v/%v", project, val),
+				Title:     replaceLast(val, "-", "/"),
 				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v", val),
 				Footer:    "http://softleader.com.tw:5678",
 				Ts:        json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 			})
 		}
-		if val, ok := spec.Labels["github"]; ok {
+		if val, found := spec.Labels["github"]; found {
 			github := strings.Split(val, "/")
-			if r, _, err := getReleaseByTag(config.GitHubToken, github[0], github[1], tag); err != nil {
-				fmt.Println(err)
+			owner := github[0]
+			repo := github[1]
+			if token, ok := config.GitHubToken[owner]; !ok {
+				fmt.Printf("not found any github token for '%v' in config file\n", owner)
 			} else {
-				release.Title = r.GetTagName()
-				release.TitleLink = r.GetHTMLURL()
-				release.AuthorName = r.GetAuthor().GetLogin()
-				release.AuthorLink = r.GetAuthor().GetHTMLURL()
-				release.AuthorIcon = r.GetAuthor().GetAvatarURL()
-				release.Footer = fmt.Sprintf("https://github.com/%v", github)
-				release.Ts = json.Number(strconv.FormatInt(r.GetPublishedAt().Unix(), 10))
+				if r, _, err := getReleaseByTag(token, owner, repo, tag); err != nil {
+					fmt.Printf("failed fetching github [%v/%v] release by tag [%v]: %v\n", owner, repo, tag, err)
+				} else {
+					release.Title = r.GetTagName()
+					release.TitleLink = r.GetHTMLURL()
+					release.AuthorName = r.GetAuthor().GetLogin()
+					release.AuthorLink = r.GetAuthor().GetHTMLURL()
+					release.AuthorIcon = r.GetAuthor().GetAvatarURL()
+					release.Footer = fmt.Sprintf("https://github.com/%v", github)
+					release.Ts = json.Number(strconv.FormatInt(r.GetPublishedAt().Unix(), 10))
+				}
 			}
 		}
 	}
@@ -112,11 +117,16 @@ func after(value string, a string) string {
 	}
 	return value[adjustedPos:len(value)]
 }
-func beforeLast(value string, a string) string {
-	// Get substring before a string.
-	pos := strings.LastIndex(value, a)
+
+// Get substring after a string.
+func replaceLast(value, target, to string) string {
+	pos := strings.LastIndex(value, target)
 	if pos == -1 {
+		return value
+	}
+	adjustedPos := pos + len(target)
+	if adjustedPos >= len(value) {
 		return ""
 	}
-	return value[0:pos]
+	return value[0:adjustedPos-len(target)] + to + value[adjustedPos:len(value)]
 }
