@@ -254,7 +254,7 @@
         for (var i = 0; i < trs.length; i++) {
             var tr = trs[i];
             var tds = tr.getElementsByTagName("td");
-            for (var d = 2; d < tds.length; d++) {
+            for (var d = 1; d < tds.length; d++) {
                 var content = tds[d];
                 if (content) {
                     if (content.innerHTML.toUpperCase().indexOf(filter) > -1) {

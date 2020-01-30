@@ -24,18 +24,17 @@ func Post(config models.Config, serviceId, image string) error {
 	if config.SlackAPI.WebHookURL == "" {
 		return ErrMissingSlackWebhookURL
 	}
-	imageName := between(image, "/", ":")
 	tag := after(image, ":")
 	payload := &slack.WebhookMessage{
-		Text: fmt.Sprintf("SIT %s 過版", imageName),
+		Text: fmt.Sprintf("SIT %s 過版", between(image, "/", ":")),
 	}
-	for _, attachment := range newAttachments(config, serviceId, imageName, tag) {
+	for _, attachment := range newAttachments(config, serviceId, tag) {
 		payload.Attachments = append(payload.Attachments, attachment)
 	}
 	return slack.PostWebhook(config.SlackAPI.WebHookURL, payload)
 }
 
-func newAttachments(config models.Config, serviceId, image, tag string) (attachments []slack.Attachment) {
+func newAttachments(config models.Config, serviceId, tag string) (attachments []slack.Attachment) {
 	release := slack.Attachment{
 		Title:  tag,
 		Footer: "github.com",
@@ -48,7 +47,7 @@ func newAttachments(config models.Config, serviceId, image, tag string) (attachm
 		if val, found := spec.Labels["com.docker.stack.namespace"]; found {
 			attachments = append(attachments, slack.Attachment{
 				Title:     replaceLast(val, "-", "/"),
-				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v?q=%v:%v", val, image, tag),
+				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v?q=%v", val, serviceId),
 				Footer:    "http://softleader.com.tw:5678",
 				Ts:        json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 			})
