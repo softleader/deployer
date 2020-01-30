@@ -48,7 +48,7 @@ func newAttachments(config models.Config, serviceId, image, tag string) (attachm
 		if val, found := spec.Labels["com.docker.stack.namespace"]; found {
 			attachments = append(attachments, slack.Attachment{
 				Title:     replaceLast(val, "-", "/"),
-				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v?q=%v:%v", val, image, tag),
+				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v?q=%v", val, image),
 				Footer:    "http://softleader.com.tw:5678",
 				Ts:        json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 			})

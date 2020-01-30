@@ -62,3 +62,5 @@ require (
 	gopkg.in/russross/blackfriday.v2 v2.0.0-20180526075726-670777b536d3 // indirect
 	gopkg.in/yaml.v2 v2.2.1
 )
+
+go 1.13
