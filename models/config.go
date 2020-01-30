@@ -10,17 +10,17 @@ import (
 )
 
 type Config struct {
-	Deploy         Deploy            `json:"deploy"`
-	Navbar         map[string]string `json:"navbar"`
-	Index          string            `json:"index"`
+	Deploy         Deploy            `json:"deploy" yaml:"deploy"`
+	Navbar         map[string]string `json:"navbar" yaml:"navbar"`
+	Index          string            `json:"index" yaml:"index"`
 	DashboardCache time.Duration     `json:"dashboard_cache" yaml:"dashboard_cache"`
 	SlackAPI       SlackAPI          `json:"slack_api" yaml:"slack_api"`
-	GitHubToken    map[string]string `json:"github_token"` // for 更新 service 時, 查版本資訊使用
+	GitHubToken    map[string]string `json:"github_token" yaml:"github_token"` // for 更新 service 時, 查版本資訊使用
 }
 
 type SlackAPI struct {
 	WebHookURL string `json:"webhook_url" yaml:"webhook_url"`
-	Message    string `json:"message"`
+	Message    string `json:"message" yaml:"message"`
 }
 
 type Deploy struct {

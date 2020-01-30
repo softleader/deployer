@@ -7,7 +7,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 )
 
-func GetStats(ctx iris.Context) {
+func GetStats(ctx iris.Context, cache string) {
 	out, err := docker.StackLs()
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
@@ -22,7 +22,7 @@ func GetStats(ctx iris.Context) {
 
 	grep := ctx.FormValue("g")
 	if g := strings.TrimSpace(grep); g != "" {
-		out, err := docker.StatsNoStream(g)
+		out, err := docker.StatsNoStream(g, cache)
 		ctx.ViewData("err", err)
 		ctx.ViewData("out", out)
 	}

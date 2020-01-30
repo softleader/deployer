@@ -6,6 +6,7 @@ import (
 )
 
 type DockerStatsNoStream struct {
+	Addr     string
 	Name     string
 	CPUPerc  string
 	MemUsage string

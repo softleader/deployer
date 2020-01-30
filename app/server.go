@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/cache"
 	"github.com/kataras/iris/context"
+	"github.com/mitchellh/go-homedir"
 	"github.com/softleader/deployer/cmd/genYaml"
 	"github.com/softleader/deployer/cmd/gpm"
 )
@@ -111,9 +112,13 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 		})
 	}
 
+	cache, _ := homedir.Expand(args.NodeCache)
+	fmt.Printf("Setting up node stats cache location to '%v'\n", cache)
 	stats := app.Party("/stats")
 	{
-		stats.Get("/", GetStats)
+		stats.Get("/", func(ctx context.Context) {
+			GetStats(ctx, cache)
+		})
 	}
 
 	return app

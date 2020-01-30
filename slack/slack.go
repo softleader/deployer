@@ -67,7 +67,7 @@ func newAttachments(config models.Config, serviceId, tag string) (attachments []
 					release.AuthorName = r.GetAuthor().GetLogin()
 					release.AuthorLink = r.GetAuthor().GetHTMLURL()
 					release.AuthorIcon = r.GetAuthor().GetAvatarURL()
-					release.Footer = fmt.Sprintf("https://github.com/%v", github)
+					release.Footer = fmt.Sprintf("https://github.com/%v/%v", owner, repo)
 					release.Ts = json.Number(strconv.FormatInt(r.GetPublishedAt().Unix(), 10))
 				}
 			}

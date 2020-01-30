@@ -1,7 +1,6 @@
 module github.com/softleader/deployer
 
 require (
-	github.com/BurntSushi/toml v0.3.0 // indirect
 	github.com/Joker/hpp v0.0.0-20180418125244-6893e659854a // indirect
 	github.com/Joker/jade v0.0.0-20180419144541-8828253bfc54 // indirect
 	github.com/ajg/form v0.0.0-20160822230020-523a5da1a92f // indirect
@@ -31,10 +30,9 @@ require (
 	github.com/kataras/survey v2.0.0+incompatible // indirect
 	github.com/klauspost/compress v1.4.0 // indirect
 	github.com/klauspost/cpuid v0.0.0-20170728055534-ae7887de9fa5 // indirect
-	github.com/mattn/go-colorable v0.0.9 // indirect
-	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/microcosm-cc/bluemonday v1.0.0 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
@@ -45,8 +43,10 @@ require (
 	github.com/satori/go.uuid v0.0.0-20180103174451-36e9d2ebbde5 // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95 // indirect
+	github.com/sirupsen/logrus v1.4.2
 	github.com/smartystreets/assertions v0.0.0-20190116191733-b6c0e53d7304 // indirect
 	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c // indirect
+	github.com/softleader/dockerctl v0.0.0-20191021043023-5eff35e89237
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
@@ -60,7 +60,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
 	gopkg.in/russross/blackfriday.v2 v2.0.0-20180526075726-670777b536d3 // indirect
-	gopkg.in/yaml.v2 v2.2.1
+	gopkg.in/yaml.v2 v2.2.2
 )
 
 go 1.13

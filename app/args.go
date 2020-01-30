@@ -6,13 +6,14 @@ import (
 )
 
 type Arguments struct {
-	Ws       string
-	Addr     string
-	Port     int
-	Gpm      string
-	GenYaml  string
-	Debug    bool
-	Registry Registry
+	Ws        string
+	Addr      string
+	Port      int
+	Gpm       string
+	GenYaml   string
+	NodeCache string
+	Debug     bool
+	Registry  Registry
 }
 
 type Registry struct {
@@ -33,6 +34,7 @@ func NewArgs() *Arguments {
 	flag.StringVar(&a.Registry.Password, "registry.password", "poweredbysoftleader", "Password to SoftLeader Docker Registry")
 	flag.StringVar(&a.Gpm, "cmd.gpm", "gpm", "Command to execute softleader/git-package-manager")
 	flag.StringVar(&a.GenYaml, "cmd.gen-yaml", "gen-yaml", "Command to execute softleader/container-yaml-generator")
+	flag.StringVar(&a.NodeCache, "node-cache", "~/.config/dockerctl", "location to cache node information")
 	flag.BoolVar(&a.Debug, "debug", false, "Print logs to standard output.")
 	flag.Parse()
 	return &a

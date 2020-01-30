@@ -1,14 +1,21 @@
 package docker
 
 import (
-	"testing"
 	"fmt"
+	"github.com/softleader/dockerctl/pkg/dockerd"
+	"testing"
 )
 
 func TestParallelOverNodes(t *testing.T) {
-	n := []string{"a", "b"}
-	out, err := parallelOverNodes("hello", n, func(grep string, host string) string {
-		return fmt.Sprintf("%s %s\n", grep, host)
+	n := []dockerd.Node{{
+		Name: "a",
+		Addr: "",
+	}, {
+		Name: "b",
+		Addr: "",
+	}}
+	out, err := parallelOverNodes("hello", n, func(grep string, node dockerd.Node) string {
+		return fmt.Sprintf("%s %s\n", grep, node.Name)
 	})
 	if err != nil {
 		t.Error(err)
