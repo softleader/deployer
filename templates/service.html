@@ -275,6 +275,16 @@
                 return false;
             }
         }
+    }).ready(function() {
+        try {
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has("q")) {
+                $("#search").val(urlParams.get("q")).keyup().focus();
+            }
+        }  catch(err) {
+            // URLSearchParams 不是所有瀏覽器都支援, 沒有支援的..就算囉
+            console.log(err);
+        }
     });
 </script>
 
