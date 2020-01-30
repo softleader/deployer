@@ -1,10 +1,10 @@
 package docker
 
 import (
+	"github.com/softleader/deployer/cmd"
+	"github.com/softleader/deployer/models"
 	"strconv"
 	"strings"
-	"github.com/softleader/deployer/models"
-	"github.com/softleader/deployer/cmd"
 )
 
 func StackLs() (s []models.DockerStackLs, err error) {
@@ -27,9 +27,14 @@ func StackServices(name string) (s []models.DockerStackServices, err error) {
 	lines := strings.Split(out, "\n")
 	for _, line := range lines {
 		if strings.TrimSpace(line) != "" {
-			s = append(s, models.NewDockerStackServices(line))
+			ss := models.NewDockerStackServices(line)
+			if _, spec, err := ServiceSpec(ss.Name); err == nil {
+				ss.Labels = spec.Labels
+			}
+			s = append(s, ss)
 		}
 	}
+
 	return
 }
 

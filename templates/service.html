@@ -86,7 +86,7 @@
             {{$stack := .stack}}
             {{range $index, $line := .out}}
             <tr>
-                <td>
+                <td style="white-space: nowrap">
                     <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{$line.Id}}"><i
                             class="fa fa-eye" aria-hidden="true"></i></a>
                 {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
@@ -104,6 +104,11 @@
                        name="{{$stack}}/{{$line.Id}}">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
+                    {{ with (index $line.Labels "github") }}
+                    <a class="btn btn-outline-secondary btn-sm" href="https://github.com/{{.}}" target="_blank">
+                        <i class="fa fa-github" aria-hidden="true"></i>
+                    </a>
+                    {{ end }}
                 </td>
                 <td>
                     <a href="/services/ps/{{$line.Id}}" class="btn btn-link btn-sm">{{$line.Id}}</a>

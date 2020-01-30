@@ -1,8 +1,8 @@
 package models
 
 import (
-	"strings"
 	"strconv"
+	"strings"
 )
 
 type DockerStatsNoStream struct {
@@ -27,6 +27,7 @@ type DockerStackServices struct {
 	Replicas string
 	Image    string
 	Ports    string
+	Labels   map[string]string
 }
 
 type DockerStackLs struct {
