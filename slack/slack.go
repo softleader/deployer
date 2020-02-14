@@ -48,7 +48,7 @@ func newAttachments(config models.Config, serviceId, tag string) (attachments []
 			attachments = append(attachments, slack.Attachment{
 				Title:     replaceLast(val, "-", "/"),
 				TitleLink: fmt.Sprintf("http://softleader.com.tw:5678/services/%v?q=%v", val, serviceId),
-				Footer:    "http://softleader.com.tw:5678",
+				Footer:    "Deployer",
 				Ts:        json.Number(strconv.FormatInt(time.Now().Unix(), 10)),
 			})
 		}
@@ -67,7 +67,7 @@ func newAttachments(config models.Config, serviceId, tag string) (attachments []
 					release.AuthorName = r.GetAuthor().GetLogin()
 					release.AuthorLink = r.GetAuthor().GetHTMLURL()
 					release.AuthorIcon = r.GetAuthor().GetAvatarURL()
-					release.Footer = fmt.Sprintf("https://github.com/%v/%v", owner, repo)
+					release.Footer = fmt.Sprintf("github.com/%v/%v", owner, repo)
 					release.Ts = json.Number(strconv.FormatInt(r.GetPublishedAt().Unix(), 10))
 				}
 			}
