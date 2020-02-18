@@ -11,7 +11,7 @@ import (
 
 func FilterService(ctx iris.Context) {
 	params := ctx.URLParams()
-	_, out, err := docker.ServiceFilter(params)
+	_, out, err := docker.ServiceFilter(params, false)
 	if err != nil {
 		ctx.Application().Logger().Warn(err.Error())
 		ctx.WriteString(err.Error())
@@ -71,9 +71,31 @@ func InspectService(ctx iris.Context) {
 }
 
 func UpdateService(ctx iris.Context) {
-	serviceId := ctx.Params().Get("serviceId")
 	image := ctx.FormValue("image")
-	if skipSlack, _ := ctx.Params().GetBool("skip-slack"); !skipSlack {
+	if image == "" {
+		writeOut(ctx, "requires image parameter")
+		return
+	}
+	serviceId := ctx.Params().Get("serviceId")
+	if filter := ctx.FormValue("filter"); filter != "" {
+		params := make(map[string]string)
+		params[filter] = serviceId
+		arg, ids, err := findServiceIdByLabel(params)
+		if err != nil {
+			writeOut(ctx, err.Error())
+			return
+		}
+		if len(ids) == 0 {
+			writeOut(ctx, fmt.Sprintf("No service found for: %s", arg))
+			return
+		}
+		if len(ids) > 1 {
+			writeOut(ctx, fmt.Sprintf("No unique service found for: %s", arg))
+			return
+		}
+		serviceId = ids[0]
+	}
+	if _, found := ctx.FormValues()["skip-slack"]; !found {
 		err := slack.Post(Ws.Config, serviceId, image)
 		if err != nil {
 			fmt.Println(err)
@@ -83,8 +105,26 @@ func UpdateService(ctx iris.Context) {
 	if err != nil {
 		out += err.Error()
 	}
-	ctx.ViewData("out", out)
-	ctx.View("pre.html")
+	writeOut(ctx, out)
+}
+
+func findServiceIdByLabel(params map[string]string) (arg string, ids []string, err error) {
+	var out string
+	if arg, out, err = docker.ServiceFilter(params, true); err != nil {
+		return
+	}
+	ids = deleteEmpty(strings.Split(out, fmt.Sprintln()))
+	return
+}
+
+func writeOut(ctx iris.Context, out string) {
+	if ctx.Method() == "GET" {
+		ctx.ViewData("out", out)
+		ctx.View("pre.html")
+		return
+	}
+	ctx.Text(out)
+	return
 }
 
 func LogsService(ctx iris.Context) {

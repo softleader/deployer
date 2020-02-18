@@ -61,8 +61,13 @@ func ServiceSpec(service string) (string, *Spec, error) {
 	return arg, &svc.Spec, err
 }
 
-func ServiceFilter(params map[string]string) (arg string, out string, err error) {
-	args := []string{"docker service ls --format '{{json .}}'"}
+func ServiceFilter(params map[string]string, quiet bool) (arg string, out string, err error) {
+	args := []string{"docker service ls"}
+	if quiet {
+		args = append(args, "-q")
+	} else {
+		args = append(args, "--format '{{json .}}'")
+	}
 	for key, val := range params {
 		args = append(args, "-f", fmt.Sprintf("%s=%s", key, val))
 	}

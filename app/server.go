@@ -88,6 +88,7 @@ func NewApplication(args *Arguments, debug bool) *iris.Application {
 		services.Get("/ps/{serviceId:string}", PsService)
 		services.Get("/inspect/{serviceId:string}", InspectService)
 		services.Get("/update/{serviceId:string}", UpdateService)
+		services.Put("/update/{serviceId:string}", UpdateService)
 		services.Get("/logs/{serviceId:string}/{tail:int}", LogsService)
 		services.Get("/rm/{stack:string}/{service:string}", func(ctx context.Context) {
 			RemoveService(ctx)
