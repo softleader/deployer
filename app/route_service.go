@@ -73,7 +73,7 @@ func InspectService(ctx iris.Context) {
 func UpdateService(ctx iris.Context) {
 	image := ctx.FormValue("image")
 	if image == "" {
-		writeOut(ctx, "requires image parameter")
+		writeOut(ctx, "Requires image parameter", 400)
 		return
 	}
 	serviceId := ctx.Params().Get("serviceId")
@@ -82,15 +82,15 @@ func UpdateService(ctx iris.Context) {
 		params[filter] = serviceId
 		arg, ids, err := findServiceIdByLabel(params)
 		if err != nil {
-			writeOut(ctx, err.Error())
+			writeOut(ctx, err.Error(), 400)
 			return
 		}
 		if len(ids) == 0 {
-			writeOut(ctx, fmt.Sprintf("No service found for: %s", arg))
+			writeOut(ctx, fmt.Sprintf("No service found for: %s", arg), 404)
 			return
 		}
 		if len(ids) > 1 {
-			writeOut(ctx, fmt.Sprintf("No unique service found for: %s", arg))
+			writeOut(ctx, fmt.Sprintf("No unique service found for: %s", arg), 400)
 			return
 		}
 		serviceId = ids[0]
@@ -104,8 +104,10 @@ func UpdateService(ctx iris.Context) {
 	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
 	if err != nil {
 		out += err.Error()
+		writeOut(ctx, out, 400)
+		return
 	}
-	writeOut(ctx, out)
+	writeOut(ctx, out, 202)
 }
 
 func findServiceIdByLabel(params map[string]string) (arg string, ids []string, err error) {
@@ -117,8 +119,9 @@ func findServiceIdByLabel(params map[string]string) (arg string, ids []string, e
 	return
 }
 
-func writeOut(ctx iris.Context, out string) {
+func writeOut(ctx iris.Context, out string, status int) {
 	if ctx.Method() != "GET" {
+		ctx.StatusCode(status)
 		ctx.Text(out)
 		return
 	}
