@@ -72,8 +72,9 @@ func InspectService(ctx iris.Context) {
 
 func UpdateService(ctx iris.Context) {
 	image := ctx.FormValue("image")
-	if image == "" {
-		writeOut(ctx, "Requires image parameter", 400)
+	replicas := ctx.FormValue("replicas")
+	if image == "" && replicas == "" {
+		writeOut(ctx, "Requires at least one of 'image' or 'replicas' parameter", 400)
 		return
 	}
 	serviceId := ctx.Params().Get("serviceId")
@@ -101,7 +102,14 @@ func UpdateService(ctx iris.Context) {
 			fmt.Println(err)
 		}
 	}
-	_, out, err := docker.ServiceUpdate(serviceId, "--image", image)
+	var args []string
+	if image != "" {
+		args = append(args, "--image", image)
+	}
+	if replicas != "" {
+		args = append(args, "--replicas", replicas)
+	}
+	_, out, err := docker.ServiceUpdate(serviceId, args...)
 	if err != nil {
 		out += err.Error()
 		writeOut(ctx, out, 400)

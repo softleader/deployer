@@ -142,7 +142,7 @@ POST /api/stacks
 }
 ```
 
-#### Example
+##### Example
 
 ```sh
 $ curl -X POST \
@@ -152,7 +152,7 @@ $ curl -X POST \
       "style":"swarm",
       "yaml":"github:softleader/softleader-package/softleader-base.yaml#master"
     }' \
-    http://localhost:5678/api/stacks
+    http://softleader.com.tw:5678/api/stacks
 ```
 
 ### Remove a Stack
@@ -163,10 +163,10 @@ DELETE /api/stacks/:stack
 
 `:stack` - 左右模糊比對, 刪除所有符合的 stack 名稱
 
-#### Example
+##### Example
 
 ```
-$ curl -X DELETE http://localhost:5678/api/stacks/:stack
+$ curl -X DELETE http://softleader.com.tw:5678/api/stacks/:stack
 ```
 
 ### Remove a Service
@@ -177,8 +177,37 @@ DELETE /api/services/:service
 
 `:service` - 完整比對, 可以是 service id 或 service name
 
-#### Example
+##### Example
 
 ```
-$ curl -X DELETE http://localhost:5678/api/services/:service
+$ curl -X DELETE http://softleader.com.tw:5678/api/services/:service
 ```
+
+### Update Service image or replicas
+
+
+```
+PUT /api/services/:service
+```
+
+`:service` - 完整比對, 可以是 service id 或 service name, 或是 `filter` 的條件
+
+#### Parameter
+
+| Name | Type | Description | Constraint |
+|------|------|-------------|---------------|
+| `image` | `string` | 要更新的 image | `image` 及 `replicas` 至少必須給其一 |
+| `replicas` | `int` | 要更新的 replicas | `image` 及 `replicas` 至少必須給其一 |
+| `filter` | `string` | 使用傳入的 filter 配上 `:service`, 來過濾出要跟新的 service id | filter 的條件必須要可以過濾出唯一的 service |
+|  `skip-slack` | `any` | 過版時不要 hook slack | | 
+
+##### Example
+
+```sh
+# 將 id 為 :service 的更新成 busybox:1.28 並開 2 個 replicas
+$ curl -X PUT 'http://softleader.com.tw:5678/api/services/:service?image=busybox:1.28&replicas=2'
+
+# 將 service label 為 app=busybox 的 service 更新成 1 個 replicas, 並且不要通知 slack
+$ curl -X PUT 'http://softleader.com.tw:5678/api/services/app=busybox?filter=label&replicas=1&skip-slack'
+```
+
