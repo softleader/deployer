@@ -118,13 +118,12 @@ func findServiceIdByLabel(params map[string]string) (arg string, ids []string, e
 }
 
 func writeOut(ctx iris.Context, out string) {
-	if ctx.Method() == "GET" {
-		ctx.ViewData("out", out)
-		ctx.View("pre.html")
+	if ctx.Method() != "GET" {
+		ctx.Text(out)
 		return
 	}
-	ctx.Text(out)
-	return
+	ctx.ViewData("out", out)
+	ctx.View("pre.html")
 }
 
 func LogsService(ctx iris.Context) {
