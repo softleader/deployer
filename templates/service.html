@@ -74,7 +74,7 @@
             <thead class="thead-light">
             <tr>
                 <th scope="col" style="width: 12%"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></th>
-                <th scope="col">Service Id</th>
+                <th scope="col">Service ID</th>
                 <th scope="col">Service Name</th>
             {{/*<th scope="col">Mode</th>*/}}
                 <th scope="col">Replicas</th>
@@ -87,28 +87,31 @@
             {{range $index, $line := .out}}
             <tr>
                 <td style="white-space: nowrap">
-                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{$line.Id}}"><i
-                            class="fa fa-eye" aria-hidden="true"></i></a>
-                {{/*<a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#logModal" data-backdrop="static"*/}}
-                {{/*name="{{$line.Id}}">*/}}
-                {{/*<i class="fa fa-file-text" aria-hidden="true"></i>*/}}
-                {{/*</a>*/}}
-
+                    <a class="btn btn-outline-secondary btn-sm" href="/services/inspect/{{$line.Id}}"
+                       data-toggle="tooltip" title="Inspect Service">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                    </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal"
                        data-backdrop="static"
-                       name="{{$line.Id}}" image="{{$line.Image}}">
+                       name="{{$line.Id}}" image="{{$line.Image}}" title="Update Service">
                         <i class="fa fa-wrench" aria-hidden="true"></i>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
                        data-backdrop="static"
-                       name="{{$stack}}/{{$line.Id}}">
+                       name="{{$stack}}/{{$line.Id}}"
+                       title="Delete Service">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                     {{ with (index $line.Labels "github") }}
-                    <a class="btn btn-outline-secondary btn-sm" href="https://github.com/{{.}}" target="_blank">
+                    <a class="btn btn-outline-secondary btn-sm" href="https://github.com/{{.}}" target="_blank"
+                       data-toggle="tooltip" title="Open GitHub page">
                         <i class="fa fa-github" aria-hidden="true"></i>
                     </a>
                     {{ end }}
+                    <button class="btn btn-outline-secondary btn-sm" data-clipboard-text="{{$line.Id}}"
+                            data-toggle="tooltip" title="Copy Service ID to clipboard">
+                        <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </button>
                 </td>
                 <td>
                     <a href="/services/ps/{{$line.Id}}" class="btn btn-link btn-sm">{{$line.Id}}</a>
@@ -216,8 +219,12 @@
 
 <script src="/jquery/jquery-3.3.1.min.js"></script>
 <script src="/bootstrap-4.1.0-dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
 
 <script>
+    $('[data-toggle="tooltip"],[data-toggle="modal"]').tooltip();
+    new ClipboardJS('.btn');
+
     $(".fa-trash").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#removeModal");
