@@ -102,13 +102,16 @@
                 <input type="text" class="form-control" id="devIpAddress" aria-describedby="devIpAddressHelp"
                        value="{{.dft.Dev.IpAddress}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
                 <small id="groupHelp" class="form-text text-muted">
-                    此欄位放空白視同不開啟 dev 模式
+                    此欄位放空白視同不開啟 dev 模式, 此 ip 會固定透過 DEVOPS_OPTS 變數帶入 Container OS 變數
                 </small>
             </div>
             <div class="form-group">
                 <label for="devPort">Dev - Port publish starts form</label>
                 <input type="number" class="form-control" id="devPort" aria-describedby="devPortHelp"
                        value="{{.dft.Dev.Port}}" {{if not .dft.Dev.IpAddress}}disabled{{end}}>
+                <small id="groupHelp" class="form-text text-muted">
+                    此次部署
+                </small>
             </div>
             <div class="form-group">
                 <label for="devIgnore">Dev - Services ignore Dev mode</label>
@@ -128,7 +131,7 @@
                 <input type="text" class="form-control" id="extend" aria-describedby="extendHelp"
                        value="{{.dft.Extend}}">
                 <small id="extendHelp" class="form-text text-muted">
-                    如: { "yaml": "main.yaml", "extend": "slave.yaml" }, 則以 main.yaml 為基礎, 將 slave.yaml 的設定覆蓋過 main.yaml 中
+                    如: { "yaml": "main.yaml", "extend": "patch.yaml" }, 則以 main.yaml 為基礎, 將 patch.yaml 的設定覆蓋過 main.yaml 中
                 </small>
             </div>
             <div class="form-group">
@@ -144,6 +147,9 @@
                         <input type="checkbox" id="flatGroup" class="form-check-input" {{if .dft.FlatGroup}}checked{{end}}>
                         Flat Group
                     </label>
+                    <small id="groupHelp" class="form-text text-muted">
+                        將所有 group 打平, 部署在同一個 swarm stack 中
+                    </small>
                 </div>
             </div>
             <div class="form-group">
@@ -151,13 +157,16 @@
                 <input type="text" class="form-control" id="net0" aria-describedby="net0Help"
                        placeholder="" value="{{.dft.Net0}}">
                 <small id="groupHelp" class="form-text text-muted">
-                    若空白則由 docker 自動建立 network
+                    本次部署要使用的 docker network, 若空白則由部署時自動建立
                 </small>
             </div>
             <div class="form-group">
                 <label for="net0">Volume0</label>
                 <input type="text" class="form-control" id="volume0" aria-describedby="volume0Help"
                        placeholder="" value="{{.dft.Volume0}}">
+                <small id="groupHelp" class="form-text text-muted">
+                    本次部署使用到的 docker volume
+                </small>
             </div>
             <div class="form-group">
                 <label for="styleHelp">Style</label>
