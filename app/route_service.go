@@ -6,6 +6,7 @@ import (
 	"github.com/softleader/deployer/cmd/docker"
 	"github.com/softleader/deployer/models"
 	"github.com/softleader/deployer/slack"
+	"strconv"
 	"strings"
 )
 
@@ -73,6 +74,9 @@ func InspectService(ctx iris.Context) {
 func UpdateService(ctx iris.Context) {
 	image := ctx.FormValue("image")
 	replicas := ctx.FormValue("replicas")
+	if i, err := strconv.Atoi(replicas); err != nil || i < 0 {
+		replicas = ""
+	}
 	if image == "" && replicas == "" {
 		writeOut(ctx, "Requires at least one of 'image' or 'replicas' parameter", 400)
 		return

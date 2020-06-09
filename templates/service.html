@@ -180,6 +180,10 @@
                 <label>--image</label>
                 <input type="text" class="form-control" id="image">
             </div>
+            <div class="form-group modal-body">
+                <label>--replicas (<0 代表不調整)</label>
+                <input type="number" class="form-control" id="replicas" value="-1">
+            </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-secondary btn-sm" type="button" data-dismiss="modal">
                     <i class="fa fa-ban" aria-hidden="true"></i> Cancel
@@ -241,7 +245,7 @@
         $modal.find(".btn").removeClass('disabled').prop('disabled', false);
         $modal.find("#image").val($(this).attr("image"));
         $modal.find("#fetch").click(function () {
-            $(this).attr("href", "/services/update/" + n + "?image=" + $modal.find("#image").val())
+            $(this).attr("href", "/services/update/" + n + "?image=" + $modal.find("#image").val() + "&replicas=" + $modal.find("#replicas").val())
             $modal.find(".btn").addClass('disabled').prop('disabled', true);
         });
     });
