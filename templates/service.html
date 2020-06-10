@@ -93,7 +93,7 @@
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#updateModal"
                        data-backdrop="static"
-                       name="{{$line.Id}}" image="{{$line.Image}}" title="Update Service">
+                       name="{{$line.Id}}" image="{{$line.Image}}" replicas="{{$line.Replicas}}" title="Update Service">
                         <i class="fa fa-wrench" aria-hidden="true"></i>
                     </a>
                     <a class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#removeModal"
@@ -181,7 +181,7 @@
                 <input type="text" class="form-control" id="image">
             </div>
             <div class="form-group modal-body">
-                <label>--replicas (<0 代表不調整)</label>
+                <label>--replicas</label>
                 <input type="number" class="form-control" id="replicas" value="-1">
             </div>
             <div class="modal-footer">
@@ -242,10 +242,16 @@
     $(".fa-wrench").parent().click(function () {
         var n = $(this).attr("name");
         var $modal = $("#updateModal");
+        var replicas = $(this).attr("replicas").split("/")[1];
         $modal.find(".btn").removeClass('disabled').prop('disabled', false);
         $modal.find("#image").val($(this).attr("image"));
+        $modal.find("#replicas").val(replicas);
         $modal.find("#fetch").click(function () {
-            $(this).attr("href", "/services/update/" + n + "?image=" + $modal.find("#image").val() + "&replicas=" + $modal.find("#replicas").val())
+            var qs = "image=" + $modal.find("#image").val();
+            if (replicas !== $modal.find("#replicas").val()) {
+                qs += "&replicas=" + $modal.find("#replicas").val();
+            }
+            $(this).attr("href", "/services/update/" + n + "?" + qs);
             $modal.find(".btn").addClass('disabled').prop('disabled', true);
         });
     });
