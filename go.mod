@@ -60,7 +60,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
 	gopkg.in/russross/blackfriday.v2 v2.0.0-20180526075726-670777b536d3 // indirect
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.2.8
 )
 
 go 1.13
